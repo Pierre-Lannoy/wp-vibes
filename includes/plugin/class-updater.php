@@ -88,6 +88,6 @@ class Updater {
 	 */
 	public function sc_get_changelog( $attributes ) {
 		$md = new Markdown();
-		return $md->get_shortcode(  'CHANGELOG.md', $attributes  );
+		return $md->get_shortcode( 'CHANGELOG.md', $attributes );
 	}
 }
