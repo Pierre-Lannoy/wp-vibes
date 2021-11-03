@@ -88,9 +88,9 @@ class Memory {
 	 */
 	public static function init() {
 		self::$statistics_filter['endpoint'] = [ '/\/livelog/' ];
-		add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'write' ], DECALOG_MAX_SHUTDOWN_PRIORITY, 0 );
+		//DIS:add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'write' ], DECALOG_MAX_SHUTDOWN_PRIORITY, 0 );
 		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) ) {
-			add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'collate_metrics' ], DECALOG_MAX_SHUTDOWN_PRIORITY - 1, 0 );
+			//DIS:add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'collate_metrics' ], DECALOG_MAX_SHUTDOWN_PRIORITY - 1, 0 );
 		}
 	}
 

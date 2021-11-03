@@ -189,7 +189,7 @@ class Schema {
 	public function initialize() {
 		global $wpdb;
 		try {
-			$this->create_table();
+			//DIS:$this->create_table();
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Table "%s" created.', $wpdb->base_prefix . self::$statistics ) );
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( 'Schema installed.' );
 		} catch ( \Throwable $e ) {
@@ -206,7 +206,7 @@ class Schema {
 	public function update() {
 		global $wpdb;
 		try {
-			$this->create_table();
+			//DIS:$this->create_table();
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Table "%s" updated.', $wpdb->base_prefix . self::$statistics ) );
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( 'Schema updated.' );
 		} catch ( \Throwable $e ) {

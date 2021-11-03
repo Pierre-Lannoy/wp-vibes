@@ -1,10 +1,10 @@
 === Vibes ===
 Contributors: PierreLannoy
-Tags: api, analytics, reports, rest-api, statistics
+Tags: rum, web vitals
 Requires at least: 5.2
 Requires PHP: 7.2
 Tested up to: 5.9
-Stable tag: 2.4.0
+Stable tag: 1.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 

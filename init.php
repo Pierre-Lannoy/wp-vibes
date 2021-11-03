@@ -17,15 +17,3 @@ define( 'VIBES_API_VERSION', '1' );
 define( 'VIBES_CODENAME', '"-"' );
 
 define( 'VIBES_CDN_AVAILABLE', true );
-
-global $timestart;
-
-if ( ! defined( 'VIBES_INBOUND_CHRONO' ) ) {
-	if ( defined( 'POWP_START_TIMESTAMP' ) ) {
-		define( 'VIBES_INBOUND_CHRONO', POWP_START_TIMESTAMP );
-	} elseif ( isset( $timestart ) && is_numeric( $timestart ) ) {
-		define( 'VIBES_INBOUND_CHRONO', $timestart );
-	} else {
-		define( 'VIBES_INBOUND_CHRONO', microtime( true ) );
-	}
-}

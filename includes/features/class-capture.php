@@ -72,11 +72,12 @@ class Capture {
 	 * @since    1.0.0
 	 */
 	public static function init() {
-		add_filter( 'pre_http_request', [ 'Vibes\Plugin\Feature\Capture', 'pre_http_request' ], 10, 3 );
-		add_filter( 'http_api_debug', [ 'Vibes\Plugin\Feature\Capture', 'http_api_debug' ], 10, 5 );
-		add_filter( 'rest_pre_echo_response', [ 'Vibes\Plugin\Feature\Capture', 'rest_pre_echo_response' ], 10, 3 );
-		self::$default_chrono = microtime( true );
-		self::$local_timezone = Timezone::network_get();
+		//DIS:
+		//add_filter( 'pre_http_request', [ 'Vibes\Plugin\Feature\Capture', 'pre_http_request' ], 10, 3 );
+		//add_filter( 'http_api_debug', [ 'Vibes\Plugin\Feature\Capture', 'http_api_debug' ], 10, 5 );
+		//add_filter( 'rest_pre_echo_response', [ 'Vibes\Plugin\Feature\Capture', 'rest_pre_echo_response' ], 10, 3 );
+		//self::$default_chrono = microtime( true );
+		//self::$local_timezone = Timezone::network_get();
 		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'Capture engine started.' );
 	}
 
