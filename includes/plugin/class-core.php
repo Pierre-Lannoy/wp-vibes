@@ -10,13 +10,18 @@
  * @since   1.0.0
  */
 
-namespace WPPluginBoilerplate\Plugin;
+namespace Vibes\Plugin;
 
-use WPPluginBoilerplate\System\Loader;
-use WPPluginBoilerplate\System\I18n;
-use WPPluginBoilerplate\System\Assets;
-use WPPluginBoilerplate\Library\Libraries;
-use WPPluginBoilerplate\System\Nag;
+use Vibes\System\Loader;
+use Vibes\System\I18n;
+use Vibes\System\Assets;
+use Vibes\Library\Libraries;
+use Vibes\System\Nag;
+use Vibes\System\Role;
+use Vibes\API\LoggerRoute;
+use Vibes\System\Environment;
+use Vibes\System\Option;
+use Vibes\System\Http;
 
 /**
  * The core plugin class.
@@ -53,6 +58,9 @@ class Core {
 		$this->define_global_hooks();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) ) {
+			$this->define_metrics();
+		}
 	}
 
 
@@ -69,11 +77,14 @@ class Core {
 		$libraries = new Libraries();
 		$this->loader->add_filter( 'perfopsone_plugin_info', self::class, 'perfopsone_plugin_info' );
 		$this->loader->add_action( 'init', $bootstrap, 'initialize' );
+		$this->loader->add_action( 'init', $bootstrap, 'late_initialize', PHP_INT_MAX );
 		$this->loader->add_action( 'wp_head', $assets, 'prefetch' );
-		$this->loader->add_action( 'auto_update_plugin', $updater, 'auto_update_plugin', 10, 2 );
-		add_shortcode( 'wppb-changelog', [ $updater, 'sc_get_changelog' ] );
-		add_shortcode( 'wppb-libraries', [ $libraries, 'sc_get_list' ] );
-		add_shortcode( 'wppb-statistics', [ 'WPPluginBoilerplate\System\Statistics', 'sc_get_raw' ] );
+		add_shortcode( 'vibes-changelog', [ $updater, 'sc_get_changelog' ] );
+		add_shortcode( 'vibes-libraries', [ $libraries, 'sc_get_list' ] );
+		add_shortcode( 'vibes-statistics', [ 'Vibes\System\Statistics', 'sc_get_raw' ] );
+		// REST API
+		$routes = new LoggerRoute();
+		$this->loader->add_action( 'rest_api_init', $routes, 'register_routes' );
 	}
 
 	/**
@@ -84,16 +95,22 @@ class Core {
 	 * @access private
 	 */
 	private function define_admin_hooks() {
-		$plugin_admin = new Wp_Plugin_Boilerplate_Admin();
+		$plugin_admin = new Vibes_Admin();
 		$nag          = new Nag();
+		$this->loader->add_action( 'init', $plugin_admin, 'disable_wp_emojis', PHP_INT_MAX );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'init_admin_menus' );
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'finalize_admin_menus', 100 );
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'normalize_admin_menus', 110 );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'init_settings_sections' );
-		$this->loader->add_filter( 'plugin_action_links_' . plugin_basename( WPPB_PLUGIN_DIR . WPPB_SLUG . '.php' ), $plugin_admin, 'add_actions_links', 10, 4 );
+		$this->loader->add_filter( 'plugin_action_links_' . plugin_basename( VIBES_PLUGIN_DIR . VIBES_SLUG . '.php' ), $plugin_admin, 'add_actions_links', 10, 4 );
 		$this->loader->add_filter( 'plugin_row_meta', $plugin_admin, 'add_row_meta', 10, 2 );
 		$this->loader->add_action( 'admin_notices', $nag, 'display' );
-		$this->loader->add_action( 'wp_ajax_hide_wppb_nag', $nag, 'hide_callback' );
+		$this->loader->add_action( 'wp_ajax_hide_vibes_nag', $nag, 'hide_callback' );
+		$this->loader->add_action( 'wp_ajax_vibes_get_stats', 'Vibes\Plugin\Feature\AnalyticsFactory', 'get_stats_callback' );
+		$this->loader->add_filter( 'myblogs_blog_actions', $plugin_admin, 'blog_action', 10, 2 );
+		$this->loader->add_filter( 'manage_sites_action_links', $plugin_admin, 'site_action', 10, 3 );
 	}
 
 	/**
@@ -104,9 +121,31 @@ class Core {
 	 * @access private
 	 */
 	private function define_public_hooks() {
-		$plugin_public = new Wp_Plugin_Boilerplate_Public();
+		$plugin_public = new Vibes_Public();
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+	}
+
+	/**
+	 * Register all metrics of the plugin.
+	 *
+	 * @since  3.0.0
+	 * @access private
+	 */
+	private function define_metrics() {
+		$metrics = \DecaLog\Engine::metricsLogger( VIBES_SLUG );
+		foreach ( array_diff( Http::$contexts, [ 'unknown' ] ) as $known_context ) {
+			foreach ( Http::$http_summary_codes as $http_summary_code ) {
+				$metrics->createProdCounter( $known_context . '_http_' . $http_summary_code . 'xx_total', 'Number of ' . $http_summary_code . 'xx ' . $known_context . ' response per request - [count]' );
+			}
+			foreach ( array_diff( Http::$verbs, [ 'unknown' ] ) as $verb ) {
+				$metrics->createProdCounter( $known_context . '_' . $verb . '_total', 'Number of ' . $known_context . ' ' . $verb . ' calls per request - [count]' );
+			}
+			$metrics->createProdCounter( $known_context . '_latency_avg', 'Average ' . $known_context . ' call time per request - [second]' );
+			$metrics->createProdCounter( $known_context . '_total', 'Number of ' . $known_context . ' calls per request - [count]' );
+		}
+		$metrics->createProdCounter( 'data_in_total', 'Data ingress per request - [byte]' );
+		$metrics->createProdCounter( 'data_out_total', 'Data egress per request - [byte]' );
 	}
 
 	/**
@@ -136,11 +175,11 @@ class Core {
 	 * @since 1.0.0
 	 */
 	public static function perfopsone_plugin_info( $plugin ) {
-		$plugin[ WPPB_SLUG ] = [
-			'name'    => WPPB_PRODUCT_NAME,
-			'code'    => WPPB_CODENAME,
-			'version' => WPPB_VERSION,
-			'url'     => WPPB_PRODUCT_URL,
+		$plugin[ VIBES_SLUG ] = [
+			'name'    => VIBES_PRODUCT_NAME,
+			'code'    => VIBES_CODENAME,
+			'version' => VIBES_VERSION,
+			'url'     => VIBES_PRODUCT_URL,
 			'icon'    => self::get_base64_logo(),
 		];
 		return $plugin;
@@ -154,6 +193,32 @@ class Core {
 	 */
 	public static function get_base64_logo() {
 		$source  = '<svg width="100%" height="100%" viewBox="0 0 1001 1001" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-miterlimit:10;">';
+		$source .= '<g id="Vibes" transform="matrix(10.0067,0,0,10.0067,0,0)">';
+		$source .= '<rect x="0" y="0" width="100" height="100" style="fill:none;"/>';
+		$source .= '<clipPath id="_clip1"><rect x="0" y="0" width="100" height="100"/></clipPath>';
+		$source .= '<g clip-path="url(#_clip1)">';
+		$source .= '<g id="Icon" transform="matrix(0.964549,0,0,0.964549,-0.63865,1.78035)">';
+		$source .= '<g transform="matrix(0,106.221,106.221,0,52.4976,-19.9011)"><path d="M0.42,-0.324C0.421,-0.324 0.421,-0.324 0.421,-0.324C0.431,-0.398 0.495,-0.456 0.572,-0.456C0.656,-0.456 0.724,-0.388 0.724,-0.305L0.724,0.293C0.725,0.383 0.651,0.456 0.56,0.456C0.48,0.456 0.414,0.399 0.399,0.323C0.356,0.291 0.328,0.241 0.328,0.183C0.328,0.156 0.335,0.13 0.346,0.106C0.26,0.076 0.197,-0.006 0.197,-0.103L0.197,-0.103C0.197,-0.225 0.297,-0.324 0.42,-0.324Z" style="fill:url(#_Linear2);fill-rule:nonzero;"/></g>';
+		$source .= '<g transform="matrix(0,1,1,0,60.0193,87.9577)"><path d="M-7.5,-7.5L7.5,-7.5" style="fill:none;fill-rule:nonzero;stroke:rgb(87,159,244);stroke-width:1.73px;"/></g>';
+		$source .= '<g transform="matrix(1,0,0,1,7.51934,95.4577)"><path d="M0,0L90,0" style="fill:none;fill-rule:nonzero;stroke:rgb(87,159,244);stroke-width:1.73px;"/></g>';
+		$source .= '<g transform="matrix(-1,0,0,1,103.001,83.2866)"><rect x="44" y="9" width="13" height="6" style="fill:rgb(171,207,249);stroke:rgb(171,207,249);stroke-width:1.73px;stroke-linecap:round;stroke-linejoin:round;"/></g>';
+		$source .= '<g transform="matrix(0,-51.5803,-51.5803,0,52.5046,84.6977)"><path d="M0.95,0.611C0.95,0.632 0.933,0.649 0.911,0.649L0.174,0.649C0.153,0.649 0.136,0.632 0.136,0.611L0.136,-0.611C0.136,-0.632 0.153,-0.649 0.174,-0.649L0.911,-0.649C0.933,-0.649 0.95,-0.632 0.95,-0.611L0.95,0.611Z" style="fill:url(#_Linear3);fill-rule:nonzero;"/></g>';
+		$source .= '<g transform="matrix(1,0,0,1,28.1936,53.5793)"><path d="M0,15.324L15.325,3.648L29.189,15.324L46.163,0" style="fill:none;fill-rule:nonzero;stroke:rgb(65,172,255);stroke-width:0.63px;"/></g>';
+		$source .= '<g transform="matrix(0,-1,-1,0,28.0046,66.6977)"><path d="M-2,-2C-3.104,-2 -4,-1.104 -4,0C-4,1.104 -3.104,2 -2,2C-0.896,2 0,1.104 0,0C0,-1.104 -0.896,-2 -2,-2" style="fill:white;fill-rule:nonzero;"/></g>';
+		$source .= '<g transform="matrix(0,-1,-1,0,44.0046,55.6977)"><path d="M-2,-2C-3.104,-2 -4,-1.104 -4,0C-4,1.104 -3.104,2 -2,2C-0.896,2 0,1.104 0,0C0,-1.104 -0.896,-2 -2,-2" style="fill:white;fill-rule:nonzero;"/></g>';
+		$source .= '<g transform="matrix(0,-1,-1,0,57.0046,66.6977)"><path d="M-2,-2C-3.104,-2 -4,-1.104 -4,0C-4,1.104 -3.104,2 -2,2C-0.896,2 0,1.104 0,0C0,-1.104 -0.896,-2 -2,-2" style="fill:white;fill-rule:nonzero;"/></g>';
+		$source .= '<g transform="matrix(0,-1,-1,0,74.0046,51.6977)"><path d="M-2,-2C-3.104,-2 -4,-1.104 -4,0C-4,1.104 -3.104,2 -2,2C-0.896,2 0,1.104 0,0C0,-1.104 -0.896,-2 -2,-2" style="fill:white;fill-rule:nonzero;"/></g>';
+		$source .= '<g transform="matrix(-1,0,0,1,145.005,34.6977)"><rect x="65" y="34" width="12" height="4" style="fill:white;"/></g>';
+		$source .= '<g transform="matrix(-1,0,0,1,61.0046,-5.3023)"><rect x="23" y="54" width="12" height="4" style="fill:white;"/></g>';
+		$source .= '<g transform="matrix(1,0,0,1,3.00458,6.6977)"><g opacity="0.3"><g transform="matrix(1,0,0,1,83,29)"><path d="M0,6L-67,6L-67,2C-67,0.896 -66.104,0 -65,0L-2,0C-0.896,0 0,0.896 0,2L0,6Z" style="fill:white;fill-rule:nonzero;"/></g></g></g>';
+		$source .= '<g transform="matrix(1,0,0,1,3.00458,6.6977)"><g opacity="0.3"><g transform="matrix(1,0,0,1,0,6)"><rect x="20" y="33" width="59" height="28" style="fill:white;"/></g></g></g>';
+		$source .= '</g>';
+		$source .= '</g>';
+		$source .= '</g>';
+		$source .= '<defs>';
+		$source .= '<linearGradient id="_Linear2" x1="0" y1="0" x2="1" y2="0" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1,0,0,-1,0,-2.11822e-06)"><stop offset="0" style="stop-color:rgb(248,247,252);stop-opacity:1"/><stop offset="0.08" style="stop-color:rgb(248,247,252);stop-opacity:1"/><stop offset="1" style="stop-color:rgb(65,172,255);stop-opacity:1"/></linearGradient>';
+		$source .= '<linearGradient id="_Linear3" x1="0" y1="0" x2="1" y2="0" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1,0,0,-1,0,0)"><stop offset="0" style="stop-color:rgb(25,39,131);stop-opacity:1"/><stop offset="1" style="stop-color:rgb(65,172,255);stop-opacity:1"/></linearGradient>';
+		$source .= '</defs>';
 		$source .= '</svg>';
 		// phpcs:ignore
 		return 'data:image/svg+xml;base64,' . base64_encode( $source );

@@ -9,7 +9,9 @@
  * @since   1.0.0
  */
 
-namespace WPPluginBoilerplate\System;
+namespace Vibes\System;
+
+use Vibes\System\GeoIP;
 
 /**
  * Define the HTTP functionality.
@@ -45,6 +47,14 @@ class Http {
 	 * @var    array    $schemes    Maintains the schemes list.
 	 */
 	public static $schemes = [ 'http', 'https', 'unknown' ];
+
+	/**
+	 * The list of summarized HTTP codes.
+	 *
+	 * @since  2.3.0
+	 * @var    array    $http_summary_codes    Maintains the summary codes list.
+	 */
+	public static $http_summary_codes = [ 1, 2, 3, 4, 5, 9 ];
 
 	/**
 	 * The list of HTTP codes meaning success.
@@ -179,6 +189,7 @@ class Http {
 		999 => 'Forbidden by quota manager',
 	];
 
+
 	/**
 	 * Set the plugin user agent.
 	 *
@@ -186,7 +197,7 @@ class Http {
 	 * @since  1.0.0
 	 */
 	public static function user_agent() {
-		return WPPB_PRODUCT_NAME . ' (' . Environment::wordpress_version_id() . '; ' . Environment::plugin_version_id() . '; +' . WPPB_PRODUCT_URL . ')';
+		return VIBES_PRODUCT_NAME . ' (' . Environment::wordpress_version_id() . '; ' . Environment::plugin_version_id() . '; +' . VIBES_PRODUCT_URL . ')';
 	}
 
 	/**
@@ -218,6 +229,58 @@ class Http {
 		}
 		$slice  = ( $subtld && ( count( $parts ) > 2 ) ) ? 3 : 2;
 		$result = implode( '.', array_slice( $parts, ( 0 - $slice ), $slice ) );
+		return $result;
+	}
+
+	/**
+	 * Format a captured record.
+	 *
+	 * @param   array   $record     The record to fromat.
+	 * @return  array   The record formatted.
+	 * @since  1.0.0
+	 */
+	public static function format_record( $record ) {
+		$result              = [];
+		$result['timestamp'] = $record['ts'];
+		$result['site_id']   = 0;
+		$result['bound']     = strtoupper( $record['context'] );
+		$result['authority'] = '-';
+		$result['scheme']    = '-';
+		$result['endpoint']  = '-';
+		$result['country']   = '-';
+		$result['verb']      = '-';
+		$result['code']      = 0;
+		$result['message']   = '-';
+		$result['size']      = 0;
+		$result['latency']   = 0;
+		if ( ! in_array( $result['bound'], [ 'INBOUND', 'OUTBOUND' ], true ) ) {
+			return $result;
+		}
+		$result['site_id']   = $record['site'];
+		$result['authority'] = $record['authority'];
+		$result['scheme']    = $record['scheme'];
+		$result['endpoint']  = $record['endpoint'];
+		$result['id']        = $record['id'];
+		if ( 'INBOUND' === $result['bound'] ) {
+			$geo_ip  = new GeoIP();
+			$country = $geo_ip->get_iso3166_alpha2( $record['id'] );
+			if ( ! empty( $country ) ) {
+				$result['country'] = $country;
+			}
+		} else {
+			$geo_ip  = new GeoIP();
+			$country = $geo_ip->get_iso3166_alpha2( $record['authority'] );
+			if ( ! empty( $country ) ) {
+				$result['country'] = $country;
+			}
+		}
+		$result['verb'] = strtoupper( $record['verb'] );
+		$result['code'] = $record['code'];
+		if ( array_key_exists( $record['code'], self::$http_status_codes ) ) {
+			$result['message'] = self::$http_status_codes[ $record['code'] ];
+		}
+		$result['size']    = (int) ( ( $record['kb_out'] + $record['kb_in'] ) * 1024 );
+		$result['latency'] = $record['latency_min'];
 		return $result;
 	}
 }

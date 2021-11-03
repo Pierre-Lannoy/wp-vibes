@@ -9,11 +9,11 @@
  * @since   1.0.0
  */
 
-namespace WPPluginBoilerplate\System;
+namespace Vibes\System;
 
-use WPPluginBoilerplate\System\Logger;
-use WPPluginBoilerplate\System\Option;
-use WPPluginBoilerplate\System\File;
+
+use Vibes\System\Option;
+use Vibes\System\File;
 
 /**
  * Define the APCu functionality.
@@ -59,8 +59,8 @@ class APCu {
 	 * @since 1.0.0
 	 */
 	public static function perfopsone_apcu_info( $apcu ) {
-		$apcu[ WPPB_SLUG ] = [
-			'name' => WPPB_PRODUCT_NAME,
+		$apcu[ VIBES_SLUG ] = [
+			'name' => VIBES_PRODUCT_NAME,
 		];
 		return $apcu;
 	}
@@ -99,7 +99,7 @@ class APCu {
 					$cpt++;
 				}
 			}
-			Logger::info( sprintf( '%d object(s) deleted.', $cpt ) );
+			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( sprintf( '%d object(s) deleted.', $cpt ) );
 		}
 		return $cpt;
 	}
@@ -112,7 +112,7 @@ class APCu {
 	public static function reset() {
 		if ( function_exists( 'apcu_clear_cache' ) ) {
 			apcu_clear_cache();
-			Logger::notice( 'Cache cleared.' );
+			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->notice( 'Cache cleared.' );
 		}
 	}
 

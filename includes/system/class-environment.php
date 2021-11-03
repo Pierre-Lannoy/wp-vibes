@@ -7,7 +7,7 @@
  * @since   1.0.0
  */
 
-namespace WPPluginBoilerplate\System;
+namespace Vibes\System;
 
 use Exception;
 
@@ -34,25 +34,67 @@ class Environment {
 	 * @since 1.0.0
 	 */
 	public static function init() {
-		$plugin_path         = str_replace( WPPB_SLUG . '/includes/system/', WPPB_SLUG . '/', plugin_dir_path( __FILE__ ) );
-		$plugin_path         = str_replace( WPPB_SLUG . '\includes\system/', WPPB_SLUG . '/', $plugin_path );
-		$plugin_url          = str_replace( WPPB_SLUG . '/includes/system/', WPPB_SLUG . '/', plugin_dir_url( __FILE__ ) );
+		$plugin_path         = str_replace( VIBES_SLUG . '/includes/system/', VIBES_SLUG . '/', plugin_dir_path( __FILE__ ) );
+		$plugin_path         = str_replace( VIBES_SLUG . '\includes\system/', VIBES_SLUG . '/', $plugin_path );
+		$plugin_url          = str_replace( VIBES_SLUG . '/includes/system/', VIBES_SLUG . '/', plugin_dir_url( __FILE__ ) );
 		$plugin_relative_url = str_replace( get_site_url() . '/', '', $plugin_url );
-		define( 'WPPB_PLUGIN_DIR', $plugin_path );
-		define( 'WPPB_PLUGIN_URL', $plugin_url );
-		define( 'WPPB_PLUGIN_RELATIVE_URL', $plugin_relative_url );
-		define( 'WPPB_ADMIN_DIR', WPPB_PLUGIN_DIR . 'admin/' );
-		define( 'WPPB_ADMIN_URL', WPPB_PLUGIN_URL . 'admin/' );
-		define( 'WPPB_PUBLIC_DIR', WPPB_PLUGIN_DIR . 'public/' );
-		define( 'WPPB_PUBLIC_URL', WPPB_PLUGIN_URL . 'public/' );
-		define( 'WPPB_INCLUDES_DIR', WPPB_PLUGIN_DIR . 'includes/' );
-		define( 'WPPB_VENDOR_DIR', WPPB_PLUGIN_DIR . 'includes/libraries/' );
-		define( 'WPPB_LANGUAGES_DIR', WPPB_PLUGIN_DIR . 'languages/' );
-		define( 'WPPB_ADMIN_RELATIVE_URL', self::admin_relative_url() );
-		define( 'WPPB_AJAX_RELATIVE_URL', self::ajax_relative_url() );
-		define( 'WPPB_PLUGIN_SIGNATURE', WPPB_PRODUCT_NAME . ' v' . WPPB_VERSION );
-		define( 'WPPB_PLUGIN_AGENT', WPPB_PRODUCT_NAME . ' (' . self::wordpress_version_id() . '; ' . self::plugin_version_id() . '; +' . WPPB_PRODUCT_URL . ')' );
-		define( 'WPPB_ASSETS_ID', WPPB_PRODUCT_ABBREVIATION . '-assets' );
+		define( 'VIBES_PLUGIN_DIR', $plugin_path );
+		define( 'VIBES_PLUGIN_URL', $plugin_url );
+		define( 'VIBES_PLUGIN_RELATIVE_URL', $plugin_relative_url );
+		define( 'VIBES_ADMIN_DIR', VIBES_PLUGIN_DIR . 'admin/' );
+		define( 'VIBES_ADMIN_URL', VIBES_PLUGIN_URL . 'admin/' );
+		define( 'VIBES_PUBLIC_DIR', VIBES_PLUGIN_DIR . 'public/' );
+		define( 'VIBES_PUBLIC_URL', VIBES_PLUGIN_URL . 'public/' );
+		define( 'VIBES_INCLUDES_DIR', VIBES_PLUGIN_DIR . 'includes/' );
+		define( 'VIBES_VENDOR_DIR', VIBES_PLUGIN_DIR . 'includes/libraries/' );
+		define( 'VIBES_LANGUAGES_DIR', VIBES_PLUGIN_DIR . 'languages/' );
+		define( 'VIBES_ADMIN_RELATIVE_URL', self::admin_relative_url() );
+		define( 'VIBES_AJAX_RELATIVE_URL', self::ajax_relative_url() );
+		define( 'VIBES_PLUGIN_SIGNATURE', VIBES_PRODUCT_NAME . ' v' . VIBES_VERSION );
+		define( 'VIBES_PLUGIN_AGENT', VIBES_PRODUCT_NAME . ' (' . self::wordpress_version_id() . '; ' . self::plugin_version_id() . '; +' . VIBES_PRODUCT_URL . ')' );
+		define( 'VIBES_ASSETS_ID', VIBES_PRODUCT_ABBREVIATION . '-assets' );
+		define( 'VIBES_LIVELOG_ID', VIBES_PRODUCT_ABBREVIATION . '-console' );
+		define( 'VIBES_REST_NAMESPACE', VIBES_SLUG . '/v' . VIBES_API_VERSION );
+	}
+
+	/**
+	 * Get the current execution mode.
+	 *
+	 * @return  integer The current execution mode.
+	 * @since 1.0.0
+	 */
+	public static function exec_mode() {
+		$req_uri = filter_input( INPUT_SERVER, 'REQUEST_URI' );
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			$id = 1;
+		} elseif ( wp_doing_cron() ) {
+			$id = 2;
+		} elseif ( wp_doing_ajax() ) {
+			$id = 3;
+		} elseif ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST ) {
+			$id = 4;
+		} elseif ( defined( 'REST_REQUEST ' ) && REST_REQUEST ) {
+			$id = 5;
+		} elseif ( $req_uri ? 0 === strpos( strtolower( $req_uri ), '/wp-json/' ) : false ) {
+			$id = 5;
+		} elseif ( $req_uri ? 0 === strpos( strtolower( $req_uri ), '/feed/' ) : false ) {
+			$id = 6;
+		} elseif ( is_admin() ) {
+			$id = 7;
+		} else {
+			$id = 8;
+		}
+		return $id;
+	}
+
+	/**
+	 * Get the current execution mode.
+	 *
+	 * @return  boolean True if metrics are available.
+	 * @since 1.0.0
+	 */
+	public static function exec_mode_for_metrics() {
+		return in_array( self::exec_mode(), [ 1, 5, 7 ], true );
 	}
 
 	/**
@@ -62,7 +104,7 @@ class Environment {
 	 * @return string The major version number.
 	 * @since  1.0.0
 	 */
-	public static function major_version( $version = WPPB_VERSION ) {
+	public static function major_version( $version = VIBES_VERSION ) {
 		try {
 			$result = substr( $version, 0, strpos( $version, '.' ) );
 		} catch ( Exception $ex ) {
@@ -78,7 +120,7 @@ class Environment {
 	 * @return string The major version number.
 	 * @since  1.0.0
 	 */
-	public static function minor_version( $version = WPPB_VERSION ) {
+	public static function minor_version( $version = VIBES_VERSION ) {
 		try {
 			$result = substr( $version, strpos( $version, '.' ) + 1, 1000 );
 			$result = substr( $result, 0, strpos( $result, '.' ) );
@@ -95,7 +137,7 @@ class Environment {
 	 * @return string The major version number.
 	 * @since  1.0.0
 	 */
-	public static function patch_version( $version = WPPB_VERSION ) {
+	public static function patch_version( $version = VIBES_VERSION ) {
 		try {
 			$result = substr( $version, strpos( $version, '.' ) + 1, 1000 );
 			$result = substr( $result, strpos( $result, '.' ) + 1, 1000 );
@@ -172,18 +214,18 @@ class Environment {
 				$debug = true;
 				if ( defined( 'WP_DEBUG_LOG' ) ) {
 					if ( WP_DEBUG_LOG ) {
-						$opt[] = esc_html__( 'log', 'wp-plugin-boilerplate' );
+						$opt[] = esc_html__( 'log', 'vibes' );
 					}
 				}
 				if ( defined( 'WP_DEBUG_DISPLAY' ) ) {
 					if ( WP_DEBUG_DISPLAY ) {
-						$opt[] = esc_html__( 'display', 'wp-plugin-boilerplate' );
+						$opt[] = esc_html__( 'display', 'vibes' );
 					}
 				}
 				$s = implode( ', ', $opt );
 			}
 		}
-		return ( $debug ? esc_html__( 'Debug enabled', 'wp-plugin-boilerplate' ) . ( '' !== $s ? ' (' . $s . ')' : '' ) : esc_html__( 'Debug disabled', 'wp-plugin-boilerplate' ) );
+		return ( $debug ? esc_html__( 'Debug enabled', 'vibes' ) . ( '' !== $s ? ' (' . $s . ')' : '' ) : esc_html__( 'Debug disabled', 'vibes' ) );
 	}
 
 	/**
@@ -193,7 +235,7 @@ class Environment {
 	 * @since  1.0.0
 	 */
 	public static function plugin_version_id() {
-		return WPPB_PRODUCT_SHORTNAME . '/' . WPPB_VERSION;
+		return VIBES_PRODUCT_SHORTNAME . '/' . VIBES_VERSION;
 	}
 
 	/**
@@ -203,10 +245,10 @@ class Environment {
 	 * @since  1.0.0
 	 */
 	public static function plugin_version_text() {
-		$s = WPPB_PRODUCT_NAME . ' ' . WPPB_VERSION;
-		if ( defined( 'WPPB_CODENAME' ) ) {
-			if ( WPPB_CODENAME !== '"-"' ) {
-				$s .= ' ' . WPPB_CODENAME;
+		$s = VIBES_PRODUCT_NAME . ' ' . VIBES_VERSION;
+		if ( defined( 'VIBES_CODENAME' ) ) {
+			if ( VIBES_CODENAME !== '"-"' ) {
+				$s .= ' ' . VIBES_CODENAME;
 			}
 		}
 		return $s;
@@ -219,7 +261,7 @@ class Environment {
 	 * @since  1.0.0
 	 */
 	public static function is_plugin_in_dev_mode() {
-		return ( strpos( WPPB_VERSION, 'dev' ) > 0 );
+		return ( strpos( VIBES_VERSION, 'dev' ) > 0 );
 	}
 
 	/**
@@ -229,7 +271,7 @@ class Environment {
 	 * @since  1.0.0
 	 */
 	public static function is_plugin_in_rc_mode() {
-		return ( strpos( WPPB_VERSION, 'rc' ) > 0 );
+		return ( strpos( VIBES_VERSION, 'rc' ) > 0 );
 	}
 
 	/**

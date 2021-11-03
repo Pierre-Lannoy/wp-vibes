@@ -7,12 +7,25 @@
  * @since   1.0.0
  */
 
-define( 'WPPB_PRODUCT_NAME', 'WordPress Plugin Boilerplate' );
-define( 'WPPB_PRODUCT_URL', 'https://github.com/Pierre-Lannoy' );
-define( 'WPPB_PRODUCT_SHORTNAME', 'PluginBoilerplate' );
-define( 'WPPB_PRODUCT_ABBREVIATION', 'wppb' );
-define( 'WPPB_SLUG', 'wp-plugin-boilerplate' );
-define( 'WPPB_VERSION', '1.0.0' );
-define( 'WPPB_CODENAME', '"-"' );
+define( 'VIBES_PRODUCT_NAME', 'Vibes' );
+define( 'VIBES_PRODUCT_URL', 'https://github.com/Pierre-Lannoy/wp-vibes' );
+define( 'VIBES_PRODUCT_SHORTNAME', 'Vibes' );
+define( 'VIBES_PRODUCT_ABBREVIATION', 'vibes' );
+define( 'VIBES_SLUG', 'vibes' );
+define( 'VIBES_VERSION', '0.0.1-dev0' );
+define( 'VIBES_API_VERSION', '1' );
+define( 'VIBES_CODENAME', '"-"' );
 
-define( 'WPPB_CDN_AVAILABLE', true );
+define( 'VIBES_CDN_AVAILABLE', true );
+
+global $timestart;
+
+if ( ! defined( 'VIBES_INBOUND_CHRONO' ) ) {
+	if ( defined( 'POWP_START_TIMESTAMP' ) ) {
+		define( 'VIBES_INBOUND_CHRONO', POWP_START_TIMESTAMP );
+	} elseif ( isset( $timestart ) && is_numeric( $timestart ) ) {
+		define( 'VIBES_INBOUND_CHRONO', $timestart );
+	} else {
+		define( 'VIBES_INBOUND_CHRONO', microtime( true ) );
+	}
+}

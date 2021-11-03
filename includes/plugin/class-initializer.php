@@ -7,7 +7,7 @@
  * @since   1.0.0
  */
 
-namespace WPPluginBoilerplate\Plugin;
+namespace Vibes\Plugin;
 
 /**
  * Fired after 'plugins_loaded' hook.
@@ -35,9 +35,23 @@ class Initializer {
 	 * @since 1.0.0
 	 */
 	public function initialize() {
-		\WPPluginBoilerplate\System\Logger::init();
-		\WPPluginBoilerplate\System\Cache::init();
-		\WPPluginBoilerplate\System\APCu::init();
+		\Vibes\System\Cache::init();
+		\Vibes\System\Sitehealth::init();
+		\Vibes\Plugin\Feature\Capture::init();
+		\Vibes\System\APCu::init();
+		//if ( 'en_US' !== determine_locale() ) {
+			unload_textdomain( VIBES_SLUG );
+			load_plugin_textdomain( VIBES_SLUG );
+		//}
+	}
+
+	/**
+	 * Initialize the plugin.
+	 *
+	 * @since 1.0.0
+	 */
+	public function late_initialize() {
+		require_once VIBES_PLUGIN_DIR . 'perfopsone/init.php';
 	}
 
 }

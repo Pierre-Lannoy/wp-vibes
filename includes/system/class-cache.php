@@ -8,7 +8,9 @@
  * @noinspection PhpCSValidationInspection
  */
 
-namespace WPPluginBoilerplate\System;
+namespace Vibes\System;
+
+use Vibes\System\Conversion;
 
 /**
  * The class responsible to handle cache management.
@@ -25,7 +27,7 @@ class Cache {
 	 * @since  1.0.0
 	 * @var    string    $pool_name    The pool's name.
 	 */
-	private static $pool_name = WPPB_SLUG;
+	private static $pool_name = VIBES_SLUG;
 
 	/**
 	 * Available TTLs.
@@ -109,8 +111,8 @@ class Cache {
 			wp_cache_add_global_groups( self::$pool_name );
 		}
 		self::$apcu_available = function_exists( 'apcu_delete' ) && function_exists( 'apcu_fetch' ) && function_exists( 'apcu_store' );
-		add_action( 'shutdown', [ 'WPPluginBoilerplate\System\Cache', 'log_debug' ], 10, 0 );
-		add_filter( 'perfopsone_icache_introspection', [ 'WPPluginBoilerplate\System\Cache', 'introspection' ] );
+		add_action( 'shutdown', [ 'Vibes\System\Cache', 'log_debug' ], 10, 0 );
+		add_filter( 'perfopsone_icache_introspection', [ 'Vibes\System\Cache', 'introspection' ] );
 	}
 
 	/**
@@ -119,7 +121,7 @@ class Cache {
 	 * @since 1.0.0
 	 */
 	public static function introspection( $endpoints ) {
-		$endpoints[ WPPB_SLUG ] = [ 'name' => WPPB_PRODUCT_NAME, 'version' => WPPB_VERSION, 'endpoint' => [ 'WPPluginBoilerplate\System\Cache', 'get_analytics' ] ];
+		$endpoints[ VIBES_SLUG ] = [ 'name' => VIBES_PRODUCT_NAME, 'version' => VIBES_VERSION, 'endpoint' => [ 'Vibes\System\Cache', 'get_analytics' ] ];
 		return $endpoints;
 	}
 
@@ -422,7 +424,7 @@ class Cache {
 						}
 					}
 				} catch ( \Throwable $e ) {
-					Logger::error( sprintf( 'Unable to query APCu status: %s.', $e->getMessage() ), $e->getCode() );
+					\DecaLog\Engine::eventsLogger( VIBES_SLUG )->error( sprintf( 'Unable to query APCu status: %s.', $e->getMessage() ), [ 'code' => $e->getCode() ] );
 				}
 			}
 		} else {
@@ -617,7 +619,7 @@ class Cache {
 		$log      .= '   Hit count: ' . $analytics['hit']['count'] . '   Hit time: ' . round($analytics['hit']['time'] * 1000, 3) . 'ms   Hit size: ' . Conversion::data_shorten( (int) $analytics['hit']['size'] );
 		$log      .= '   Miss count: ' . $analytics['miss']['count'] . '   Miss time: ' . round($analytics['miss']['time'] * 1000, 3) . 'ms   Miss size: ' . Conversion::data_shorten( (int) $analytics['miss']['size'] );
 		if ( 0 !== (int) $analytics['hit']['count'] || 0 !== (int) $analytics['miss']['count'] ) {
-			Logger::debug( $log );
+			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( $log );
 		}
 	}
 

@@ -9,7 +9,7 @@
  * @since   2.0.0
  */
 
-namespace WPPluginBoilerplate\System;
+namespace Vibes\System;
 
 use cebe\markdownparser\GithubMarkdown;
 
@@ -43,9 +43,9 @@ class Markdown {
 		);
 		$style       = $_attributes['style'];
 		$mode        = $_attributes['mode'];
-		$error       = esc_html__( 'Sorry, unable to find or read the specified file.', 'wp-plugin-boilerplate' );
+		$error       = esc_html__( 'Sorry, unable to find or read the specified file.', 'vibes' );
 		$result      = esc_html( $error );
-		$changelog   = WPPB_PLUGIN_DIR . $file;
+		$changelog   = VIBES_PLUGIN_DIR . $file;
 		if ( file_exists( $changelog ) ) {
 			try {
 				// phpcs:ignore

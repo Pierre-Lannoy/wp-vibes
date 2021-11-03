@@ -9,7 +9,8 @@
  * @since   1.0.0
  */
 
-namespace WPPluginBoilerplate\System;
+namespace Vibes\System;
+use Vibes\System\Environment;
 
 /**
  * Define the options functionality.
@@ -27,9 +28,36 @@ class Option {
 	 *
 	 * @since  1.0.0
 	 * @access private
-	 * @var    array    $defaults    The $defaults list.
+	 * @var    array    $defaults    The defaults list.
 	 */
 	private static $defaults = [];
+
+	/**
+	 * The list of network-wide options.
+	 *
+	 * @since  1.0.0
+	 * @access private
+	 * @var    array    $network    The network-wide list.
+	 */
+	private static $network = [];
+
+	/**
+	 * The list of site options.
+	 *
+	 * @since  1.0.0
+	 * @access private
+	 * @var    array    $site    The site list.
+	 */
+	private static $site = [];
+
+	/**
+	 * The list of private options.
+	 *
+	 * @since  1.0.0
+	 * @access private
+	 * @var    array    $private    The private options list.
+	 */
+	private static $private = [];
 
 	/**
 	 * Set the defaults options.
@@ -40,10 +68,51 @@ class Option {
 		self::$defaults['use_cdn']           = false;
 		self::$defaults['download_favicons'] = false;
 		self::$defaults['script_in_footer']  = false;
-		self::$defaults['auto_update']       = true;
 		self::$defaults['display_nag']       = false;
+		self::$defaults['metrics']           = true;
 		self::$defaults['nags']              = [];
 		self::$defaults['version']           = '0.0.0';
+		self::$defaults['inbound_cut_path']  = 4;
+		self::$defaults['outbound_cut_path'] = 3;
+		self::$defaults['outbound_capture']  = true;
+		self::$defaults['inbound_capture']   = true;
+		self::$defaults['outbound_level']    = 'notice';
+		self::$defaults['inbound_level']     = 'debug';
+		self::$defaults['livelog']           = true;
+		self::$defaults['smart_filter']      = true;
+		self::$defaults['history']           = 90;
+		self::$network                       = [ 'version', 'use_cdn', 'download_favicons', 'script_in_footer', 'display_nag', 'metrics', 'inbound_cut_path', 'outbound_cut_path', 'inbound_capture', 'outbound_capture', 'inbound_level', 'outbound_level', 'livelog', 'smart_filter', 'history' ];
+	}
+
+	/**
+	 * Get the options infos for Site Health "info" tab.
+	 *
+	 * @since 1.0.0
+	 */
+	public static function debug_info() {
+		$result = [];
+		$si     = '[Site Option] ';
+		$nt     = $si;
+		if ( Environment::is_wordpress_multisite() ) {
+			$nt = '[Network Option] ';
+		}
+		foreach ( self::$network as $opt ) {
+			$val            = self::network_get( $opt );
+			$result[ $opt ] = [
+				'label'   => $nt . $opt,
+				'value'   => is_bool( $val ) ? $val ? 1 : 0 : $val,
+				'private' => in_array( $opt, self::$private, true ),
+			];
+		}
+		foreach ( self::$site as $opt ) {
+			$val            = self::site_get( $opt );
+			$result[ $opt ] = [
+				'label'   => $si . $opt,
+				'value'   => is_bool( $val ) ? $val ? 1 : 0 : $val,
+				'private' => in_array( $opt, self::$private, true ),
+			];
+		}
+		return $result;
 	}
 
 	/**
@@ -58,7 +127,7 @@ class Option {
 		if ( array_key_exists( $option, self::$defaults ) && ! isset( $default ) ) {
 			$default = self::$defaults[ $option ];
 		}
-		$val = get_option( WPPB_PRODUCT_ABBREVIATION . '_' . $option, $default );
+		$val = get_option( VIBES_PRODUCT_ABBREVIATION . '_' . $option, $default );
 		if ( is_bool( $default ) ) {
 			return (bool) $val;
 		}
@@ -77,7 +146,7 @@ class Option {
 		if ( array_key_exists( $option, self::$defaults ) && ! isset( $default ) ) {
 			$default = self::$defaults[ $option ];
 		}
-		$val = get_site_option( WPPB_PRODUCT_ABBREVIATION . '_' . $option, $default );
+		$val = get_site_option( VIBES_PRODUCT_ABBREVIATION . '_' . $option, $default );
 		if ( is_bool( $default ) ) {
 			return (bool) $val;
 		}
@@ -92,7 +161,7 @@ class Option {
 	 * @since 1.0.0
 	 */
 	public static function site_exists( $option ) {
-		return 'non_existent_option' !== get_option( WPPB_PRODUCT_ABBREVIATION . '_' . $option, 'non_existent_option' );
+		return 'non_existent_option' !== get_option( VIBES_PRODUCT_ABBREVIATION . '_' . $option, 'non_existent_option' );
 	}
 
 	/**
@@ -103,7 +172,7 @@ class Option {
 	 * @since 1.0.0
 	 */
 	public static function network_exists( $option ) {
-		return 'non_existent_option' !== get_site_option( WPPB_PRODUCT_ABBREVIATION . '_' . $option, 'non_existent_option' );
+		return 'non_existent_option' !== get_site_option( VIBES_PRODUCT_ABBREVIATION . '_' . $option, 'non_existent_option' );
 	}
 
 	/**
@@ -122,7 +191,7 @@ class Option {
 		if ( false === $value ) {
 			$value = 0;
 		}
-		return update_option( WPPB_PRODUCT_ABBREVIATION . '_' . $option, $value, $autoload );
+		return update_option( VIBES_PRODUCT_ABBREVIATION . '_' . $option, $value, $autoload );
 	}
 
 	/**
@@ -137,7 +206,7 @@ class Option {
 		if ( false === $value ) {
 			$value = 0;
 		}
-		return update_site_option( WPPB_PRODUCT_ABBREVIATION . '_' . $option, $value );
+		return update_site_option( VIBES_PRODUCT_ABBREVIATION . '_' . $option, $value );
 	}
 
 	/**
@@ -150,13 +219,26 @@ class Option {
 		global $wpdb;
 		$result = 0;
 		// phpcs:ignore
-		$delete = $wpdb->get_col( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '" . WPPB_PRODUCT_ABBREVIATION . '_%' . "';" );
+		$delete = $wpdb->get_col( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '" . VIBES_PRODUCT_ABBREVIATION . '_%' . "';" );
 		foreach ( $delete as $option ) {
 			if ( delete_option( $option ) ) {
 				++$result;
 			}
 		}
 		return $result;
+	}
+
+	/**
+	 * Reset some options to their defaults.
+	 *
+	 * @since 1.0.0
+	 */
+	public static function reset_to_defaults() {
+		foreach ( self::$network as $key ) {
+			if ( 'version' !== $key ) {
+				self::network_set( $key, self::$defaults[ $key ] );
+			}
+		}
 	}
 
 	/**

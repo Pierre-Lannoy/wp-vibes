@@ -9,9 +9,9 @@
  * @since   1.0.0
  */
 
-namespace WPPluginBoilerplate\System;
+namespace Vibes\System;
 
-use WPPluginBoilerplate\System\Environment;
+use Vibes\System\Environment;
 
 /**
  * Define the timezone functionality.
