@@ -39,10 +39,8 @@ class Initializer {
 		\Vibes\System\Sitehealth::init();
 		\Vibes\Plugin\Feature\Capture::init();
 		\Vibes\System\APCu::init();
-		//if ( 'en_US' !== determine_locale() ) {
-			unload_textdomain( VIBES_SLUG );
-			load_plugin_textdomain( VIBES_SLUG );
-		//}
+		unload_textdomain( VIBES_SLUG );
+		load_plugin_textdomain( VIBES_SLUG );
 	}
 
 	/**
