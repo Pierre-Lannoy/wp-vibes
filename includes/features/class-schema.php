@@ -14,7 +14,7 @@ namespace Vibes\Plugin\Feature;
 use Vibes\System\Blog;
 use Vibes\System\Option;
 use Vibes\System\Database;
-use Vibes\System\Http;
+use Vibes\System\Device;
 use Vibes\System\Favicon;
 
 use Vibes\System\Cache;
@@ -80,7 +80,7 @@ class Schema {
 	 */
 	public static function write() {
 		if ( Option::network_get( 'outbound_capture' ) || Option::network_get( 'inbound_capture' ) ) {
-			self::write_statistics();
+			//self::write_statistics();
 		}
 	}
 
@@ -189,7 +189,7 @@ class Schema {
 	public function initialize() {
 		global $wpdb;
 		try {
-			//DIS:$this->create_table();
+			$this->create_table();
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Table "%s" created.', $wpdb->base_prefix . self::$statistics ) );
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( 'Schema installed.' );
 		} catch ( \Throwable $e ) {
@@ -206,7 +206,7 @@ class Schema {
 	public function update() {
 		global $wpdb;
 		try {
-			//DIS:$this->create_table();
+			$this->create_table();
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Table "%s" updated.', $wpdb->base_prefix . self::$statistics ) );
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( 'Schema updated.' );
 		} catch ( \Throwable $e ) {
@@ -249,21 +249,22 @@ class Schema {
 		$sql             = 'CREATE TABLE IF NOT EXISTS ' . $wpdb->base_prefix . self::$statistics;
 		$sql            .= " (`timestamp` date NOT NULL DEFAULT '0000-00-00',";
 		$sql            .= " `site` bigint(20) NOT NULL DEFAULT '0',";
-		$sql            .= " `context` enum('" . implode( "','", Http::$contexts ) . "') NOT NULL DEFAULT 'unknown',";
-		$sql            .= " `country` varchar(2) DEFAULT NULL,";
-		$sql            .= " `id` varchar(40) NOT NULL DEFAULT '-',";
-		$sql            .= " `verb` enum('" . implode( "','", Http::$verbs ) . "') NOT NULL DEFAULT 'unknown',";
-		$sql            .= " `scheme` enum('" . implode( "','", Http::$schemes ) . "') NOT NULL DEFAULT 'unknown',";
-		$sql            .= " `authority` varchar(250) NOT NULL DEFAULT '-',";
-		$sql            .= " `endpoint` varchar(250) NOT NULL DEFAULT '-',";
-		$sql            .= " `code` smallint UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `hit` int(11) UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `latency_min` smallint UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `latency_avg` smallint UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `latency_max` smallint UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `kb_in` int(11) UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `kb_out` int(11) UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= ' UNIQUE KEY u_stat (timestamp, site, context, id, verb, scheme, authority, endpoint, code)';
+		$sql            .= " `endpoint` varchar(250) NOT NULL DEFAULT '/',";
+		$sql            .= " `country` varchar(2) DEFAULT '00',";
+		$sql            .= " `device` enum('" . implode( "','", Device::$observable ) . "') NOT NULL DEFAULT 'unknown',";
+		// Core Web Vitals
+		$sql            .= " `LCP_val` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+		$sql            .= " `LCP_hit` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+		$sql            .= " `FID_val` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+		$sql            .= " `FID_hit` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+		$sql            .= " `CLS_val` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+		$sql            .= " `CLS_hit` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+		// Web Vitals Extensions
+		$sql            .= " `TTFB_val` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+		$sql            .= " `TTFB_hit` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+		$sql            .= " `FCP_val` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+		$sql            .= " `FCP_hit` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+		$sql            .= ' UNIQUE KEY u_stat (timestamp, site, endpoint, country, device)';
 		$sql            .= ") $charset_collate;";
 		// phpcs:ignore
 		$wpdb->query( $sql );
