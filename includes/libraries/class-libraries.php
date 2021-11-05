@@ -262,6 +262,13 @@ class Libraries {
 		$item['license'] = $this->license_name( 'gpl3' );
 		$item['langs']   = L10n::get_language_markup( [ 'en' ] );
 		$list[]          = $item;
+		$item['name']    = 'web-vitals';
+		$item['version'] = '2.1.2';
+		$item['author']  = sprintf( esc_html__( '%s & contributors', 'vibes' ), 'Goggle' );
+		$item['url']     = 'https://github.com/GoogleChrome/web-vitals';
+		$item['license'] = $this->license_name( 'apl2' );
+		$item['langs']   = L10n::get_language_markup( [ 'en' ] );
+		$list[]          = $item;
 		usort( $list, function ( $a, $b ) { return strcmp( strtolower( $a['name'] ), strtolower( $b['name'] ) );} );
 		if ( 'html' === $style ) {
 			$items = [];
