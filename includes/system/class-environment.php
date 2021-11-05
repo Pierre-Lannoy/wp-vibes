@@ -53,6 +53,7 @@ class Environment {
 		define( 'VIBES_PLUGIN_SIGNATURE', VIBES_PRODUCT_NAME . ' v' . VIBES_VERSION );
 		define( 'VIBES_PLUGIN_AGENT', VIBES_PRODUCT_NAME . ' (' . self::wordpress_version_id() . '; ' . self::plugin_version_id() . '; +' . VIBES_PRODUCT_URL . ')' );
 		define( 'VIBES_ASSETS_ID', VIBES_PRODUCT_ABBREVIATION . '-assets' );
+		define( 'VIBES_ANALYTICS_ID', VIBES_PRODUCT_ABBREVIATION . '-analytics' );
 		define( 'VIBES_LIVELOG_ID', VIBES_PRODUCT_ABBREVIATION . '-console' );
 		define( 'VIBES_REST_NAMESPACE', VIBES_SLUG . '/v' . VIBES_API_VERSION );
 	}

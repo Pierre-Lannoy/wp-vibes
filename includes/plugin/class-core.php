@@ -19,6 +19,7 @@ use Vibes\Library\Libraries;
 use Vibes\System\Nag;
 use Vibes\System\Role;
 use Vibes\API\LoggerRoute;
+use Vibes\API\BeaconRoute;
 use Vibes\System\Environment;
 use Vibes\System\Option;
 use Vibes\System\Http;
@@ -85,6 +86,8 @@ class Core {
 		// REST API
 		$routes = new LoggerRoute();
 		$this->loader->add_action( 'rest_api_init', $routes, 'register_routes' );
+		$beacon = new BeaconRoute();
+		$this->loader->add_action( 'rest_api_init', $beacon, 'register_routes' );
 	}
 
 	/**
@@ -104,6 +107,7 @@ class Core {
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'finalize_admin_menus', 100 );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'normalize_admin_menus', 110 );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'init_settings_sections' );
+		$this->loader->add_action( 'admin_print_scripts', '\Vibes\Plugin\Feature\Capture', 'init' );
 		//DIS:$this->loader->add_filter( 'plugin_action_links_' . plugin_basename( VIBES_PLUGIN_DIR . VIBES_SLUG . '.php' ), $plugin_admin, 'add_actions_links', 10, 4 );
 		//DIS:$this->loader->add_filter( 'plugin_row_meta', $plugin_admin, 'add_row_meta', 10, 2 );
 		$this->loader->add_action( 'admin_notices', $nag, 'display' );
@@ -122,6 +126,7 @@ class Core {
 	 */
 	private function define_public_hooks() {
 		$plugin_public = new Vibes_Public();
+		$this->loader->add_action( 'wp_head', '\Vibes\Plugin\Feature\Capture', 'init' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 	}

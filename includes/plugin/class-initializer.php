@@ -37,7 +37,6 @@ class Initializer {
 	public function initialize() {
 		\Vibes\System\Cache::init();
 		\Vibes\System\Sitehealth::init();
-		\Vibes\Plugin\Feature\Capture::init();
 		\Vibes\System\APCu::init();
 		unload_textdomain( VIBES_SLUG );
 		load_plugin_textdomain( VIBES_SLUG );

@@ -101,7 +101,7 @@ class Assets {
 				$file = 'https://cdn.jsdelivr.net/wp/' . VIBES_SLUG . '/tags/' . VIBES_VERSION . '/public/' . $file;
 			}
 			// phpcs:ignore
-			return wp_register_script( $handle, $file, $deps, null, Option::network_get( 'script_in_footer' ) );
+			return wp_register_script( $handle, $file, $deps, null, VIBES_ANALYTICS_ID === $handle ? true : Option::network_get( 'script_in_footer' ) );
 		} else {
 			if ( Environment::is_plugin_in_production_mode() ) {
 				$version = VIBES_VERSION;
@@ -111,7 +111,7 @@ class Assets {
 			if ( Environment::is_plugin_in_dev_mode() ) {
 				$file = str_replace( '.min', '', $file );
 			}
-			return wp_register_script( $handle, $src . $file, $deps, $version, Option::network_get( 'script_in_footer' ) );
+			return wp_register_script( $handle, $src . $file, $deps, $version, VIBES_ANALYTICS_ID === $handle ? true : Option::network_get( 'script_in_footer' ) );
 		}
 	}
 

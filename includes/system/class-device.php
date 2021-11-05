@@ -58,6 +58,15 @@ class Device {
 		self::$observable = array_merge( [ 'unknown' ], array_diff( self::$classes, $removable ), array_diff( self::$types, $removable ) );
 	}
 
+	/**
+	 * Defines all needed globals.
+	 *
+	 * @since 1.0.0
+	 */
+	public static function get_device() {
+		return 'unknown';
+	}
+
 }
 
 Device::init();

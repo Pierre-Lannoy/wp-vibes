@@ -15,8 +15,8 @@ use Vibes\System\Blog;
 use Vibes\System\Option;
 use Vibes\System\Database;
 use Vibes\System\Device;
+use Vibes\System\WebVitals;
 use Vibes\System\Favicon;
-
 use Vibes\System\Cache;
 use Vibes\System\GeoIP;
 
@@ -79,25 +79,17 @@ class Schema {
 	 * @since    1.0.0
 	 */
 	public static function write() {
-		if ( Option::network_get( 'outbound_capture' ) || Option::network_get( 'inbound_capture' ) ) {
-			//self::write_statistics();
-		}
+		//self::write_statistics();
 	}
 
 	/**
 	 * Write statistics.
 	 *
-	 * @param boolean $final Optional. If false, allows recursive calls. This is to allow to write
-	 *                                 records generated while executing 'shutdown' hook.
-	 * @since    1.0.0
+	 *  @since    1.0.0
 	 */
-	private static function write_statistics( $final = false ) {
+	private static function write_statistics() {
 		foreach ( self::$statistics_buffer as $key => $record ) {
 			self::write_statistics_records_to_database( $record );
-			unset( self::$statistics_buffer[ $key ] );
-		}
-		if ( 0 < count( self::$statistics_buffer ) && ! $final ) {
-			self::write_statistics( true );
 		}
 		self::purge();
 	}
@@ -174,11 +166,7 @@ class Schema {
 	 * @since    1.0.0
 	 */
 	public static function store_statistics( $record ) {
-		foreach ( [ 'outbound', 'inbound' ] as $bound ) {
-			if ( Option::network_get( $bound . '_capture' ) && array_key_exists( 'context', $record ) && $bound === $record['context'] ) {
-				self::$statistics_buffer[] = $record;
-			}
-		}
+		self::$statistics_buffer[] = $record;
 	}
 
 	/**
@@ -249,23 +237,23 @@ class Schema {
 		$sql             = 'CREATE TABLE IF NOT EXISTS ' . $wpdb->base_prefix . self::$statistics;
 		$sql            .= " (`timestamp` date NOT NULL DEFAULT '0000-00-00',";
 		$sql            .= " `site` bigint(20) NOT NULL DEFAULT '0',";
-		$sql            .= " `endpoint` varchar(250) NOT NULL DEFAULT '/',";
+		$sql            .= " `endpoint` varchar(250) NOT NULL DEFAULT '-',";
+		$sql            .= " `authent` tinyint(1) DEFAULT '0',";
 		$sql            .= " `country` varchar(2) DEFAULT '00',";
 		$sql            .= " `device` enum('" . implode( "','", Device::$observable ) . "') NOT NULL DEFAULT 'unknown',";
-		// Core Web Vitals
-		$sql            .= " `LCP_val` int(11) UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `LCP_hit` int(11) UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `FID_val` int(11) UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `FID_hit` int(11) UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `CLS_val` int(11) UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `CLS_hit` int(11) UNSIGNED NOT NULL DEFAULT '0',";
-		// Web Vitals Extensions
-		$sql            .= " `TTFB_val` int(11) UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `TTFB_hit` int(11) UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `FCP_val` int(11) UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= " `FCP_hit` int(11) UNSIGNED NOT NULL DEFAULT '0',";
-		$sql            .= ' UNIQUE KEY u_stat (timestamp, site, endpoint, country, device)';
-		$sql            .= ") $charset_collate;";
+		// Web Vitals (core+extensions)
+		foreach ( WebVitals::$rated_metrics as $metric ) {
+			foreach ( [ 'sum', 'good', 'impr', 'poor' ] as $field ) {
+				$sql .= " `' . $metric . '_' . $field . '` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+			}
+		}
+		foreach ( WebVitals::$unrated_metrics as $metric ) {
+			foreach ( [ 'sum', 'hit' ] as $field ) {
+				$sql .= " `' . $metric . '_' . $field . '` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+			}
+		}
+		$sql .= ' UNIQUE KEY u_stat (timestamp, site, endpoint, authent, country, device)';
+		$sql .= ") $charset_collate;";
 		// phpcs:ignore
 		$wpdb->query( $sql );
 	}
@@ -292,21 +280,12 @@ class Schema {
 	 */
 	public static function init_record() {
 		$record = [
-			'timestamp'   => '0000-00-00',
-			'site'        => 0,
-			'context'     => 'unknown',
-			'id'          => '-',
-			'verb'        => 'unknown',
-			'scheme'      => 'unknown',
-			'authority'   => '-',
-			'endpoint'    => '-',
-			'code'        => 0,
-			'hit'         => 1,
-			'latency_min' => 0,
-			'latency_avg' => 0,
-			'latency_max' => 0,
-			'kb_in'       => 0,
-			'kb_out'      => 0,
+			'timestamp' => '0000-00-00',
+			'site'      => 0,
+			'endpoint'  => '-',
+			'authent'   => 0,
+			'country'   => '00',
+			'device'    => 'unknown',
 		];
 		return $record;
 	}
