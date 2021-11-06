@@ -53,7 +53,7 @@ class Capture {
 	 */
 	public static function init() {
 		// phpcs:ignore
-		if ( (int) Option::network_get( 'sampling', 100 ) >= mt_rand( 1, 1000 ) ) {
+		if ( (int) Option::network_get( 'sampling' ) >= mt_rand( 1, 1000 ) ) {
 			add_filter(
 				'script_loader_tag',
 				function ( $tag, $handle, $src ) {
