@@ -18,7 +18,6 @@ use Vibes\System\Device;
 use Vibes\System\WebVitals;
 use Vibes\System\Favicon;
 use Vibes\System\Cache;
-use Vibes\System\GeoIP;
 
 /**
  * Define the schema functionality.
@@ -48,14 +47,6 @@ class Schema {
 	private static $statistics_buffer = [];
 
 	/**
-	 * GeoIP instance.
-	 *
-	 * @since  1.0.0
-	 * @var    GeoIP    $geo_ip    Maintain the GeoIP instance..
-	 */
-	private static $geo_ip = null;
-
-	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -70,7 +61,6 @@ class Schema {
 	 */
 	public static function init() {
 		add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Schema', 'write' ], DECALOG_MAX_SHUTDOWN_PRIORITY, 0 );
-		self::$geo_ip = new GeoIP();
 	}
 
 	/**
@@ -79,19 +69,10 @@ class Schema {
 	 * @since    1.0.0
 	 */
 	public static function write() {
-		//self::write_statistics();
-	}
-
-	/**
-	 * Write statistics.
-	 *
-	 *  @since    1.0.0
-	 */
-	private static function write_statistics() {
 		foreach ( self::$statistics_buffer as $key => $record ) {
-			self::write_statistics_records_to_database( $record );
+			//self::write_statistics_records_to_database( $record );
 		}
-		self::purge();
+		//self::purge();
 	}
 
 	/**
@@ -108,12 +89,7 @@ class Schema {
 		if ( array_key_exists( 'context', $record ) && array_key_exists( 'id', $record ) && 'inbound' === $record['context'] ) {
 			$host = $record['id'];
 		}
-		if ( '' !== $host ) {
-			$country = self::$geo_ip->get_iso3166_alpha2( $host );
-			if ( ! empty( $country ) ) {
-				$record['country'] = $country;
-			}
-		}
+
 		$record['id'] = Http::top_domain( $record['id'] );
 		Favicon::get_raw( $record['id'], true );
 		$site = Blog::get_blog_url( $record['site'] );

@@ -157,21 +157,12 @@ class Capture {
 	/**
 	 * Records an entry.
 	 *
-	 * @param array|\WP_Error $response HTTP response or WP_Error object.
-	 * @param array          $args     HTTP request arguments.
-	 * @param string         $url      The request URL.
-	 * @param string         $bound    Optional. The bound.
-	 * @param int            $b_in     Optional. Inbound bytes.
-	 * @param int            $b_out    Optional. Outbound bytes.
+	 * @param array          $record     HTTP request arguments.
 	 * @since    1.0.0
 	 */
-	private static function record( $record, $args, $url, $bound = 'unknown', $b_in = 0, $b_out = 0 ) {
-		if ( '-' !== $record['id'] && '-' !== $record['authority'] ) {
-			Schema::store_statistics( $record );
-			//$record['ts'] = $datetime->format( 'Y-m-d H:i:s' );
-			Memory::store_statistics( $record );
-		}
-
+	public static function record( $record ) {
+		Schema::store_statistics( $record );
+		Memory::store_statistics( $record );
 	}
 
 }

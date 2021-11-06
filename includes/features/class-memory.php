@@ -220,7 +220,7 @@ class Memory {
 	 * @since    2.0.0
 	 */
 	public static function store_statistics( $record ) {
-		if ( Option::network_get( 'smart_filter' ) ) {
+		/*if ( Option::network_get( 'smart_filter' ) ) {
 			foreach ( self::$statistics_filter as $field => $filter ) {
 				foreach ( $filter as $f ) {
 					if ( preg_match( $f, $record[ $field ] ) ) {
@@ -230,7 +230,7 @@ class Memory {
 			}
 		}
 		$date = new \DateTime();
-		self::$statistics_buffer[ $date->format( 'YmdHisu' ) ] = $record;
+		self::$statistics_buffer[ $date->format( 'YmdHisu' ) ] = $record;*/
 	}
 
 	/**

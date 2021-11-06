@@ -70,7 +70,7 @@ class BeaconRoute extends \WP_REST_Controller {
 	}
 
 	/**
-	 * Get the query params for livelog.
+	 * Get the query params for beacon.
 	 *
 	 * @return array    The schema fragment.
 	 * @since  1.0.0
@@ -120,6 +120,8 @@ class BeaconRoute extends \WP_REST_Controller {
 				}
 			}
 		}
+		Capture::record( $record );
+		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Signal received from %s and correctly pre-processed.', $record['endpoint'] ), [ 'code' => 202 ] );
 		return new \WP_REST_Response( null, 202 );
 	}
 
