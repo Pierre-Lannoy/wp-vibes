@@ -39,7 +39,7 @@ jQuery( document ).ready(
 					elem = document.createElement( 'pre' );
 					elem.classList.add( 'vibes-logger-line' );
 					elem.classList.add( 'vibes-logger-line-init' );
-					elem.innerHTML = 'Waiting first API call...';
+					elem.innerHTML = 'Waiting first signal...';
 					root.appendChild( elem );
 					init = true;
 				}

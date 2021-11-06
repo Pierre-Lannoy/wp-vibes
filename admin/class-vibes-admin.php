@@ -149,14 +149,14 @@ class Vibes_Admin {
 		}
 		if ( Role::SUPER_ADMIN === Role::admin_type() || Role::SINGLE_ADMIN === Role::admin_type() ) {
 			$perfops['consoles'][] = [
-				'name'          => esc_html__( 'Live API Calls', 'vibes' ),
+				'name'          => esc_html__( 'Live Vibes Signals', 'vibes' ),
 				/* translators: as in the sentence "Check the events that occurred on your network." or "Check the events that occurred on your website." */
-				'description'   => sprintf( esc_html__( 'Displays API vibes as soon as it happens on your %s.', 'vibes' ), Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
+				'description'   => sprintf( esc_html__( 'Displays %s performance signals as soon as they are received by your %s.', 'vibes' ), VIBES_PRODUCT_NAME, Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
 				'icon_callback' => [ \Vibes\Plugin\Core::class, 'get_base64_logo' ],
 				'slug'          => 'vibes-console',
 				/* translators: as in the sentence "Vibes Viewer" */
-				'page_title'    => sprintf( esc_html__( '%s Live API Calls', 'vibes' ), VIBES_PRODUCT_NAME ),
-				'menu_title'    => esc_html__( 'Live API Calls', 'vibes' ),
+				'page_title'    => sprintf( esc_html__( '%s Live Performance Signals', 'vibes' ), VIBES_PRODUCT_NAME ),
+				'menu_title'    => sprintf( esc_html__( 'Live %s Signals', 'vibes' ), VIBES_PRODUCT_NAME ),
 				'capability'    => 'manage_options',
 				'callback'      => [ $this, 'get_console_page' ],
 				'plugin'        => VIBES_SLUG,

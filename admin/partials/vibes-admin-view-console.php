@@ -31,7 +31,7 @@ wp_enqueue_script( VIBES_LIVELOG_ID );
 ?>
 
 <div class="wrap">
-	<h2><?php echo sprintf( esc_html__( '%s Live API Calls', 'vibes' ), VIBES_PRODUCT_NAME );?></h2>
+	<h2><?php echo sprintf( esc_html__( '%s Live Performance Signals', 'vibes' ), VIBES_PRODUCT_NAME );?></h2>
     <div class="media-toolbar wp-filter vibes-pilot-toolbar" style="border-radius:4px;">
         <div class="media-toolbar-secondary" data-children-count="2">
             <div class="view-switch media-grid-view-switch">

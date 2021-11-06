@@ -34,14 +34,6 @@ use malkusch\lock\mutex\FlockMutex;
 class Memory {
 
 	/**
-	 * Statistics filter.
-	 *
-	 * @since  2.0.0
-	 * @var    array    $statistics_filter    The statistics filters.
-	 */
-	private static $statistics_filter = [];
-
-	/**
 	 * Statistics buffer.
 	 *
 	 * @since  2.0.0
@@ -87,7 +79,6 @@ class Memory {
 	 * @since    2.0.0
 	 */
 	public static function init() {
-		self::$statistics_filter['endpoint'] = [ '/\/livelog/' ];
 		//DIS:add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'write' ], DECALOG_MAX_SHUTDOWN_PRIORITY, 0 );
 		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) ) {
 			//DIS:add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'collate_metrics' ], DECALOG_MAX_SHUTDOWN_PRIORITY - 1, 0 );
