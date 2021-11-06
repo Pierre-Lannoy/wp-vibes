@@ -73,11 +73,12 @@ class Option {
 		self::$defaults['nags']              = [];
 		self::$defaults['version']           = '0.0.0';
 		self::$defaults['cut_path']          = 3;
+		self::$defaults['sampling']          = 1000;
 		self::$defaults['capture']           = true;
 		self::$defaults['livelog']           = true;
 		self::$defaults['smart_filter']      = true;
 		self::$defaults['history']           = 90;
-		self::$network                       = [ 'version', 'use_cdn', 'download_favicons', 'script_in_footer', 'display_nag', 'metrics', 'cut_path', 'capture', 'livelog', 'smart_filter', 'history' ];
+		self::$network                       = [ 'version', 'use_cdn', 'download_favicons', 'script_in_footer', 'display_nag', 'metrics', 'cut_path', 'sampling', 'capture', 'livelog', 'smart_filter', 'history' ];
 	}
 
 	/**

@@ -58,29 +58,32 @@ class Capture {
 	 * @since    1.0.0
 	 */
 	public static function init() {
-		add_filter(
-			'script_loader_tag',
-			function ( $tag, $handle, $src ) {
-				if ( VIBES_ANALYTICS_ID === $handle ) {
-					return '<script type="module" src="' . esc_url( $src ) . '" id="' . $handle . '-js"></script>';
-				}
-				return $tag;
+		// phpcs:ignore
+		if ( (int) Option::network_get( 'sampling', 100 ) >= mt_rand( 1, 1000 ) ) {
+			add_filter(
+				'script_loader_tag',
+				function ( $tag, $handle, $src ) {
+					if ( VIBES_ANALYTICS_ID === $handle ) {
+						return '<script type="module" src="' . esc_url( $src ) . '" id="' . $handle . '-js"></script>';
+					}
+					return $tag;
 
-			},
-			10,
-			3
-		);
-		wp_enqueue_script( VIBES_ANALYTICS_ID );
-		wp_localize_script(
-			VIBES_ANALYTICS_ID,
-			'analyticsSettings',
-			[
-				'restUrl'       => esc_url_raw( rest_url() . VIBES_REST_NAMESPACE . '/beacon' ),
-				'authenticated' => ( 0 === User::get_current_user_id( 0 ) ? 0 : 1 ),
-				'gAnalytics'    => true,
-			]
-		);
-		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'Capture engine started.' );
+				},
+				10,
+				3
+			);
+			wp_enqueue_script( VIBES_ANALYTICS_ID );
+			wp_localize_script(
+				VIBES_ANALYTICS_ID,
+				'analyticsSettings',
+				[
+					'restUrl'       => esc_url_raw( rest_url() . VIBES_REST_NAMESPACE . '/beacon' ),
+					'authenticated' => ( 0 === User::get_current_user_id( 0 ) ? 0 : 1 ),
+					'gAnalytics'    => true,
+				]
+			);
+			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'Capture engine started.' );
+		}
 	}
 
 	/**
