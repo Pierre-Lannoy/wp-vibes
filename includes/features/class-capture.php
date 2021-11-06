@@ -11,19 +11,13 @@
 
 namespace Vibes\Plugin\Feature;
 
-use Vibes\System\Blog;
 use Vibes\System\Device;
-use Vibes\System\Environment;
-
 use Vibes\Plugin\Feature\Schema;
 use Vibes\Plugin\Feature\Memory;
 use Vibes\System\GeoIP;
 use Vibes\System\Option;
 use Vibes\System\User;
-use Vibes\System\Http;
-use Vibes\System\Favicon;
 use Vibes\System\IP;
-use Vibes\System\UUID;
 
 /**
  * Define the captures functionality.
@@ -160,7 +154,7 @@ class Capture {
 	/**
 	 * Records an entry.
 	 *
-	 * @param array          $record     HTTP request arguments.
+	 * @param array          $record     A record of metrics..
 	 * @since    1.0.0
 	 */
 	public static function record( $record ) {
