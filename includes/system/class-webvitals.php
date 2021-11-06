@@ -96,15 +96,6 @@ class WebVitals {
 	];
 
 	/**
-	 * Defines all needed globals.
-	 *
-	 * @since 1.0.0
-	 */
-	public static function init() {
-
-	}
-
-	/**
 	 * Get the rate field.
 	 *
 	 * @param   string      $metric The metric name.
@@ -155,10 +146,10 @@ class WebVitals {
 	 */
 	public static function get_displayable_value( $metric, $value ) {
 		if ( array_key_exists( $metric, self::$metrics_ratios ) ) {
-			$value = $value / self::$metrics_ratios[ $metric ];
+			$value /= self::$metrics_ratios[ $metric ];
 		}
 		if ( array_key_exists( $metric, self::$metrics_display ) ) {
-			$value = $value * self::$metrics_display[ $metric ];
+			$value *= self::$metrics_display[ $metric ];
 		}
 		$precision = 0;
 		if ( array_key_exists( $metric, self::$metrics_precisions ) ) {
@@ -168,5 +159,3 @@ class WebVitals {
 	}
 
 }
-
-WebVitals::init();
