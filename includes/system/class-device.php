@@ -96,7 +96,7 @@ class Device {
 			case 'camera':
 				return '📸️';
 			default:
-				return '';
+				return '🥷';
 		}
 	}
 
@@ -108,7 +108,7 @@ class Device {
 	 * @since 1.0.0
 	 */
 	public static function get_id_name( $type ) {
-		return strtoupper( str_replace( '_', ' ', $type ) );
+		return ucwords( str_replace( '_', ' ', $type ) );
 	}
 
 	/**
