@@ -38,7 +38,7 @@ class Device {
 	 * @since  1.0.0
 	 * @var    array    $verbs    Maintains the types list.
 	 */
-	public static $types = [ 'smartphone', 'featurephone', 'tablet', 'phablet', 'phablet', 'console', 'portable_media_player', 'car_browser', 'tv', 'smart_display', 'camera', 'unknown' ];
+	public static $types = [ 'smartphone', 'featurephone', 'tablet', 'phablet', 'console', 'portable_media_player', 'car_browser', 'tv', 'smart_display', 'camera', 'unknown' ];
 
 	/**
 	 * The list of observable devices.
@@ -59,12 +59,71 @@ class Device {
 	}
 
 	/**
-	 * Defines all needed globals.
+	 * Get device type.
 	 *
 	 * @since 1.0.0
 	 */
 	public static function get_device() {
 		return 'unknown';
+	}
+
+	/**
+	 * Get icon.
+	 *
+	 * @param   string  $type   The device type.
+	 * @return  string  The icon.
+	 * @since 1.0.0
+	 */
+	public static function get_icon( $type ) {
+		switch ( $type ) {
+			case 'desktop':
+				return '🖥️';
+			case 'mobile':
+			case 'featurephone':
+			case 'phablet':
+			case 'tablet':
+			case 'smartphone':
+				return '📱️';
+			case 'console':
+				return '🎮️';
+			case 'portable_media_player':
+				return '📀️';
+			case 'car_browser':
+				return '🚙️';
+			case 'tv':
+			case 'smart_display':
+				return '📺️';
+			case 'camera':
+				return '📸️';
+			default:
+				return '';
+		}
+	}
+
+	/**
+	 * Get id name.
+	 *
+	 * @param   string  $type   The device type.
+	 * @return  string  The id name.
+	 * @since 1.0.0
+	 */
+	public static function get_id_name( $type ) {
+		return strtoupper( str_replace( '_', ' ', $type ) );
+	}
+
+	/**
+	 * Get icon and id name.
+	 *
+	 * @param   string  $type   The device type.
+	 * @return  string  The icon and id name.
+	 * @since 1.0.0
+	 */
+	public static function get_icon_id_name( $type ) {
+		$icon = self::get_icon( $type );
+		if ( '' === $icon ) {
+			$icon = '';
+		}
+		return $icon . ' ' . self::get_id_name( $type );
 	}
 
 }
