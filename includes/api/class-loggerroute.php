@@ -31,9 +31,9 @@ class LoggerRoute extends \WP_REST_Controller {
 	 * The acceptable levels.
 	 *
 	 * @since  2.0.0
-	 * @var    array    $bounds    The acceptable levels.
+	 * @var    array    $filters    The acceptable levels.
 	 */
-	protected $bounds = [ 'both', 'inbound', 'outbound' ];
+	protected $filters = [ 'all', 'webvital', 'source', 'navigation' ];
 
 	/**
 	 * Register the routes for the objects of the controller.
@@ -73,20 +73,20 @@ class LoggerRoute extends \WP_REST_Controller {
 	 */
 	public function arg_schema_livelog() {
 		return [
-			'index'     => [
+			'index'  => [
 				'description'       => 'The index to start from.',
 				'type'              => 'string',
 				'required'          => false,
 				'default'           => '0',
 				'sanitize_callback' => 'sanitize_text_field',
 			],
-			'direction' => [
-				'description'       => 'The direction to get.',
+			'filter' => [
+				'description'       => 'The filter to apply.',
 				'type'              => 'string',
-				'enum'              => $this->bounds,
+				'enum'              => $this->filters,
 				'required'          => false,
-				'default'           => 'both',
-				'sanitize_callback' => [ $this, 'sanitize_bound' ],
+				'default'           => 'all',
+				'sanitize_callback' => [ $this, 'sanitize_filter' ],
 			],
 		];
 	}
@@ -114,9 +114,9 @@ class LoggerRoute extends \WP_REST_Controller {
 	 * @return  string  The level sanitized.
 	 * @since  2.0.0
 	 */
-	public function sanitize_bound( $value, $request = null, $param = null ) {
-		$result = 'both';
-		if ( in_array( (string) $value, $this->bounds, true ) ) {
+	public function sanitize_filter( $value, $request = null, $param = null ) {
+		$result = 'all';
+		if ( in_array( (string) $value, $this->filters, true ) ) {
 			$result = (string) $value;
 		}
 		return $result;
@@ -137,7 +137,7 @@ class LoggerRoute extends \WP_REST_Controller {
 			$records = [];
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->notice( 'Live console launched.' );
 		} else {
-			$records = Wpcli::records_format( Wpcli::records_filter( Memory::read(), ( 'both' !== $request['direction'] ? [ 'bound' => $request['direction'] ] : [] ), $request['index'] ), 320 );
+			$records = Wpcli::records_format( Wpcli::records_filter( Memory::read(), ( 'all' !== $request['filter'] ? [ 'type' => '/' . $request['filter'] . '/iU' ] : [] ), $request['index'] ), 320 );
 			$index   = array_key_last( $records );
 			if ( ! isset( $index ) ) {
 				$index = $request['index'];

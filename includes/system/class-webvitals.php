@@ -96,6 +96,20 @@ class WebVitals {
 	];
 
 	/**
+	 * The list of metrics units.
+	 *
+	 * @since  1.0.0
+	 * @var    array    $metrics_units    Maintains the metrics units list.
+	 */
+	public static $metrics_units = [
+		'CLS'  => '',
+		'FID'  => 'ms',
+		'LCP'  => 'ms',
+		'FCP'  => 'ms',
+		'TTFB' => 'ms',
+	];
+
+	/**
 	 * Get the rate field.
 	 *
 	 * @param   string      $metric The metric name.
@@ -156,6 +170,37 @@ class WebVitals {
 			$precision = self::$metrics_precisions[ $metric ];
 		}
 		return round( $value, $precision );
+	}
+
+	/**
+	 * Get the information line about metric and value.
+	 *
+	 * @param   array      $metric The metric array.
+	 * @return  string  The storable value.
+	 * @since 1.0.0
+	 */
+	public static function get_info_line( $metric ) {
+		$idx = 'unkn';
+		$val = 0;
+		$qdx = '';
+		foreach ( $metric as $key => $value ) {
+			if ( false !== strpos( $key, '_sum' ) ) {
+				$idx = str_replace( '_sum', '', $key );
+				$val = $value;
+			} else {
+				if ( false !== strpos( $key, '_' ) ) {
+					$qdx = substr( $key, 1 + strpos( $key, '_' ) );
+				}
+				if ( 'hit' === $qdx ) {
+					$qdx = '';
+				}
+			}
+		}
+		$val = (string) self::get_displayable_value( $idx, $val );
+		if ( array_key_exists( $idx, self::$metrics_units ) ) {
+			$val .= self::$metrics_units[ $idx ];
+		}
+		return strtoupper( str_pad( $idx, 5 ) ) . strtoupper( str_pad( $qdx, 5 ) ) . str_pad( $val, 8, ' ', STR_PAD_LEFT ) ;
 	}
 
 }

@@ -1,9 +1,9 @@
 jQuery( document ).ready(
 	function($) {
 		function initialize() {
-			$( '#vibes-select-bound' ).change(
+			$( '#vibes-select-filter' ).change(
 				function () {
-					bound = $( this ).val();
+					filter = $( this ).val();
 				}
 			);
 			$( '#vibes-control-play' ).click(
@@ -47,7 +47,7 @@ jQuery( document ).ready(
 					{
 						type : 'GET',
 						url : livelog.restUrl,
-						data : { direction: bound, index: index },
+						data : { filter: filter, index: index },
 						beforeSend: function ( xhr ) { xhr.setRequestHeader( 'X-WP-Nonce', livelog.restNonce ); xhr.setRequestHeader( 'Traffic-No-Log', 'inbound' ); },
 						success: function( response ) {
 							if ( response ) {
@@ -66,7 +66,7 @@ jQuery( document ).ready(
 											function( item ){
 												elem = document.createElement( 'pre' );
 												elem.classList.add( 'vibes-logger-line' );
-												elem.classList.add( 'vibes-logger-line-' + item[1].bound );
+												elem.classList.add( 'vibes-logger-line-' + item[1].type );
 												elem.innerHTML = item[1].line.replace( ' ', '&nbsp;' );
 												if ( root.childElementCount > livelog.buffer ) {
 													root.removeChild( root.firstElementChild );
@@ -89,7 +89,7 @@ jQuery( document ).ready(
 			}
 		}
 
-		let bound   = 'both';
+		let filter  = 'all';
 		let index   = '0';
 		let running = true;
 		let init    = false;

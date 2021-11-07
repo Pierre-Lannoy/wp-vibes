@@ -38,10 +38,11 @@ wp_enqueue_script( VIBES_LIVELOG_ID );
                 <span class="dashicons dashicons-controls-play vibes-control vibes-control-inactive" id="vibes-control-play"></span>
                 <span class="dashicons dashicons-controls-pause vibes-control vibes-control-inactive" id="vibes-control-pause"></span>
             </div>
-            <select id="vibes-select-bound" class="attachment-filters">
-                <option value="both"><?php echo esc_html__( 'Both', 'vibes' );?></option>
-                <option value="inbound"><?php echo esc_html__( 'Inbounds', 'vibes' );?></option>
-                <option value="outbound"><?php echo esc_html__( 'Outbounds', 'vibes' );?>
+            <select id="vibes-select-filter" class="attachment-filters">
+                <option value="all"><?php echo esc_html__( 'All', 'vibes' );?></option>
+                <option value="webvital"><?php echo esc_html__( 'Web Vitals', 'vibes' );?></option>
+                <option value="source"><?php echo esc_html__( 'Sources', 'vibes' );?>
+                <option value="navigation"><?php echo esc_html__( 'Navigation', 'vibes' );?>
             </select>
             <div class="view-switch media-grid-view-switch" style="display: inline;">
                 <span class="vibes-control-hint" style="float: right">initializing&nbsp;&nbsp;&nbsp;⚪</span>

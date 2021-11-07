@@ -113,6 +113,7 @@ class BeaconRoute extends \WP_REST_Controller {
 				if ( 'none' !== $rate_field ) {
 					$record[ $metric['name'] . '_sum' ]            = $storable_value;
 					$record[ $metric['name'] . '_' . $rate_field ] = 1;
+					$record['type']                                = 'webvital';
 				}
 			} else {
 				switch ( $metric['name'] ) {

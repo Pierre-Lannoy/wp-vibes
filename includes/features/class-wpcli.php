@@ -14,8 +14,9 @@ namespace Vibes\Plugin\Feature;
 use Vibes\Plugin\Feature\Memory;
 use Vibes\System\Cache;
 use Vibes\System\Conversion;
-
+use Vibes\System\WebVitals;
 use Vibes\System\Date;
+use Vibes\System\Device;
 use Vibes\System\EmojiFlag;
 use Vibes\System\Environment;
 use Vibes\System\Markdown;
@@ -44,7 +45,7 @@ class Wpcli {
 	private $level_color = [
 		'standard' =>
 			[
-				'inbound'  => '%4%c',
+				'webvital'  => '%4%c',
 				'outbound' => '%3%r',
 			],
 		'soft'     =>
@@ -224,16 +225,8 @@ class Wpcli {
 		$result = [];
 		foreach ( $records as $idx => $record ) {
 			foreach ( $filters as $key => $filter ) {
-				switch ( $key ) {
-					case 'bound':
-						if ( $record['bound'] !== strtoupper( $filter ) ) {
-							continue 3;
-						}
-						break;
-					default:
-						if ( ! preg_match( $filter, $record[ $key ] ) ) {
-							continue 3;
-						}
+				if ( ! preg_match( $filter, $record[ $key ] ) ) {
+					continue 2;
 				}
 			}
 			$result[ $idx ] = $record;
@@ -247,7 +240,7 @@ class Wpcli {
 			}
 			$result = $tmp;
 		}
-		uksort($result, 'strcmp' );
+		uksort( $result, 'strcmp' );
 		return $result;
 	}
 
@@ -264,41 +257,24 @@ class Wpcli {
 		$result = [];
 		$geoip  = new GeoIP();
 		foreach ( $records as $idx => $record ) {
-			$line  = '[' . $record['timestamp'] . '] ';
-			$line .= strtoupper( str_pad( $record['bound'], 8 ) ) . ' ';
-			$line .= strtoupper( str_pad( $record['verb'], 7 ) ) . ' ';
-			$line .= str_pad( $record['code'], 3, '0', STR_PAD_LEFT ) . ' ';
-			$line .= str_pad( Conversion::data_shorten( $record['size'] ), 7, ' ', STR_PAD_LEFT ) . ' ';
-			$line .= str_pad( $record['latency'] . 'ms', 7, ' ', STR_PAD_LEFT ) . ' ';
-			if ( Environment::is_wordpress_multisite() ) {
-				$sid = ' SID:' . str_pad( (string) $record['site_id'], 4, '0', STR_PAD_LEFT ) . ' ';
-			} else {
-				$sid = ' ';
-			}
-			$url_parts = wp_parse_url( get_site_url( $record['site_id'] ) );
-			if ( array_key_exists( 'host', $url_parts ) && isset( $url_parts['host'] ) ) {
-				$sauth = $url_parts['host'];
-			} else {
-				$sauth = 'Local Site';
-			}
 			if ( $geoip->is_installed() ) {
-				$country = EmojiFlag::get( $record['country'] ) . ' ';
+				$country = EmojiFlag::get( $record['country'] );
 			} else {
-				$country = '';
+				$country = ' ';
 			}
-			switch ( $record['bound'] ) {
-				case 'INBOUND':
-					$line .= $sid . $country . $record['id'] . ' → ' . $sauth . $record['endpoint'];
-					break;
-				case 'OUTBOUND':
-					$line .= $sid . $sauth . ' → ' . $country . $record['authority'] . $record['endpoint'];
-					break;
+			$line  = '[' . $record['timestamp'] . '] ';
+			$line .= strtoupper( str_pad( $record['type'], 8 ) ) . ' ';
+			$line .= $country . ' ';
+			$line .= strtoupper( str_pad( Device::get_icon_id_name( $record['device'] ), 21 ) ) . ' ';
+			if ( 'webvital' === $record['type'] ) {
+				$line .= WebVitals::get_info_line( $record ) . ' ';
 			}
+			$line .= $record['endpoint'];
 			$line = preg_replace( '/[\x00-\x1F\x7F\xA0]/u', '', $line );
 			if ( $pad - 1 < strlen( $line ) ) {
 				$line = substr( $line, 0, $pad - 1 ) . '…';
 			}
-			$result[ $idx ] = [ 'bound' => strtolower( $record['bound'] ), 'line' => vibes_mb_str_pad( $line, $pad ) ];
+			$result[ $idx ] = [ 'type' => strtolower( $record['type'] ), 'line' => vibes_mb_str_pad( $line, $pad ) ];
 		}
 		return $result;
 	}
@@ -316,7 +292,7 @@ class Wpcli {
 			$theme = 'standard';
 		}
 		foreach ( self::records_format( $records, $pad ) as $record ) {
-			\WP_CLI::line( \WP_CLI::colorize( $this->level_color[ $theme ][ strtolower( $record['bound'] ) ] ) . $record['line'] . \WP_CLI::colorize( '%n' ) );
+			\WP_CLI::line( \WP_CLI::colorize( $this->level_color[ $theme ][ strtolower( $record['type'] ) ] ) . $record['line'] . \WP_CLI::colorize( '%n' ) );
 		}
 	}
 

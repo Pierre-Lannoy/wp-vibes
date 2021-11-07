@@ -34,14 +34,6 @@ use malkusch\lock\mutex\FlockMutex;
 class Memory {
 
 	/**
-	 * Statistics buffer.
-	 *
-	 * @since  2.0.0
-	 * @var    array    $statistics    The statistics buffer.
-	 */
-	private static $statistics_buffer = [];
-
-	/**
 	 * Messages buffer.
 	 *
 	 * @since  2.0.0
@@ -79,7 +71,7 @@ class Memory {
 	 * @since    2.0.0
 	 */
 	public static function init() {
-		//DIS:add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'write' ], DECALOG_MAX_SHUTDOWN_PRIORITY, 0 );
+		add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'write' ], DECALOG_MAX_SHUTDOWN_PRIORITY, 0 );
 		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) ) {
 			//DIS:add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'collate_metrics' ], DECALOG_MAX_SHUTDOWN_PRIORITY - 1, 0 );
 		}
@@ -101,25 +93,7 @@ class Memory {
 	 */
 	public static function write() {
 		if ( self::is_enabled() ) {
-			self::format_records();
 			self::write_records_to_memory();
-		}
-	}
-
-	/**
-	 * Format records.
-	 *
-	 * @param boolean $final Optional. If false, allows recursive calls. This is to allow to format
-	 *                                 records generated while executing 'shutdown' hook.
-	 * @since    2.0.0
-	 */
-	private static function format_records( $final = false ) {
-		foreach ( self::$statistics_buffer as $key => $record ) {
-			self::$messages_buffer[ $key ] = Http::format_record( $record );
-			unset( self::$statistics_buffer[ $key ] );
-		}
-		if ( 0 < count( self::$statistics_buffer ) && ! $final ) {
-			self::format_records( true );
 		}
 	}
 
@@ -211,17 +185,9 @@ class Memory {
 	 * @since    2.0.0
 	 */
 	public static function store_statistics( $record ) {
-		/*if ( Option::network_get( 'smart_filter' ) ) {
-			foreach ( self::$statistics_filter as $field => $filter ) {
-				foreach ( $filter as $f ) {
-					if ( preg_match( $f, $record[ $field ] ) ) {
-						return;
-					}
-				}
-			}
-		}
-		$date = new \DateTime();
-		self::$statistics_buffer[ $date->format( 'YmdHisu' ) ] = $record;*/
+		$date                = new \DateTime();
+		$record['timestamp'] = $date->format( 'H:i:s.u' );
+		self::$messages_buffer[ $date->format( 'YmdHisu' ) ] = $record;
 	}
 
 	/**

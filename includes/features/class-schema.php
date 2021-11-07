@@ -262,6 +262,7 @@ class Schema {
 			'authent'   => 0,
 			'country'   => '00',
 			'device'    => 'unknown',
+			'type'      => '-',
 		];
 		return $record;
 	}
