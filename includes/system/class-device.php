@@ -12,6 +12,7 @@
 namespace Vibes\System;
 
 use Vibes\System\UserAgent;
+use Vibes\System\Environment;
 
 /**
  * Define the device functionality.
@@ -113,27 +114,38 @@ class Device {
 	public static function get_icon( $type ) {
 		switch ( $type ) {
 			case 'desktop':
-				return '🖥️';
+				$result = '🖥️';
+				break;
 			case 'mobile':
 			case 'featurephone':
 			case 'phablet':
 			case 'tablet':
 			case 'smartphone':
-				return '📱️';
+				$result = '📱️';
+				break;
 			case 'console':
-				return '🎮️';
+				$result = '🎮️';
+				break;
 			case 'portable_media_player':
-				return '📀️';
+				$result = '📀️';
+				break;
 			case 'car_browser':
-				return '🚙️';
+				$result = '🚙️';
+				break;
 			case 'tv':
 			case 'smart_display':
-				return '📺️';
+				$result = '📺️';
+				break;
 			case 'camera':
-				return '📸️';
+				$result = '📸️';
+				break;
 			default:
-				return '🥷';
+				$result = '🥷';
 		}
+		if ( '🖥️' === $result && 1 === Environment::exec_mode() ) {
+			$result = $result . ' ';
+		}
+		return $result;
 	}
 
 	/**
@@ -155,7 +167,7 @@ class Device {
 	 * @since 1.0.0
 	 */
 	public static function get_icon_id_name( $type ) {
-		return self::get_icon( $type ) . '…' . self::get_id_name( $type );
+		return self::get_icon( $type ) . ' ' . self::get_id_name( $type );
 	}
 
 }
