@@ -32,11 +32,15 @@
 }
 
 .vibes-logger-line-webvital {
-    color:#9999FF;
+    color:#5197D5;
 }
 
-.vibes-logger-line-outbound {
-    color:#FB7B00;
+.vibes-logger-line-resource {
+    color:#915EB1;
+}
+
+.vibes-logger-line-navigation {
+    color:#B5C148;
 }
 
 .vibes-control{

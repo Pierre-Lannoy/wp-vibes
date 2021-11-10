@@ -12,6 +12,7 @@
 namespace Vibes\Plugin\Feature;
 
 use Vibes\Plugin\Feature\Memory;
+use Vibes\System\BrowserPerformance;
 use Vibes\System\Cache;
 use Vibes\System\Conversion;
 use Vibes\System\WebVitals;
@@ -45,13 +46,15 @@ class Wpcli {
 	private $level_color = [
 		'standard' =>
 			[
-				'webvital' => '%4%c',
-				'outbound' => '%3%r',
+				'webvital'   => '%4%c',
+				'navigation' => '%2%k',
+				'resource'   => '%5%w',
 			],
 		'soft'     =>
 			[
-				'webvital' => '%0%c',
-				'outbound' => '%0%Y',
+				'webvital'   => '%0%c',
+				'navigation' => '%0%g',
+				'resource'   => '%0%m',
 			],
 	];
 
@@ -263,14 +266,16 @@ class Wpcli {
 				$country = ' ';
 			}
 			$line  = '[' . $record['timestamp'] . '] ';
-			$line .= strtoupper( str_pad( $record['type'], 8 ) ) . ' ';
+			$line .= strtoupper( str_pad( $record['type'], 10 ) ) . ' ';
 			$line .= $country . ' ';
-			$line .= strtoupper( str_pad( Device::get_icon_id_name( $record['device'] ), 21 ) ) . ' ';
+			$line .= strtoupper( str_pad( Device::get_icon_id_name( $record['device'] ), ( 'Desktop' === Device::get_id_name( $record['device'] ) && 1 === Environment::exec_mode() ) ? 22 : 21 ) ) . ' ';
 			if ( 'webvital' === $record['type'] ) {
 				$line .= WebVitals::get_info_line( $record ) . ' ';
+				$line .= $record['endpoint'];
+			} elseif ( 'navigation' === $record['type'] || 'resource' === $record['type'] ) {
+				$line .= BrowserPerformance::get_info_line( $record ) . ' ';
 			}
-			$line .= $record['endpoint'];
-			$line  = preg_replace( '/[\x00-\x1F\x7F\xA0]/u', '', $line );
+			$line = preg_replace( '/[\x00-\x1F\x7F\xA0]/u', '', $line );
 			if ( $pad - 1 < strlen( $line ) ) {
 				$line = substr( $line, 0, $pad - 1 ) . '…';
 			}

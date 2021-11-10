@@ -11,10 +11,10 @@
 
 namespace Vibes\API;
 
-
 use Vibes\Plugin\Feature\Capture;
 use Vibes\Plugin\Feature\Schema;
 use Vibes\System\Blog;
+use Vibes\System\BrowserPerformance;
 use Vibes\System\Role;
 use Vibes\Plugin\Feature\Wpcli;
 use Vibes\Plugin\Feature\Memory;
@@ -119,19 +119,25 @@ class BeaconRoute extends \WP_REST_Controller {
 						}
 					}
 					break;
-				case 'navigation':
 				case 'resource':
-					// initiator
-
-
+				case 'navigation':
+					if ( array_key_exists( 'start', $metric ) && array_key_exists( 'duration', $metric ) && in_array( $metric['name'], BrowserPerformance::$spans, true ) ) {
+						foreach ( [ 'start', 'duration' ] as $field ) {
+							$record[ 'span_' . $metric['name'] . '_' . $field ] = BrowserPerformance::get_storable_value( $metric['name'], (float) $metric[ $field ] );
+						}
+						$record['hit'] = 1;
+					}
+					if ( array_key_exists( 'value', $metric ) && in_array( $metric['name'], BrowserPerformance::$unrated_metrics, true ) ) {
+						$record[ $metric['name'] . '_sum' ] = BrowserPerformance::get_storable_value( $metric['name'], (float) $metric['value'] );
+					}
+					if ( array_key_exists( 'initiator', $content ) ) {
+						$record['initiator'] = substr( $content['initiator'], 0, 15 );
+					}
 					break;
 			}
 		}
-		if ( 'webvital' === $record['type'] ) {
-			Capture::record( $record );
-		}
-
-		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Signal received from %s and correctly pre-processed.', $record['endpoint'] ), [ 'code' => 202 ] );
+		Capture::record( $record );
+		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'Signal received and correctly pre-processed.', [ 'code' => 202 ] );
 		return new \WP_REST_Response( null, 202 );
 	}
 

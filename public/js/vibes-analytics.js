@@ -33,23 +33,23 @@ function performanceReport(timing,type) {
 		authenticated: analyticsSettings.authenticated,
 		initiator: timing.initiatorType,
 		metrics: [{
-			name:  'span_redirect',
+			name:  'redirect',
 			start: timing.redirectStart - start,
 			duration: timing.redirectEnd - timing.redirectStart,
 		},{
-			name:  'span_dns',
+			name:  'dns',
 			start: timing.domainLookupStart - start,
 			duration: timing.domainLookupEnd - timing.domainLookupStart,
 		}]};
 	if ( 0 < timing.secureConnectionStart) {
 		analytics.metrics.push(
 			{
-				name:  'span_tcp',
+				name:  'tcp',
 				start: timing.connectStart - start,
 				duration: timing.connectEnd - timing.connectStart,
 			},
 			{
-				name:  'span_ssl',
+				name:  'ssl',
 				start: timing.secureConnectionStart - start,
 				duration: timing.connectEnd - timing.secureConnectionStart,
 			}
@@ -57,7 +57,7 @@ function performanceReport(timing,type) {
 	} else {
 		analytics.metrics.push(
 			{
-				name:  'span_tcp',
+				name:  'tcp',
 				start: timing.connectStart - start,
 				duration: timing.connectEnd - timing.connectStart,
 			}
@@ -65,12 +65,12 @@ function performanceReport(timing,type) {
 	}
 	analytics.metrics.push(
 		{
-			name:  'span_wait',
+			name:  'wait',
 			start: timing.requestStart - start,
 			duration: timing.responseStart - timing.requestStart,
 		},
 		{
-			name:  'span_download',
+			name:  'download',
 			start: timing.responseStart - start,
 			duration: timing.responseEnd - timing.responseStart,
 		},
@@ -79,7 +79,7 @@ function performanceReport(timing,type) {
 			value: timing.duration,
 		},
 		{
-			name:  'redirect',
+			name:  'redirects',
 			value: timing.redirectCount,
 		},
 	);

@@ -12,6 +12,7 @@
 namespace Vibes\System;
 
 use Vibes\System\GeoIP;
+use Vibes\System\Conversion;
 
 /**
  * Define the browser performance functionality.
@@ -72,28 +73,38 @@ class BrowserPerformance {
 	 * @since 1.0.0
 	 */
 	public static function get_info_line( $metric ) {
-		/*$idx = 'unkn';
-		$val = 0;
-		$qdx = '';
-		foreach ( $metric as $key => $value ) {
-			if ( false !== strpos( $key, '_sum' ) ) {
-				$idx = str_replace( '_sum', '', $key );
-				$val = $value;
-			} else {
-				if ( false !== strpos( $key, '_' ) ) {
-					$qdx = substr( $key, 1 + strpos( $key, '_' ) );
-				}
-				if ( 'hit' === $qdx ) {
-					$qdx = '';
-				}
+		$initiator = '';
+		if ( array_key_exists( 'cache_sum', $metric ) ) {
+			$size = 'local cache';
+		} else {
+			$size = Conversion::data_shorten( $metric['size_sum'] ?? 0 );
+		}
+		if ( 'navigation' === $metric['type'] ) {
+			$host = $metric['endpoint'];
+		}
+		if ( 'resource' === $metric['type'] ) {
+			$host      = $metric['endpoint'];
+			$initiator = '[' . $metric['initiator'] . '] ';
+		}
+		$host .= ' (' . $size . ')';
+		if ( 'resource' === $metric['type'] ) {
+			$host .= ' from ' . $metric['authority'];
+		}
+		$cnx = 0;
+		foreach ( [ 'redirect', 'dns', 'tcp', 'ssl' ] as $span ) {
+			$field = 'span_' . $span . '_duration';
+			if ( array_key_exists( $field, $metric ) ) {
+				$cnx += $metric[ $field ];
 			}
 		}
-		$val = (string) self::get_displayable_value( $idx, $val );
-		if ( array_key_exists( $idx, self::$metrics_units ) ) {
-			$val .= self::$metrics_units[ $idx ];
+		$span = 'cnct:' . self::get_displayable_value( '', $cnx ) . 'ms ';
+		if ( array_key_exists( 'span_wait_duration', $metric ) ) {
+			$span .= 'wait:' . self::get_displayable_value( '', $metric['span_wait_duration'] ) . 'ms ';
 		}
-		return strtoupper( str_pad( $idx, 5 ) ) . strtoupper( str_pad( $qdx, 5 ) ) . str_pad( $val, 8, ' ', STR_PAD_LEFT ) ;*/
-		return '';
+		if ( array_key_exists( 'span_download_duration', $metric ) ) {
+			$span .= 'dwld:' . self::get_displayable_value( '', $metric['span_download_duration'] ) . 'ms ';
+		}
+		return 'SPAN      ' . $initiator . $span . $host;
 	}
 
 }
