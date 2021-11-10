@@ -131,7 +131,10 @@ class BeaconRoute extends \WP_REST_Controller {
 						$record[ $metric['name'] . '_sum' ] = BrowserPerformance::get_storable_value( $metric['name'], (float) $metric['value'] );
 					}
 					if ( array_key_exists( 'initiator', $content ) ) {
-						$record['initiator'] = substr( $content['initiator'], 0, 15 );
+						if ( 'xmlhttprequest' === $content['initiator'] ) {
+							$content['initiator'] = 'xhr';
+						}
+						$record['initiator'] = substr( $content['initiator'], 0, 6 );
 					}
 					break;
 			}

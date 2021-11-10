@@ -84,7 +84,7 @@ class BrowserPerformance {
 		}
 		if ( 'resource' === $metric['type'] ) {
 			$host      = $metric['endpoint'];
-			$initiator = '[' . $metric['initiator'] . '] ';
+			$initiator = $metric['initiator'];
 		}
 		$host .= ' (' . $size . ')';
 		if ( 'resource' === $metric['type'] ) {
@@ -104,7 +104,7 @@ class BrowserPerformance {
 		if ( array_key_exists( 'span_download_duration', $metric ) ) {
 			$span .= 'dwld:' . self::get_displayable_value( '', $metric['span_download_duration'] ) . 'ms ';
 		}
-		return 'SPAN      ' . $initiator . $span . $host;
+		return 'SPAN ' . strtoupper( str_pad( $initiator, 7 ) ) . $span . $host;
 	}
 
 }

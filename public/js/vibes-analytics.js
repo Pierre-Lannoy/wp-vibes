@@ -119,6 +119,8 @@ function resourceObserve(list, observer) {
 		list.getEntriesByType( 'resource' ).forEach(
 			function(timing){
 				if ( ( ! excluded.includes( timing.name ) ) && analyticsSettings.sampling >= getRandomArbitrary( 1, 1000 ) ) {
+					//if ( 'xmlhttprequest' ===  timing.initiatorType && ( ) )
+
 					excluded.push( timing.name );
 					performanceReport( timing,'resource' );
 				}

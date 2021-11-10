@@ -279,7 +279,7 @@ class Schema {
 		$sql .= " `site` bigint(20) NOT NULL DEFAULT '0',";
 		$sql .= " `authority` varchar(250) NOT NULL DEFAULT '-',";
 		$sql .= " `endpoint` varchar(250) NOT NULL DEFAULT '-',";
-		$sql .= " `initiator` varchar(15) NOT NULL DEFAULT '-',";
+		$sql .= " `initiator` varchar(6) NOT NULL DEFAULT '-',";
 		$sql .= self::browser_performance_subset();
 		$sql .= ' UNIQUE KEY u_stat (timestamp, site, authority, endpoint, initiator)';
 		$sql .= ") $charset_collate;";

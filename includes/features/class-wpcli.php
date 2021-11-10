@@ -268,7 +268,7 @@ class Wpcli {
 			$line  = '[' . $record['timestamp'] . '] ';
 			$line .= strtoupper( str_pad( $record['type'], 10 ) ) . ' ';
 			$line .= $country . ' ';
-			$line .= strtoupper( str_pad( Device::get_icon_id_name( $record['device'] ), ( 'Desktop' === Device::get_id_name( $record['device'] ) && 1 === Environment::exec_mode() ) ? 22 : 21 ) ) . ' ';
+			$line .= strtoupper( str_pad( Device::get_icon( $record['device'] ), ( 'Desktop' === Device::get_id_name( $record['device'] ) && 1 === Environment::exec_mode() ) ? 4 : 5 ) ) . ' ';
 			if ( 'webvital' === $record['type'] ) {
 				$line .= WebVitals::get_info_line( $record ) . ' ';
 				$line .= $record['endpoint'];
