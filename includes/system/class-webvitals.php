@@ -200,7 +200,7 @@ class WebVitals {
 		if ( array_key_exists( $idx, self::$metrics_units ) ) {
 			$val .= self::$metrics_units[ $idx ];
 		}
-		return strtoupper( str_pad( $idx, 5 ) ) . strtoupper( str_pad( $qdx, 5 ) ) . str_pad( $val, 8, ' ', STR_PAD_LEFT ) ;
+		return strtoupper( str_pad( $idx, 5 ) ) . strtoupper( str_pad( $qdx, 5 ) ) . str_pad( $val, 8, ' ', STR_PAD_LEFT );
 	}
 
 }

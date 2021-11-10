@@ -32,12 +32,12 @@ use Vibes\System\WebVitals;
 class BeaconRoute extends \WP_REST_Controller {
 
 	/**
-	 * The acceptable levels.
+	 * The acceptable types.
 	 *
 	 * @since  1.0.0
-	 * @var    array    $bounds    The acceptable levels.
+	 * @var    array    $types    The acceptable types.
 	 */
-	protected $bounds = [ 'both', 'inbound', 'outbound' ];
+	protected $types = [ 'webvital', 'resource', 'navigation' ];
 
 	/**
 	 * Register the routes for the objects of the controller.
@@ -97,31 +97,40 @@ class BeaconRoute extends \WP_REST_Controller {
 	 */
 	public function post_beacon( $request ) {
 		$content = \json_decode( $request->get_body(), true );
-		if ( ! ( array_key_exists( 'locationUrl', $content ) && array_key_exists( 'authenticated', $content ) && array_key_exists( 'metrics', $content ) && is_array( $content['metrics'] ) ) ) {
+		if ( ! ( array_key_exists( 'type', $content ) && in_array( $content['type'], $this->types, true ) && array_key_exists( 'resource', $content ) && array_key_exists( 'authenticated', $content ) && array_key_exists( 'metrics', $content ) && is_array( $content['metrics'] ) ) ) {
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( 'Malformed beacon POST request.', [ 'code' => 400 ] );
 			return new \WP_REST_Response( null, 400 );
 		}
-		$record = Capture::init_record( $content['locationUrl'], $content['authenticated'] );
+		$record = Capture::init_record( $content['resource'], $content['authenticated'], $content['type'] );
 		foreach ( $content['metrics'] as $metric ) {
-			if ( ! ( is_array( $metric ) && array_key_exists( 'name', $metric ) && array_key_exists( 'value', $metric ) ) ) {
+			if ( ! ( is_array( $metric ) && array_key_exists( 'name', $metric ) ) ) {
 				\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( 'Malformed beacon POST request.', [ 'code' => 400 ] );
 				return new \WP_REST_Response( null, 400 );
 			}
-			if ( in_array( $metric['name'], array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics ), true ) ) {
-				$storable_value = WebVitals::get_storable_value( (string) $metric['name'], (float) $metric['value'] );
-				$rate_field     = WebVitals::get_rate_field( (string) $metric['name'], $storable_value );
-				if ( 'none' !== $rate_field ) {
-					$record[ $metric['name'] . '_sum' ]            = $storable_value;
-					$record[ $metric['name'] . '_' . $rate_field ] = 1;
-					$record['type']                                = 'webvital';
-				}
-			} else {
-				switch ( $metric['name'] ) {
-					case 'CLS':
-				}
+			switch ( $content['type'] ) {
+				case 'webvital':
+					if ( array_key_exists( 'value', $metric ) && in_array( $metric['name'], array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics ), true ) ) {
+						$storable_value = WebVitals::get_storable_value( (string) $metric['name'], (float) $metric['value'] );
+						$rate_field     = WebVitals::get_rate_field( (string) $metric['name'], $storable_value );
+						if ( 'none' !== $rate_field ) {
+							$record[ $metric['name'] . '_sum' ]            = $storable_value;
+							$record[ $metric['name'] . '_' . $rate_field ] = 1;
+
+						}
+					}
+					break;
+				case 'navigation':
+				case 'resource':
+					// initiator
+
+
+					break;
 			}
 		}
-		Capture::record( $record );
+		if ( 'webvital' === $record['type'] ) {
+			Capture::record( $record );
+		}
+
 		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Signal received from %s and correctly pre-processed.', $record['endpoint'] ), [ 'code' => 202 ] );
 		return new \WP_REST_Response( null, 202 );
 	}

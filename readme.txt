@@ -1,6 +1,6 @@
 === Vibes ===
 Contributors: PierreLannoy
-Tags: rum, web vitals
+Tags: rum, web vitals, telemetry
 Requires at least: 5.2
 Requires PHP: 7.2
 Tested up to: 5.9

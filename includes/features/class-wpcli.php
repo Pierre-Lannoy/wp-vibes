@@ -45,12 +45,12 @@ class Wpcli {
 	private $level_color = [
 		'standard' =>
 			[
-				'webvital'  => '%4%c',
+				'webvital' => '%4%c',
 				'outbound' => '%3%r',
 			],
 		'soft'     =>
 			[
-				'inbound'  => '%0%c',
+				'webvital' => '%0%c',
 				'outbound' => '%0%Y',
 			],
 	];
@@ -96,7 +96,7 @@ class Wpcli {
 			if ( '' === $field ) {
 				$result .= $key;
 			} else {
-				$result .= $id[$field];
+				$result .= $id[ $field ];
 			}
 			if ( $id !== $last ) {
 				$result .= ' ';
@@ -270,11 +270,14 @@ class Wpcli {
 				$line .= WebVitals::get_info_line( $record ) . ' ';
 			}
 			$line .= $record['endpoint'];
-			$line = preg_replace( '/[\x00-\x1F\x7F\xA0]/u', '', $line );
+			$line  = preg_replace( '/[\x00-\x1F\x7F\xA0]/u', '', $line );
 			if ( $pad - 1 < strlen( $line ) ) {
 				$line = substr( $line, 0, $pad - 1 ) . '…';
 			}
-			$result[ $idx ] = [ 'type' => strtolower( $record['type'] ), 'line' => vibes_mb_str_pad( $line, $pad ) ];
+			$result[ $idx ] = [
+				'type' => strtolower( $record['type'] ),
+				'line' => vibes_mb_str_pad( $line, $pad ),
+			];
 		}
 		return $result;
 	}
@@ -332,18 +335,18 @@ class Wpcli {
 			\WP_CLI::line( 'Metrics collation: disabled.' );
 		}
 		if ( \DecaLog\Engine::isDecalogActivated() ) {
-			\WP_CLI::line( 'Logging support: ' . \DecaLog\Engine::getVersionString() . '.');
+			\WP_CLI::line( 'Logging support: ' . \DecaLog\Engine::getVersionString() . '.' );
 		} else {
 			\WP_CLI::line( 'Logging support: no.' );
 		}
 		$geo = new GeoIP();
 		if ( $geo->is_installed() ) {
-			\WP_CLI::line( 'IP information support: yes (' . $geo->get_full_name() . ').');
+			\WP_CLI::line( 'IP information support: yes (' . $geo->get_full_name() . ').' );
 		} else {
 			\WP_CLI::line( 'IP information support: no.' );
 		}
 		if ( SharedMemory::$available ) {
-			\WP_CLI::line( 'Shared memory support: yes (shmop v' . phpversion( 'shmop' ) . ').');
+			\WP_CLI::line( 'Shared memory support: yes (shmop v' . phpversion( 'shmop' ) . ').' );
 		} else {
 			\WP_CLI::line( 'Shared memory support: no.' );
 		}
@@ -483,7 +486,10 @@ class Wpcli {
 		$action = isset( $args[0] ) ? $args[0] : 'list';
 		$codes  = [];
 		foreach ( $this->exit_codes as $key => $msg ) {
-			$codes[ $key ] = [ 'code' => $key, 'meaning' => ucfirst( $msg ) ];
+			$codes[ $key ] = [
+				'code'    => $key,
+				'meaning' => ucfirst( $msg ),
+			];
 		}
 		switch ( $action ) {
 			case 'list':
@@ -537,7 +543,10 @@ class Wpcli {
 		$action = isset( $args[0] ) ? $args[0] : 'list';
 		$codes  = [];
 		foreach ( Http::$http_status_codes as $key => $msg ) {
-			$codes[ $key ] = [ 'code' => $key, 'meaning' => ucfirst( $msg ) ];
+			$codes[ $key ] = [
+				'code'    => $key,
+				'meaning' => ucfirst( $msg ),
+			];
 		}
 		switch ( $action ) {
 			case 'list':
@@ -611,7 +620,7 @@ class Wpcli {
 	 *
 	 */
 	public function tail( $args, $assoc_args ) {
-		if ( ! function_exists( 'shmop_open' ) || ! function_exists( 'shmop_read' ) || ! function_exists( 'shmop_write' ) || ! function_exists( 'shmop_delete' ) || ! function_exists( 'shmop_close' )) {
+		if ( ! function_exists( 'shmop_open' ) || ! function_exists( 'shmop_read' ) || ! function_exists( 'shmop_write' ) || ! function_exists( 'shmop_delete' ) || ! function_exists( 'shmop_close' ) ) {
 			\WP_CLI::error( 'unable to launch tail command, no shared memory manager found.' );
 		}
 		if ( ! Option::network_get( 'livelog' ) ) {
@@ -633,13 +642,13 @@ class Wpcli {
 		}
 		$filter = \json_decode( isset( $assoc_args['filter'] ) ? (string) $assoc_args['filter'] : '{}', true );
 		if ( is_array( $filter ) ) {
-			foreach( [ 'authority', 'scheme', 'endpoint', 'verb', 'code', 'message', 'size', 'latency', 'site_id' ] as $field ) {
+			foreach ( [ 'authority', 'scheme', 'endpoint', 'verb', 'code', 'message', 'size', 'latency', 'site_id' ] as $field ) {
 				if ( array_key_exists( $field, $filter ) ) {
-					$value = (string) $filter[$field];
+					$value = (string) $filter[ $field ];
 					if ( '' === $value ) {
 						continue;
 					}
-					$filters[$field] = $value;
+					$filters[ $field ] = $value;
 				}
 			}
 		}
@@ -676,7 +685,7 @@ class Wpcli {
 	 */
 	public static function sc_get_helpfile( $attributes ) {
 		$md = new Markdown();
-		return $md->get_shortcode(  'WP-CLI.md', $attributes  );
+		return $md->get_shortcode( 'WP-CLI.md', $attributes );
 	}
 
 }
@@ -684,5 +693,5 @@ class Wpcli {
 add_shortcode( 'vibes-wpcli', [ 'Vibes\Plugin\Feature\Wpcli', 'sc_get_helpfile' ] );
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	\WP_CLI::add_command( 'api', 'Vibes\Plugin\Feature\Wpcli' );
+	\WP_CLI::add_command( 'vibes', 'Vibes\Plugin\Feature\Wpcli' );
 }

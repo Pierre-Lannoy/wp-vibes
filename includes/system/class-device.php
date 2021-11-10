@@ -11,7 +11,7 @@
 
 namespace Vibes\System;
 
-use Vibes\System\GeoIP;
+use Vibes\System\UserAgent;
 
 /**
  * Define the device functionality.
@@ -64,6 +64,42 @@ class Device {
 	 * @since 1.0.0
 	 */
 	public static function get_device() {
+		$ua = UserAgent::get();
+		if ( $ua->class_is_desktop ) {
+			return 'desktop';
+		}
+		if ( $ua->class_is_mobile ) {
+			if ( $ua->device_is_smartphone ) {
+				return 'smartphone';
+			}
+			if ( $ua->device_is_featurephone ) {
+				return 'featurephone';
+			}
+			if ( $ua->device_is_tablet ) {
+				return 'tablet';
+			}
+			if ( $ua->device_is_phablet ) {
+				return 'phablet';
+			}
+			if ( $ua->device_is_console ) {
+				return 'console';
+			}
+			if ( $ua->device_is_portable_media_player ) {
+				return 'portable_media_player';
+			}
+			if ( $ua->device_is_car_browser ) {
+				return 'car_browser';
+			}
+			if ( $ua->device_is_tv ) {
+				return 'tv';
+			}
+			if ( $ua->device_is_smart_display ) {
+				return 'smart_display';
+			}
+			if ( $ua->device_is_camera ) {
+				return 'camera';
+			}
+		}
 		return 'unknown';
 	}
 
@@ -119,11 +155,7 @@ class Device {
 	 * @since 1.0.0
 	 */
 	public static function get_icon_id_name( $type ) {
-		$icon = self::get_icon( $type );
-		if ( '' === $icon ) {
-			$icon = '';
-		}
-		return $icon . ' ' . self::get_id_name( $type );
+		return self::get_icon( $type ) . '…' . self::get_id_name( $type );
 	}
 
 }

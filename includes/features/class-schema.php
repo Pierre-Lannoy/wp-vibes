@@ -16,6 +16,8 @@ use Vibes\System\Option;
 use Vibes\System\Database;
 use Vibes\System\Device;
 use Vibes\System\WebVitals;
+use Vibes\System\BrowserPerformance;
+use Vibes\System\Http;
 use Vibes\System\Favicon;
 use Vibes\System\Cache;
 
@@ -39,10 +41,18 @@ class Schema {
 	private static $statistics = VIBES_SLUG . '_statistics';
 
 	/**
+	 * Resources table name.
+	 *
+	 * @since  1.0.0
+	 * @var    string    $resources    The resources table name.
+	 */
+	private static $resources = VIBES_SLUG . '_resources';
+
+	/**
 	 * Statistics buffer.
 	 *
 	 * @since  1.0.0
-	 * @var    array    $statistics    The statistics buffer.
+	 * @var    array    $statistics_buffer    The statistics buffer.
 	 */
 	private static $statistics_buffer = [];
 
@@ -153,11 +163,9 @@ class Schema {
 	public function initialize() {
 		global $wpdb;
 		try {
-			$this->create_table();
-			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Table "%s" created.', $wpdb->base_prefix . self::$statistics ) );
-			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( 'Schema installed.' );
+			$this->create_tables( 'created' );
 		} catch ( \Throwable $e ) {
-			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->alert( sprintf( 'Unable to create "%s" table: %s', $wpdb->base_prefix . self::$statistics, $e->getMessage() ), [ 'code' => $e->getCode() ] );
+			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->alert( sprintf( 'Unable to create a table: %s', $e->getMessage() ), [ 'code' => $e->getCode() ] );
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->alert( 'Schema not installed.', [ 'code' => $e->getCode() ] );
 		}
 	}
@@ -170,9 +178,7 @@ class Schema {
 	public function update() {
 		global $wpdb;
 		try {
-			$this->create_table();
-			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Table "%s" updated.', $wpdb->base_prefix . self::$statistics ) );
-			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( 'Schema updated.' );
+			$this->create_tables( 'updated' );
 		} catch ( \Throwable $e ) {
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->alert( sprintf( 'Unable to update "%s" table: %s', $wpdb->base_prefix . self::$statistics, $e->getMessage() ), [ 'code' => $e->getCode() ] );
 		}
@@ -203,21 +209,34 @@ class Schema {
 	}
 
 	/**
-	 * Create the table.
+	 * Get the performance subset.
 	 *
+	 * @return  string  The create subset query.
 	 * @since    1.0.0
 	 */
-	private function create_table() {
-		global $wpdb;
-		$charset_collate = 'DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci';
-		$sql             = 'CREATE TABLE IF NOT EXISTS ' . $wpdb->base_prefix . self::$statistics;
-		$sql            .= " (`timestamp` date NOT NULL DEFAULT '0000-00-00',";
-		$sql            .= " `site` bigint(20) NOT NULL DEFAULT '0',";
-		$sql            .= " `endpoint` varchar(250) NOT NULL DEFAULT '-',";
-		$sql            .= " `authent` tinyint(1) DEFAULT '0',";
-		$sql            .= " `country` varchar(2) DEFAULT '00',";
-		$sql            .= " `device` enum('" . implode( "','", Device::$observable ) . "') NOT NULL DEFAULT 'unknown',";
-		// Web Vitals (core+extensions)
+	private function browser_performance_subset() {
+		$sql = " `hit` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+		foreach ( BrowserPerformance::$spans as $span ) {
+			foreach ( [ 'start', 'duration' ] as $field ) {
+				$sql .= " `span_' . $span . '_' . $field . '` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+			}
+		}
+		foreach ( BrowserPerformance::$unrated_metrics as $metric ) {
+			foreach ( [ 'sum' ] as $field ) {
+				$sql .= " `' . $metric . '_' . $field . '` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+			}
+		}
+		return $sql;
+	}
+
+	/**
+	 * Get the web vitals subset.
+	 *
+	 * @return  string  The create subset query.
+	 * @since    1.0.0
+	 */
+	private function webvitals_subset() {
+		$sql = '';
 		foreach ( WebVitals::$rated_metrics as $metric ) {
 			foreach ( [ 'sum', 'good', 'impr', 'poor' ] as $field ) {
 				$sql .= " `' . $metric . '_' . $field . '` int(11) UNSIGNED NOT NULL DEFAULT '0',";
@@ -228,10 +247,47 @@ class Schema {
 				$sql .= " `' . $metric . '_' . $field . '` int(11) UNSIGNED NOT NULL DEFAULT '0',";
 			}
 		}
-		$sql .= ' UNIQUE KEY u_stat (timestamp, site, endpoint, authent, country, device)';
+		return $sql;
+	}
+
+	/**
+	 * Create the table.
+	 *
+	 * @param   string  $text   The text to log.
+	 * @since    1.0.0
+	 */
+	private function create_tables( $text ) {
+		global $wpdb;
+		$charset_collate = 'DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci';
+		$sql             = 'CREATE TABLE IF NOT EXISTS ' . $wpdb->base_prefix . self::$statistics;
+		$sql            .= " (`timestamp` date NOT NULL DEFAULT '0000-00-00',";
+		$sql            .= " `site` bigint(20) NOT NULL DEFAULT '0',";
+		$sql            .= " `endpoint` varchar(250) NOT NULL DEFAULT '-',";
+		$sql            .= " `authent` tinyint(1) DEFAULT '0',";
+		$sql            .= " `country` varchar(2) DEFAULT '00',";
+		$sql            .= " `device` enum('" . implode( "','", Device::$observable ) . "') NOT NULL DEFAULT 'unknown',";
+		$sql            .= self::webvitals_subset();
+		$sql            .= self::browser_performance_subset();
+		$sql            .= ' UNIQUE KEY u_stat (timestamp, site, endpoint, authent, country, device)';
+		$sql            .= ") $charset_collate;";
+		// phpcs:ignore
+		$wpdb->query( $sql );
+		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Table "%s" %s.', $wpdb->base_prefix . self::$statistics, $text ) );
+
+		$sql  = 'CREATE TABLE IF NOT EXISTS ' . $wpdb->base_prefix . self::$resources;
+		$sql .= " (`timestamp` date NOT NULL DEFAULT '0000-00-00',";
+		$sql .= " `site` bigint(20) NOT NULL DEFAULT '0',";
+		$sql .= " `authority` varchar(250) NOT NULL DEFAULT '-',";
+		$sql .= " `endpoint` varchar(250) NOT NULL DEFAULT '-',";
+		$sql .= " `initiator` varchar(15) NOT NULL DEFAULT '-',";
+		$sql .= self::browser_performance_subset();
+		$sql .= ' UNIQUE KEY u_stat (timestamp, site, authority, endpoint, initiator)';
 		$sql .= ") $charset_collate;";
 		// phpcs:ignore
 		$wpdb->query( $sql );
+		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Table "%s" %s.', $wpdb->base_prefix . self::$resources, $text ) );
+
+		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( sprintf( 'Schema %s.', $text ) );
 	}
 
 	/**
@@ -245,25 +301,42 @@ class Schema {
 		// phpcs:ignore
 		$wpdb->query( $sql );
 		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Table "%s" removed.', $wpdb->base_prefix . self::$statistics ) );
+		$sql = 'DROP TABLE IF EXISTS ' . $wpdb->base_prefix . self::$resources;
+		// phpcs:ignore
+		$wpdb->query( $sql );
+		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Table "%s" removed.', $wpdb->base_prefix . self::$resources ) );
 		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'Schema destroyed.' );
 	}
 
 	/**
 	 * Get an empty record.
 	 *
+	 * @param   string  $type       The metrics type.
 	 * @return  array   An empty, ready to use, record.
 	 * @since    1.0.0
 	 */
-	public static function init_record() {
-		$record = [
-			'timestamp' => '0000-00-00',
-			'site'      => 0,
-			'endpoint'  => '-',
-			'authent'   => 0,
-			'country'   => '00',
-			'device'    => 'unknown',
-			'type'      => '-',
-		];
+	public static function init_record( $type ) {
+		switch ( $type ) {
+			case 'webvital':
+				$record = [
+					'timestamp' => '0000-00-00',
+					'site'      => 0,
+					'endpoint'  => '-',
+					'authent'   => 0,
+					'country'   => '00',
+					'device'    => 'unknown',
+					'type'      => '-',
+				];
+				break;
+			default:
+				$record = [
+					'timestamp' => '0000-00-00',
+					'site'      => 0,
+					'authority' => '-',
+					'endpoint'  => '-',
+					'initiator' => '-',
+				];
+		}
 		return $record;
 	}
 
@@ -474,7 +547,7 @@ class Schema {
 		}
 		global $wpdb;
 		$sql  = 'SELECT ' . ( '' !== $group && 'id' !== $group && 'authority' !== $group ? $group . ', ' : '' ) . $c . 'id, authority, sum(hit) as sum_hit, sum(kb_in) as sum_kb_in, sum(kb_out) as sum_kb_out, sum(hit*latency_avg)/sum(hit) as avg_latency, min(latency_min) as min_latency, max(latency_max) as max_latency FROM ';
-		$sql .= $wpdb->base_prefix . self::$statistics . ' WHERE (' . implode( ' AND ', $filter ) . ') ' . $where_extra . ' GROUP BY ' . $group . ' ' . $order . ( $limit > 0 ? 'LIMIT ' . $limit : '') .';';
+		$sql .= $wpdb->base_prefix . self::$statistics . ' WHERE (' . implode( ' AND ', $filter ) . ') ' . $where_extra . ' GROUP BY ' . $group . ' ' . $order . ( $limit > 0 ? 'LIMIT ' . $limit : '' ) . ';';
 		// phpcs:ignore
 		$result = $wpdb->get_results( $sql, ARRAY_A );
 		if ( is_array( $result ) && 0 < count( $result ) ) {

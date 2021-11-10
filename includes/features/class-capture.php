@@ -53,7 +53,7 @@ class Capture {
 	 */
 	public static function init() {
 		// phpcs:ignore
-		if ( (int) Option::network_get( 'sampling' ) >= mt_rand( 1, 1000 ) ) {
+		if ( Option::network_get( 'capture' ) && ( (int) Option::network_get( 'sampling' ) >= mt_rand( 1, 1000 ) ) ) {
 			add_filter(
 				'script_loader_tag',
 				function ( $tag, $handle, $src ) {
@@ -73,7 +73,7 @@ class Capture {
 				[
 					'restUrl'       => esc_url_raw( rest_url() . VIBES_REST_NAMESPACE . '/beacon' ),
 					'authenticated' => ( 0 === User::get_current_user_id( 0 ) ? 0 : 1 ),
-					'gAnalytics'    => true,
+					'sampling'      => (int) Option::network_get( 'resource_sampling' ),
 				]
 			);
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'Capture engine started.' );
@@ -85,24 +85,36 @@ class Capture {
 	 *
 	 * @param   string  $url        The location url.
 	 * @param   integer $authent    Is te call authenticated?
+	 * @param   string  $type       The metrics type.
 	 * @return  array   A pre-filled, ready to use, record.
 	 * @since    1.0.0
 	 */
-	public static function init_record( $url, $authent ) {
+	public static function init_record( $url, $authent, $type ) {
 		$url_parts = wp_parse_url( $url );
 		$host      = '';
 		if ( array_key_exists( 'host', $url_parts ) && isset( $url_parts['host'] ) ) {
 			$host = $url_parts['host'];
 		}
 		$geoip               = new GeoIP();
-		$record              = Schema::init_record();
+		$record              = Schema::init_record( $type );
 		$datetime            = new \DateTime( 'now', self::$local_timezone );
 		$record['timestamp'] = $datetime->format( 'Y-m-d' );
 		$record['site']      = get_current_blog_id();
-		$record['authent']   = 1 === (int) $authent ? 1 : 0;
 		$record['endpoint']  = self::clean_endpoint( $host, $url_parts['path'], Option::network_get( 'cut_path', 3 ) );
 		$record['country']   = $geoip->get_iso3166_alpha2( IP::get_current() ) ?? '00';
 		$record['device']    = Device::get_device();
+		$record['type']      = $type;
+		switch ( $type ) {
+			case 'webvital':
+				$record['authent'] = 1 === (int) $authent ? 1 : 0;
+				break;
+			default:
+				if ( array_key_exists( 'user', $url_parts ) && array_key_exists( 'pass', $url_parts ) && isset( $url_parts['user'] ) && isset( $url_parts['pass'] ) ) {
+					$record['authority'] = $url_parts['user'] . ':' . $url_parts['pass'] . '@' . $url_parts['host'];
+				} else {
+					$record['authority'] = $url_parts['host'];
+				}
+		}
 		return $record;
 	}
 
