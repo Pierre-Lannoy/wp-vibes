@@ -118,9 +118,10 @@ function resourceObserve(list, observer) {
 	if (0 < list.getEntriesByType( 'resource' ).length) {
 		list.getEntriesByType( 'resource' ).forEach(
 			function(timing){
+				if ( 'xmlhttprequest' === timing.initiatorType && ( 0 < timing.name.indexOf( '/beacon' ) || 0 < timing.name.indexOf( '/livelog' ) ) ) {
+					return;
+				}
 				if ( ( ! excluded.includes( timing.name ) ) && analyticsSettings.sampling >= getRandomArbitrary( 1, 1000 ) ) {
-					//if ( 'xmlhttprequest' ===  timing.initiatorType && ( ) )
-
 					excluded.push( timing.name );
 					performanceReport( timing,'resource' );
 				}
