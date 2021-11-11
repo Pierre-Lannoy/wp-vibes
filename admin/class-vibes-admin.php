@@ -270,7 +270,6 @@ class Vibes_Admin {
 	public function add_row_meta( $links, $file ) {
 		if ( 0 === strpos( $file, VIBES_SLUG . '/' ) ) {
 			$links[] = '<a href="https://wordpress.org/support/plugin/' . VIBES_SLUG . '/">' . __( 'Support', 'vibes' ) . '</a>';
-			$links[] = '<a href="https://perfops.one">PefOps One</a>';
 		}
 		return $links;
 	}
