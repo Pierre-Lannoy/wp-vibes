@@ -101,7 +101,7 @@ class Capture {
 		$datetime            = new \DateTime( 'now', self::$local_timezone );
 		$record['timestamp'] = $datetime->format( 'Y-m-d' );
 		$record['site']      = get_current_blog_id();
-		$record['endpoint']  = self::clean_endpoint( $host, $url_parts['path'], Option::network_get( 'cut_path', 3 ) );
+		$record['endpoint']  = substr( self::clean_endpoint( $host, $url_parts['path'], Option::network_get( 'cut_path', 3 ) ), 0, 250 );
 		$record['country']   = $geoip->get_iso3166_alpha2( IP::get_current() ) ?? '00';
 		$record['device']    = Device::get_device();
 		$record['type']      = $type;
@@ -111,9 +111,9 @@ class Capture {
 				break;
 			default:
 				if ( array_key_exists( 'user', $url_parts ) && array_key_exists( 'pass', $url_parts ) && isset( $url_parts['user'] ) && isset( $url_parts['pass'] ) ) {
-					$record['authority'] = $url_parts['user'] . ':' . $url_parts['pass'] . '@' . $url_parts['host'];
+					$record['authority'] = substr( $url_parts['user'] . ':' . $url_parts['pass'] . '@' . $url_parts['host'], 0, 250 );
 				} else {
-					$record['authority'] = $url_parts['host'];
+					$record['authority'] = substr( $url_parts['host'], 0, 250 );
 				}
 		}
 		return $record;

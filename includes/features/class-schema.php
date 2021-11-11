@@ -57,6 +57,26 @@ class Schema {
 	private static $statistics_buffer = [];
 
 	/**
+	 * The list of standard fields.
+	 *
+	 * @since  1.0.0
+	 * @var    array    $standard_fields    Maintains the standard fields list.
+	 */
+	public static $standard_fields = [ 'timestamp', 'site', 'endpoint', 'authent', 'country', 'device', 'authority' ];
+
+	/**
+	 * The list of fields to delete.
+	 *
+	 * @since  1.0.0
+	 * @var    array    $deletable_fields    Maintains the deletable standard fields list.
+	 */
+	public static $deletable_fields = [
+		'navigation' => [ 'authority', 'initiator' ],
+		'resource'   => [ 'country', 'device', 'authent' ],
+		'webvital'   => [],
+	];
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -79,8 +99,8 @@ class Schema {
 	 * @since    1.0.0
 	 */
 	public static function write() {
-		foreach ( self::$statistics_buffer as $key => $record ) {
-			//self::write_statistics_records_to_database( $record );
+		foreach ( self::$statistics_buffer as $record ) {
+			self::write_statistics_records_to_database( $record );
 		}
 		//self::purge();
 	}
@@ -92,54 +112,72 @@ class Schema {
 	 * @since    1.0.0
 	 */
 	private static function write_statistics_records_to_database( $record ) {
-		$host = '';
-		if ( array_key_exists( 'authority', $record ) ) {
-			$host = $record['authority'];
+		if ( array_key_exists( 'type', $record ) ) {
+			$type = $record['type'];
+			unset( $record['type'] );
+		} else {
+			return;
 		}
-		if ( array_key_exists( 'context', $record ) && array_key_exists( 'id', $record ) && 'inbound' === $record['context'] ) {
-			$host = $record['id'];
-		}
-
-		$record['id'] = Http::top_domain( $record['id'] );
-		Favicon::get_raw( $record['id'], true );
-		$site = Blog::get_blog_url( $record['site'] );
-		if ( '' !== $site ) {
-			Favicon::get_raw( $site, true );
+		if ( array_key_exists( $type, self::$deletable_fields ) ) {
+			foreach ( self::$deletable_fields[ $type ] as $field ) {
+				if ( array_key_exists( $field, $record ) ) {
+					unset( $record[ $field ] );
+				}
+			}
 		}
 		$field_insert = [];
 		$value_insert = [];
 		$value_update = [];
-		foreach ( $record as $k => $v ) {
-			$field_insert[] = '`' . $k . '`';
-			$value_insert[] = "'" . $v . "'";
-			if ( 'country' === $k ) {
-				$value_update[] = '`country`="' . $v . '"';
+		foreach ( self::$standard_fields as $field ) {
+			if ( array_key_exists( $field, $record ) ) {
+				$field_insert[] = '`' . $field . '`';
+				$value_insert[] = "'" . $record[ $field ] . "'";
 			}
-			if ( 'hit' === $k ) {
-				$value_update[] = '`hit`=hit + 1';
+		}
+		if ( array_key_exists( 'initiator', $record ) && 'resource' === $type ) {
+			$field_insert[] = '`initiator`';
+			$value_insert[] = "'" . $record['initiator'] . "'";
+		}
+		foreach ( array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics, BrowserPerformance::$unrated_metrics ) as $metric ) {
+			foreach ( [ 'sum', 'good', 'impr', 'poor', 'hit' ] as $cmp ) {
+				$field = $metric . '_' . $cmp;
+				if ( array_key_exists( $field, $record ) ) {
+					$field_insert[] = '`' . $field . '`';
+					$value_insert[] = "'" . (int) $record[ $field ] . "'";
+					$value_update[] = '`' . $field . '`=' . $field . '+' . (int) $record[ $field ];
+				}
 			}
-			if ( 'kb_in' === $k ) {
-				$value_update[] = '`kb_in`=kb_in + ' . $v;
+		}
+		foreach ( BrowserPerformance::$spans as $metric ) {
+			foreach ( [ 'start', 'duration' ] as $cmp ) {
+				$field = 'span_' . $metric . '_' . $cmp;
+				if ( array_key_exists( $field, $record ) ) {
+					$field_insert[] = '`' . $field . '`';
+					$value_insert[] = "'" . (int) $record[ $field ] . "'";
+					$value_update[] = '`' . $field . '`=' . $field . '+' . (int) $record[ $field ];
+				}
 			}
-			if ( 'kb_out' === $k ) {
-				$value_update[] = '`kb_out`=kb_out + ' . $v;
-			}
-			if ( 'latency_min' === $k ) {
-				$value_update[] = '`latency_min`=if(latency_min>' . $v . ',' . $v . ',latency_min)';
-			}
-			if ( 'latency_avg' === $k ) {
-				$value_update[] = '`latency_avg`=((latency_avg*hit)+' . $v . ')/(hit+1)';
-			}
-			if ( 'latency_max' === $k ) {
-				$value_update[] = '`latency_max`=if(latency_max<' . $v . ',' . $v . ',latency_max)';
-			}
+		}
+		if ( array_key_exists( 'hit', $record ) ) {
+			$field_insert[] = '`hit`';
+			$value_insert[] = "'" . (int) $record['hit'] . "'";
+			$value_update[] = '`hit`=hit+' . (int) $record['hit'];
 		}
 		if ( count( $field_insert ) > 0 ) {
 			global $wpdb;
-			$sql  = 'INSERT INTO `' . $wpdb->base_prefix . self::$statistics . '` ';
+			if ( 'resource' === $type ) {
+				$sql = 'INSERT INTO `' . $wpdb->base_prefix . self::$resources . '` ';
+			} else {
+				$sql = 'INSERT INTO `' . $wpdb->base_prefix . self::$statistics . '` ';
+			}
 			$sql .= '(' . implode( ',', $field_insert ) . ') ';
 			$sql .= 'VALUES (' . implode( ',', $value_insert ) . ') ';
 			$sql .= 'ON DUPLICATE KEY UPDATE ' . implode( ',', $value_update ) . ';';
+
+			if ( 'webvital' !== $type ) {
+				\DecaLog\Engine::eventsLogger( VIBES_SLUG )->error( $sql );
+			}
+
 			// phpcs:ignore
 			$wpdb->query( $sql );
 		}
@@ -218,12 +256,12 @@ class Schema {
 		$sql = " `hit` int(11) UNSIGNED NOT NULL DEFAULT '0',";
 		foreach ( BrowserPerformance::$spans as $span ) {
 			foreach ( [ 'start', 'duration' ] as $field ) {
-				$sql .= " `span_' . $span . '_' . $field . '` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+				$sql .= ' `span_' . $span . '_' . $field . "` int(11) UNSIGNED NOT NULL DEFAULT '0',";
 			}
 		}
 		foreach ( BrowserPerformance::$unrated_metrics as $metric ) {
 			foreach ( [ 'sum' ] as $field ) {
-				$sql .= " `' . $metric . '_' . $field . '` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+				$sql .= ' `' . $metric . '_' . $field . "` int(11) UNSIGNED NOT NULL DEFAULT '0',";
 			}
 		}
 		return $sql;
@@ -239,12 +277,12 @@ class Schema {
 		$sql = '';
 		foreach ( WebVitals::$rated_metrics as $metric ) {
 			foreach ( [ 'sum', 'good', 'impr', 'poor' ] as $field ) {
-				$sql .= " `' . $metric . '_' . $field . '` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+				$sql .= ' `' . $metric . '_' . $field . "` int(11) UNSIGNED NOT NULL DEFAULT '0',";
 			}
 		}
 		foreach ( WebVitals::$unrated_metrics as $metric ) {
 			foreach ( [ 'sum', 'hit' ] as $field ) {
-				$sql .= " `' . $metric . '_' . $field . '` int(11) UNSIGNED NOT NULL DEFAULT '0',";
+				$sql .= ' `' . $metric . '_' . $field . "` int(11) UNSIGNED NOT NULL DEFAULT '0',";
 			}
 		}
 		return $sql;
