@@ -72,7 +72,7 @@ class Capture {
 				'analyticsSettings',
 				[
 					'restUrl'       => esc_url_raw( rest_url() . VIBES_REST_NAMESPACE . '/beacon' ),
-					'authenticated' => ( 0 === User::get_current_user_id( 0 ) ? 0 : 1 ),
+					'authenticated' => ( 0 < (int) User::get_current_user_id( 0 ) ? 1 : 0 ),
 					'sampling'      => (int) Option::network_get( 'resource_sampling' ),
 					'smartFilter'   => Option::network_get( 'smart_filter' ) ? 1 : 0,
 				]
@@ -105,16 +105,13 @@ class Capture {
 		$record['country']   = $geoip->get_iso3166_alpha2( IP::get_current() ) ?? '00';
 		$record['device']    = Device::get_device();
 		$record['type']      = $type;
-		switch ( $type ) {
-			case 'webvital':
-				$record['authent'] = 1 === (int) $authent ? 1 : 0;
-				break;
-			default:
-				if ( array_key_exists( 'user', $url_parts ) && array_key_exists( 'pass', $url_parts ) && isset( $url_parts['user'] ) && isset( $url_parts['pass'] ) ) {
-					$record['authority'] = substr( $url_parts['user'] . ':' . $url_parts['pass'] . '@' . $url_parts['host'], 0, 250 );
-				} else {
-					$record['authority'] = substr( $url_parts['host'], 0, 250 );
-				}
+		$record['authent']   = 1 === (int) $authent ? 1 : 0;
+		if ( 'webvital' !== $type ) {
+			if ( array_key_exists( 'user', $url_parts ) && array_key_exists( 'pass', $url_parts ) && isset( $url_parts['user'] ) && isset( $url_parts['pass'] ) ) {
+				$record['authority'] = substr( $url_parts['user'] . ':' . $url_parts['pass'] . '@' . $url_parts['host'], 0, 250 );
+			} else {
+				$record['authority'] = substr( $url_parts['host'], 0, 250 );
+			}
 		}
 		return $record;
 	}
