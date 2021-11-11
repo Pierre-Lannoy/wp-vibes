@@ -118,7 +118,7 @@ function resourceObserve(list, observer) {
 	if (0 < list.getEntriesByType( 'resource' ).length) {
 		list.getEntriesByType( 'resource' ).forEach(
 			function(timing){
-				if ( 'xmlhttprequest' === timing.initiatorType && ( 0 < timing.name.indexOf( '/beacon' ) || 0 < timing.name.indexOf( '/livelog' ) ) ) {
+				if ( 'xmlhttprequest' === timing.initiatorType && '1' === analyticsSettings.smartFilter && ( 0 < timing.name.indexOf( '/beacon' ) || 0 < timing.name.indexOf( '/livelog' ) ) ) {
 					return;
 				}
 				if ( ( ! excluded.includes( timing.name ) ) && analyticsSettings.sampling >= getRandomArbitrary( 1, 1000 ) ) {
@@ -132,7 +132,6 @@ function resourceObserve(list, observer) {
 
 try {
 	webVitalsObserve();
-	excluded.push( analyticsSettings.restUrl );
 	let navigationObserver = new PerformanceObserver( navigationObserve );
 	navigationObserver.observe( { entryTypes: ['navigation'] } );
 	let resourceObserver = new PerformanceObserver( resourceObserve );

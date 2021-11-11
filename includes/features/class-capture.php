@@ -74,6 +74,7 @@ class Capture {
 					'restUrl'       => esc_url_raw( rest_url() . VIBES_REST_NAMESPACE . '/beacon' ),
 					'authenticated' => ( 0 === User::get_current_user_id( 0 ) ? 0 : 1 ),
 					'sampling'      => (int) Option::network_get( 'resource_sampling' ),
+					'smartFilter'   => Option::network_get( 'smart_filter' ) ? 1 : 0,
 				]
 			);
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'Capture engine started.' );
