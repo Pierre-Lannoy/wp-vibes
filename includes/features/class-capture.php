@@ -61,7 +61,6 @@ class Capture {
 						return '<script type="module" src="' . esc_url( $src ) . '" id="' . $handle . '-js"></script>';
 					}
 					return $tag;
-
 				},
 				10,
 				3
