@@ -173,11 +173,6 @@ class Schema {
 			$sql .= '(' . implode( ',', $field_insert ) . ') ';
 			$sql .= 'VALUES (' . implode( ',', $value_insert ) . ') ';
 			$sql .= 'ON DUPLICATE KEY UPDATE ' . implode( ',', $value_update ) . ';';
-
-			if ( 'webvital' !== $type ) {
-				\DecaLog\Engine::eventsLogger( VIBES_SLUG )->error( $sql );
-			}
-
 			// phpcs:ignore
 			$wpdb->query( $sql );
 		}

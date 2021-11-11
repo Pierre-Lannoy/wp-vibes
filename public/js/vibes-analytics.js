@@ -34,7 +34,7 @@ function performanceReport(timing,type) {
 		initiator: timing.initiatorType,
 		metrics: [{
 			name:  'redirect',
-			start: timing.redirectStart - start,
+			start: timing.redirectStart > start ? timing.redirectStart - start : 0,
 			duration: timing.redirectEnd - timing.redirectStart,
 		},{
 			name:  'dns',
@@ -118,7 +118,7 @@ function resourceObserve(list, observer) {
 	if (0 < list.getEntriesByType( 'resource' ).length) {
 		list.getEntriesByType( 'resource' ).forEach(
 			function(timing){
-				if ( 'xmlhttprequest' === timing.initiatorType && '1' === analyticsSettings.smartFilter && ( 0 < timing.name.indexOf( '/beacon' ) || 0 < timing.name.indexOf( '/livelog' ) ) ) {
+				if ( ( 'xmlhttprequest' === timing.initiatorType || 'beacon' === timing.initiatorType ) && '1' === analyticsSettings.smartFilter && ( 0 < timing.name.indexOf( '/beacon' ) || 0 < timing.name.indexOf( '/livelog' ) ) ) {
 					return;
 				}
 				if ( ( ! excluded.includes( timing.name ) ) && analyticsSettings.sampling >= getRandomArbitrary( 1, 1000 ) ) {
@@ -137,5 +137,5 @@ try {
 	let resourceObserver = new PerformanceObserver( resourceObserve );
 	resourceObserver.observe( { entryTypes: ['resource'] } );
 } catch (error) {
-	console.error( 'Vibes error: ' . error );
+	console.error( 'Vibes analytics error: ' . error );
 }
