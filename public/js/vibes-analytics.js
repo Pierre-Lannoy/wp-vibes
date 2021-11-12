@@ -118,7 +118,7 @@ function resourceObserve(list, observer) {
 	if (0 < list.getEntriesByType( 'resource' ).length) {
 		list.getEntriesByType( 'resource' ).forEach(
 			function(timing){
-				if ( ( 'xmlhttprequest' === timing.initiatorType || 'beacon' === timing.initiatorType ) && '1' === analyticsSettings.smartFilter && ( 0 < timing.name.indexOf( '/beacon' ) || 0 < timing.name.indexOf( '/livelog' ) ) ) {
+				if ( ( 'xmlhttprequest' === timing.initiatorType || 'beacon' === timing.initiatorType || 'other' === timing.initiatorType ) && '1' === analyticsSettings.smartFilter && ( 0 < timing.name.indexOf( '/beacon' ) || 0 < timing.name.indexOf( '/livelog' ) ) ) {
 					return;
 				}
 				if ( ( ! excluded.includes( timing.name ) ) && analyticsSettings.sampling >= getRandomArbitrary( 1, 1000 ) ) {
