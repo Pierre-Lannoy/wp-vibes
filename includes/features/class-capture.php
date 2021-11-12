@@ -103,6 +103,7 @@ class Capture {
 		$record['endpoint']  = substr( self::clean_endpoint( $host, $url_parts['path'], 'resource' === $type ? Option::network_get( 'rcut_path' ) : Option::network_get( 'cut_path' ) ), 0, 250 );
 		$record['country']   = $geoip->get_iso3166_alpha2( IP::get_current() ) ?? '00';
 		$record['device']    = Device::get_device();
+		$record['class']     = Device::get_class();
 		$record['type']      = $type;
 		$record['authent']   = 1 === (int) $authent ? 1 : 0;
 		if ( 'webvital' !== $type ) {

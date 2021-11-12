@@ -228,6 +228,24 @@ class UserAgent {
 	public $device_is_smart_display = false;
 
 	/**
+	 * @var boolean  True if it's a smart speaker, false otherwise.
+	 * @since   1.0.0
+	 */
+	public $device_is_smart_speaker = false;
+
+	/**
+	 * @var boolean  True if it's a wearable, false otherwise.
+	 * @since   1.0.0
+	 */
+	public $device_is_wearable = false;
+
+	/**
+	 * @var boolean  True if it's a peripheral, false otherwise.
+	 * @since   1.0.0
+	 */
+	public $device_is_peripheral = false;
+
+	/**
 	 * @var boolean  True if it's a camera, false otherwise.
 	 * @since   1.0.0
 	 */

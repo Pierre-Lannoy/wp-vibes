@@ -31,7 +31,7 @@ class Device {
 	 * @since  1.0.0
 	 * @var    array    $verbs    Maintains the classes list.
 	 */
-	public static $classes = [ 'bot', 'mobile', 'desktop', 'unknown' ];
+	public static $classes = [ 'bot', 'mobile', 'desktop', 'other' ];
 
 	/**
 	 * The list of available types.
@@ -39,7 +39,7 @@ class Device {
 	 * @since  1.0.0
 	 * @var    array    $verbs    Maintains the types list.
 	 */
-	public static $types = [ 'smartphone', 'featurephone', 'tablet', 'phablet', 'console', 'portable_media_player', 'car_browser', 'tv', 'smart_display', 'camera', 'unknown' ];
+	public static $types = [ 'smartphone', 'featurephone', 'tablet', 'phablet', 'console', 'portable_media_player', 'car_browser', 'tv', 'smart_display', 'smart_speaker', 'wearable', 'peripheral', 'camera', 'other' ];
 
 	/**
 	 * The list of observable devices.
@@ -55,8 +55,27 @@ class Device {
 	 * @since 1.0.0
 	 */
 	public static function init() {
-		$removable        = [ 'bot', 'unknown' ];
-		self::$observable = array_merge( [ 'unknown' ], array_diff( self::$classes, $removable ), array_diff( self::$types, $removable ) );
+		$removable        = [ 'other' ];
+		self::$observable = array_merge( [ 'other' ], array_diff( self::$classes, $removable ), array_diff( self::$types, $removable ) );
+	}
+
+	/**
+	 * Get device type.
+	 *
+	 * @since 1.0.0
+	 */
+	public static function get_class() {
+		$ua = UserAgent::get();
+		if ( $ua->class_is_desktop ) {
+			return 'desktop';
+		}
+		if ( $ua->class_is_mobile ) {
+			return 'mobile';
+		}
+		if ( $ua->class_is_bot ) {
+			return 'bot';
+		}
+		return 'other';
 	}
 
 	/**
@@ -68,6 +87,9 @@ class Device {
 		$ua = UserAgent::get();
 		if ( $ua->class_is_desktop ) {
 			return 'desktop';
+		}
+		if ( $ua->class_is_bot ) {
+			return 'bot';
 		}
 		if ( $ua->class_is_mobile ) {
 			if ( $ua->device_is_smartphone ) {
@@ -100,8 +122,23 @@ class Device {
 			if ( $ua->device_is_camera ) {
 				return 'camera';
 			}
+			if ( property_exists( $ua, 'device_is_smart_speaker' ) ) {
+				if ( $ua->device_is_smart_speaker ) {
+					return 'smart_speaker';
+				}
+			}
+			if ( property_exists( $ua, 'device_is_wearable' ) ) {
+				if ( $ua->device_is_wearable ) {
+					return 'wearable';
+				}
+			}
+			if ( property_exists( $ua, 'device_is_peripheral' ) ) {
+				if ( $ua->device_is_peripheral ) {
+					return 'peripheral';
+				}
+			}
 		}
-		return 'unknown';
+		return 'other';
 	}
 
 	/**
@@ -139,11 +176,20 @@ class Device {
 			case 'camera':
 				$result = '📸️';
 				break;
+			case 'smart_speaker':
+				$result = '🔊️';
+				break;
+			case 'wearable':
+				$result = '⌚️';
+				break;
+			case 'peripheral':
+				$result = '🖨️️';
+				break;
+			case 'bot':
+				$result = '🤖️️';
+				break;
 			default:
 				$result = '🥷';
-		}
-		if ( '🖥️' === $result && 1 === Environment::exec_mode() ) {
-			$result = $result . ' ';
 		}
 		return $result;
 	}
@@ -162,7 +208,7 @@ class Device {
 	/**
 	 * Get icon and id name.
 	 *
-	 * @param   string  $type   The device type.
+	 * @param   string  $type   The device type or class.
 	 * @return  string  The icon and id name.
 	 * @since 1.0.0
 	 */

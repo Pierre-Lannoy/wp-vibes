@@ -38,7 +38,7 @@ function vibes_mb_str_pad( $input, $length, $padding = ' ', $padType = STR_PAD_R
 			case STR_PAD_BOTH:
 				$left_padding_length  = floor( $padding_required / 2 );
 				$right_padding_length = $padding_required - $left_padding_length;
-				$result             =
+				$result               =
 					mb_substr( str_repeat( $padding, $left_padding_length ), 0, $left_padding_length, $encoding ) .
 					$input .
 					mb_substr( str_repeat( $padding, $right_padding_length ), 0, $right_padding_length, $encoding );

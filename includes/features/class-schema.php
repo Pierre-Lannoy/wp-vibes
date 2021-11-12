@@ -62,7 +62,7 @@ class Schema {
 	 * @since  1.0.0
 	 * @var    array    $standard_fields    Maintains the standard fields list.
 	 */
-	public static $standard_fields = [ 'timestamp', 'site', 'endpoint', 'authent', 'country', 'device', 'authority' ];
+	public static $standard_fields = [ 'timestamp', 'site', 'endpoint', 'authent', 'country', 'class', 'device', 'authority' ];
 
 	/**
 	 * The list of fields to delete.
@@ -72,8 +72,8 @@ class Schema {
 	 */
 	public static $deletable_fields = [
 		'navigation' => [ 'authority', 'initiator' ],
-		'resource'   => [ 'country', 'device', 'authent' ],
-		'webvital'   => [],
+		'resource'   => [ 'country', 'class', 'device', 'authent' ],
+		'webvital'   => [ 'authority', 'initiator' ],
 	];
 
 	/**
@@ -134,7 +134,7 @@ class Schema {
 				$value_insert[] = "'" . $record[ $field ] . "'";
 			}
 		}
-		if ( array_key_exists( 'initiator', $record ) && 'resource' === $type ) {
+		if ( array_key_exists( 'initiator', $record ) ) {
 			$field_insert[] = '`initiator`';
 			$value_insert[] = "'" . $record['initiator'] . "'";
 		}
@@ -304,7 +304,8 @@ class Schema {
 		$sql            .= " `endpoint` varchar(250) NOT NULL DEFAULT '-',";
 		$sql            .= " `authent` tinyint(1) DEFAULT '0',";
 		$sql            .= " `country` varchar(2) DEFAULT '00',";
-		$sql            .= " `device` enum('" . implode( "','", Device::$observable ) . "') NOT NULL DEFAULT 'unknown',";
+		$sql            .= " `class` enum('" . implode( "','", Device::$classes ) . "') NOT NULL DEFAULT 'other',";
+		$sql            .= " `device` enum('" . implode( "','", Device::$observable ) . "') NOT NULL DEFAULT 'other',";
 		$sql            .= self::webvitals_subset();
 		$sql            .= self::browser_performance_subset();
 		$sql            .= ' UNIQUE KEY u_stat (timestamp, site, endpoint, authent, country, device)';
@@ -363,7 +364,8 @@ class Schema {
 					'endpoint'  => '-',
 					'authent'   => 0,
 					'country'   => '00',
-					'device'    => 'unknown',
+					'class'     => 'other',
+					'device'    => 'other',
 					'type'      => '-',
 				];
 				break;
