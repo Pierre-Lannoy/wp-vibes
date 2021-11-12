@@ -100,7 +100,7 @@ class Capture {
 		$datetime            = new \DateTime( 'now', self::$local_timezone );
 		$record['timestamp'] = $datetime->format( 'Y-m-d' );
 		$record['site']      = get_current_blog_id();
-		$record['endpoint']  = substr( self::clean_endpoint( $host, $url_parts['path'], Option::network_get( 'cut_path', 3 ) ), 0, 250 );
+		$record['endpoint']  = substr( self::clean_endpoint( $host, $url_parts['path'], 'resource' === $type ? Option::network_get( 'rcut_path', 6 ) : Option::network_get( 'cut_path', 3 ) ), 0, 250 );
 		$record['country']   = $geoip->get_iso3166_alpha2( IP::get_current() ) ?? '00';
 		$record['device']    = Device::get_device();
 		$record['type']      = $type;
