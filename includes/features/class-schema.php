@@ -102,7 +102,7 @@ class Schema {
 		foreach ( self::$statistics_buffer as $record ) {
 			self::write_statistics_records_to_database( $record );
 		}
-		//self::purge();
+		self::purge();
 	}
 
 	/**
@@ -223,21 +223,27 @@ class Schema {
 	 * @since    1.0.0
 	 */
 	private static function purge() {
-		$days = (int) Option::network_get( 'history' );
+		$database = new Database();
+		$days     = (int) Option::network_get( 'history' );
 		if ( ! is_numeric( $days ) || 30 > $days ) {
 			$days = 30;
 			Option::network_set( 'history', $days );
 		}
-		$database = new Database();
-		$count    = $database->purge( self::$statistics, 'timestamp', 24 * $days );
+		$count = $database->purge( self::$statistics, 'timestamp', 24 * $days );
+		$days  = (int) Option::network_get( 'rhistory' );
+		if ( ! is_numeric( $days ) || 1 > $days ) {
+			$days = 2;
+			Option::network_set( 'rhistory', $days );
+		}
+		$count += $database->purge( self::$resources, 'timestamp', 24 * $days );
 		if ( 0 === $count ) {
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'No old records to delete.' );
 		} elseif ( 1 === $count ) {
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( '1 old record deleted.' );
-			Cache::delete_global( 'data/oldestdate' );
+			Cache::delete_global( 'data/oldestdate_statistices' );
 		} else {
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( '%1$s old records deleted.', $count ) );
-			Cache::delete_global( 'data/oldestdate' );
+			Cache::delete_global( 'data/oldestdate_resources' );
 		}
 	}
 

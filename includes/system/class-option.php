@@ -78,8 +78,9 @@ class Option {
 		self::$defaults['capture']           = true;
 		self::$defaults['livelog']           = true;
 		self::$defaults['smart_filter']      = true;
-		self::$defaults['history']           = 90;
-		self::$network                       = [ 'version', 'use_cdn', 'download_favicons', 'script_in_footer', 'display_nag', 'metrics', 'cut_path', 'sampling', 'resource_sampling', 'capture', 'livelog', 'smart_filter', 'history' ];
+		self::$defaults['history']           = 30;
+		self::$defaults['rhistory']          = 2;
+		self::$network                       = [ 'version', 'use_cdn', 'download_favicons', 'script_in_footer', 'display_nag', 'metrics', 'cut_path', 'sampling', 'resource_sampling', 'capture', 'livelog', 'smart_filter', 'history', 'rhistory' ];
 	}
 
 	/**
