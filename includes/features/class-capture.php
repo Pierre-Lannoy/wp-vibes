@@ -18,6 +18,7 @@ use Vibes\System\GeoIP;
 use Vibes\System\Option;
 use Vibes\System\User;
 use Vibes\System\IP;
+use Vibes\System\Http;
 
 /**
  * Define the captures functionality.
@@ -53,7 +54,7 @@ class Capture {
 	 */
 	public static function init() {
 		// phpcs:ignore
-		if ( Option::network_get( 'capture' ) && ( (int) Option::network_get( 'sampling' ) >= mt_rand( 1, 1000 ) ) ) {
+		if ( ( Option::network_get( 'capture' ) || Option::network_get( 'rcapture' ) ) && ( (int) Option::network_get( 'sampling' ) >= mt_rand( 1, 1000 ) ) ) {
 			add_filter(
 				'script_loader_tag',
 				function ( $tag, $handle, $src ) {
@@ -106,12 +107,14 @@ class Capture {
 		$record['class']     = Device::get_class();
 		$record['type']      = $type;
 		$record['authent']   = 1 === (int) $authent ? 1 : 0;
-		if ( 'webvital' !== $type ) {
-			if ( array_key_exists( 'user', $url_parts ) && array_key_exists( 'pass', $url_parts ) && isset( $url_parts['user'] ) && isset( $url_parts['pass'] ) ) {
-				$record['authority'] = substr( $url_parts['user'] . ':' . $url_parts['pass'] . '@' . $url_parts['host'], 0, 250 );
-			} else {
-				$record['authority'] = substr( $url_parts['host'], 0, 250 );
-			}
+		$record['id']        = substr( Http::top_domain( $host, false ), 0, 40 );
+		if ( array_key_exists( 'scheme', $url_parts ) && isset( $url_parts['scheme'] ) ) {
+			$record['scheme'] = $url_parts['scheme'];
+		}
+		if ( array_key_exists( 'user', $url_parts ) && array_key_exists( 'pass', $url_parts ) && isset( $url_parts['user'] ) && isset( $url_parts['pass'] ) ) {
+			$record['authority'] = substr( $url_parts['user'] . ':' . $url_parts['pass'] . '@' . $url_parts['host'], 0, 250 );
+		} else {
+			$record['authority'] = substr( $url_parts['host'], 0, 250 );
 		}
 		return $record;
 	}

@@ -62,7 +62,7 @@ class Schema {
 	 * @since  1.0.0
 	 * @var    array    $standard_fields    Maintains the standard fields list.
 	 */
-	public static $standard_fields = [ 'timestamp', 'site', 'endpoint', 'authent', 'country', 'class', 'device', 'authority' ];
+	public static $standard_fields = [ 'timestamp', 'site', 'id', 'scheme', 'endpoint', 'authent', 'country', 'class', 'device', 'authority' ];
 
 	/**
 	 * The list of fields to delete.
@@ -71,9 +71,9 @@ class Schema {
 	 * @var    array    $deletable_fields    Maintains the deletable standard fields list.
 	 */
 	public static $deletable_fields = [
-		'navigation' => [ 'authority', 'initiator' ],
+		'navigation' => [ 'authority', 'initiator', 'id', 'scheme' ],
 		'resource'   => [ 'country', 'class', 'device', 'authent' ],
-		'webvital'   => [ 'authority', 'initiator' ],
+		'webvital'   => [ 'authority', 'initiator', 'id', 'scheme' ],
 	];
 
 	/**
@@ -317,11 +317,13 @@ class Schema {
 		$sql  = 'CREATE TABLE IF NOT EXISTS ' . $wpdb->base_prefix . self::$resources;
 		$sql .= " (`timestamp` date NOT NULL DEFAULT '0000-00-00',";
 		$sql .= " `site` bigint(20) NOT NULL DEFAULT '0',";
+		$sql .= " `id` varchar(40) NOT NULL DEFAULT '-',";
+		$sql .= " `scheme` enum('" . implode( "','", Http::$schemes ) . "') NOT NULL DEFAULT 'unknown',";
 		$sql .= " `authority` varchar(250) NOT NULL DEFAULT '-',";
 		$sql .= " `endpoint` varchar(250) NOT NULL DEFAULT '-',";
 		$sql .= " `initiator` varchar(6) NOT NULL DEFAULT '-',";
 		$sql .= self::browser_performance_subset();
-		$sql .= ' UNIQUE KEY u_stat (timestamp, site, authority, endpoint, initiator)';
+		$sql .= ' UNIQUE KEY u_stat (timestamp, site, scheme, authority, endpoint, initiator)';
 		$sql .= ") $charset_collate;";
 		// phpcs:ignore
 		$wpdb->query( $sql );
@@ -407,20 +409,21 @@ class Schema {
 	/**
 	 * Get the oldest date.
 	 *
+	 * @param   string  $source   The source of data.
 	 * @return  string   The oldest timestamp in the statistics table.
 	 * @since    1.0.0
 	 */
-	public static function get_oldest_date() {
-		$result = Cache::get_global( 'data/oldestdate' );
+	public static function get_oldest_date( $source ) {
+		$result = Cache::get_global( 'data/' . $source . '/oldestdate' );
 		if ( $result ) {
 			return $result;
 		}
 		global $wpdb;
-		$sql = 'SELECT * FROM ' . $wpdb->base_prefix . self::$statistics . ' ORDER BY `timestamp` ASC LIMIT 1';
+		$sql = 'SELECT * FROM ' . $wpdb->base_prefix . ( 'resource' === $source ? self::$resources : self::$statistics ) . ' ORDER BY `timestamp` ASC LIMIT 1';
 		// phpcs:ignore
 		$result = $wpdb->get_results( $sql, ARRAY_A );
 		if ( is_array( $result ) && 0 < count( $result ) && array_key_exists( 'timestamp', $result[0] ) ) {
-			Cache::set_global( 'data/oldestdate', $result[0]['timestamp'], 'infinite' );
+			Cache::set_global( 'data/' . $source . '/oldestdate', $result[0]['timestamp'], 'infinite' );
 			return $result[0]['timestamp'];
 		}
 		return '';
@@ -553,6 +556,7 @@ class Schema {
 	/**
 	 * Get the standard KPIs.
 	 *
+	 * @param   string  $source      The source of data.
 	 * @param   string  $group       The group of the query.
 	 * @param   array   $count       The sub-groups of the query.
 	 * @param   array   $filter      The filter of the query.
@@ -565,9 +569,9 @@ class Schema {
 	 * @return  array   The standard KPIs.
 	 * @since    1.0.0
 	 */
-	public static function get_grouped_list( $group, $count, $filter, $cache = true, $extra_field = '', $extras = [], $not = false, $order = '', $limit = 0 ) {
+	public static function get_grouped_list( $source, $group, $count, $filter, $cache = true, $extra_field = '', $extras = [], $not = false, $order = '', $limit = 0 ) {
 		// phpcs:ignore
-		$id = Cache::id( __FUNCTION__ . $group . serialize( $count ) . serialize( $filter ) . $extra_field . serialize( $extras ) . ( $not ? 'no' : 'yes') . $order . (string) $limit);
+		$id = Cache::id( __FUNCTION__ . $source . $group . serialize( $count ) . serialize( $filter ) . $extra_field . serialize( $extras ) . ( $not ? 'no' : 'yes') . $order . (string) $limit);
 		if ( $cache ) {
 			$result = Cache::get_global( $id );
 			if ( $result ) {
