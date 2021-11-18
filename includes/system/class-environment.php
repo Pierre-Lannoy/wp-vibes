@@ -43,6 +43,7 @@ class Environment {
 		define( 'VIBES_PLUGIN_RELATIVE_URL', $plugin_relative_url );
 		define( 'VIBES_ADMIN_DIR', VIBES_PLUGIN_DIR . 'admin/' );
 		define( 'VIBES_ADMIN_URL', VIBES_PLUGIN_URL . 'admin/' );
+		define( 'VIBES_ASSETS_DIR', VIBES_PLUGIN_DIR . 'assets/' );
 		define( 'VIBES_PUBLIC_DIR', VIBES_PLUGIN_DIR . 'public/' );
 		define( 'VIBES_PUBLIC_URL', VIBES_PLUGIN_URL . 'public/' );
 		define( 'VIBES_INCLUDES_DIR', VIBES_PLUGIN_DIR . 'includes/' );
