@@ -20,6 +20,7 @@ use Vibes\System\BrowserPerformance;
 use Vibes\System\Http;
 use Vibes\System\Favicon;
 use Vibes\System\Cache;
+use Vibes\System\Mime;
 
 /**
  * Define the schema functionality.
@@ -62,7 +63,7 @@ class Schema {
 	 * @since  1.0.0
 	 * @var    array    $standard_fields    Maintains the standard fields list.
 	 */
-	public static $standard_fields = [ 'timestamp', 'site', 'id', 'scheme', 'endpoint', 'authent', 'country', 'class', 'device', 'authority' ];
+	public static $standard_fields = [ 'timestamp', 'site', 'id', 'scheme', 'mime', 'category', 'endpoint', 'authent', 'country', 'class', 'device', 'authority' ];
 
 	/**
 	 * The list of fields to delete.
@@ -71,9 +72,9 @@ class Schema {
 	 * @var    array    $deletable_fields    Maintains the deletable standard fields list.
 	 */
 	public static $deletable_fields = [
-		'navigation' => [ 'authority', 'initiator', 'id', 'scheme' ],
+		'navigation' => [ 'authority', 'initiator', 'id', 'scheme', 'mime', 'category' ],
 		'resource'   => [ 'country', 'class', 'device', 'authent' ],
-		'webvital'   => [ 'authority', 'initiator', 'id', 'scheme' ],
+		'webvital'   => [ 'authority', 'initiator', 'id', 'scheme', 'mime', 'category' ],
 	];
 
 	/**
@@ -269,6 +270,26 @@ class Schema {
 	}
 
 	/**
+	 * Get the performance select.
+	 *
+	 * @return  array  The select items.
+	 * @since    1.0.0
+	 */
+	private static function browser_performance_select() {
+		$sql = [ 'sum(hit) as sum_hit' ];
+		foreach ( BrowserPerformance::$spans as $span ) {
+			foreach ( [ 'start', 'duration' ] as $field ) {
+				$sql[] = 'sum(span_' . $span . '_' . $field . ')/sum(hit) as avg_span_' . $span . '_' . $field;
+			}
+		}
+		$sql[] = 'sum(load_sum)/sum(hit) as avg_load';
+		$sql[] = 'sum(redirects_sum)/sum(hit) as avg_redirects';
+		$sql[] = 'if(0<>(sum(hit)-sum(cache_sum)),sum(size_sum)/(sum(hit)-sum(cache_sum)),0) as avg_size';
+		$sql[] = 'sum(cache_sum)/sum(hit) as avg_cache';
+		return $sql;
+	}
+
+	/**
 	 * Get the web vitals subset.
 	 *
 	 * @return  string  The create subset query.
@@ -285,6 +306,26 @@ class Schema {
 			foreach ( [ 'sum', 'hit' ] as $field ) {
 				$sql .= ' `' . $metric . '_' . $field . "` int(11) UNSIGNED NOT NULL DEFAULT '0',";
 			}
+		}
+		return $sql;
+	}
+
+	/**
+	 * Get the web vitals select.
+	 *
+	 * @return  array  The select items.
+	 * @since    1.0.0
+	 */
+	private static function webvitals_select() {
+		$sql = [];
+		foreach ( WebVitals::$rated_metrics as $metric ) {
+			$sql[] = 'sum(' . $metric . '_sum)/sum(' . $metric . '_good+' . $metric . '_impr+' . $metric . '_poor+) as avg_' . $metric;
+			foreach ( [ 'sum', 'good', 'impr', 'poor' ] as $field ) {
+				$sql[] = 'sum(' . $metric . '_' . $field . ')/sum(' . $metric . '_good+' . $metric . '_impr+' . $metric . '_poor+) as avg_' . $metric . '_' . $field;
+			}
+		}
+		foreach ( WebVitals::$unrated_metrics as $metric ) {
+			$sql[] = 'sum(' . $metric . '_sum)/sum(' . $metric . '_hit) as avg_' . $metric;
 		}
 		return $sql;
 	}
@@ -318,12 +359,14 @@ class Schema {
 		$sql .= " (`timestamp` date NOT NULL DEFAULT '0000-00-00',";
 		$sql .= " `site` bigint(20) NOT NULL DEFAULT '0',";
 		$sql .= " `id` varchar(40) NOT NULL DEFAULT '-',";
-		$sql .= " `scheme` enum('" . implode( "','", Http::$schemes ) . "') NOT NULL DEFAULT 'unknown',";
+		$sql .= " `scheme` enum('" . implode( "','", Http::$extended_schemes ) . "') NOT NULL DEFAULT 'unknown',";
 		$sql .= " `authority` varchar(250) NOT NULL DEFAULT '-',";
+		$sql .= " `category` enum('" . implode( "','", array_merge( Mime::$categories, Mime::$subcategories, [ 'unknown' ] ) ) . "') NOT NULL DEFAULT 'unknown',";
+		$sql .= " `mime` varchar(90) NOT NULL DEFAULT '(unknown)',";
 		$sql .= " `endpoint` varchar(250) NOT NULL DEFAULT '-',";
 		$sql .= " `initiator` varchar(6) NOT NULL DEFAULT '-',";
 		$sql .= self::browser_performance_subset();
-		$sql .= ' UNIQUE KEY u_stat (timestamp, site, scheme, authority, endpoint, initiator)';
+		$sql .= ' UNIQUE KEY u_stat (timestamp, site, scheme, authority, mime, endpoint, initiator)';
 		$sql .= ") $charset_collate;";
 		// phpcs:ignore
 		$wpdb->query( $sql );
@@ -535,6 +578,7 @@ class Schema {
 	/**
 	 * Get a time series.
 	 *
+	 * @param   string  $source      The source of data.
 	 * @param   array   $filter      The filter of the query.
 	 * @param   boolean $cache       Has the query to be cached.
 	 * @param   string  $extra_field Optional. The extra field to filter.
@@ -544,8 +588,8 @@ class Schema {
 	 * @return  array   The time series.
 	 * @since    1.0.0
 	 */
-	public static function get_time_series( $filter, $cache = true, $extra_field = '', $extras = [], $not = false, $limit = 0 ) {
-		$data   = self::get_grouped_list( 'timestamp', [], $filter, $cache, $extra_field, $extras, $not, 'ORDER BY timestamp ASC', $limit );
+	public static function get_time_series( $source, $filter, $cache = true, $extra_field = '', $extras = [], $not = false, $limit = 0 ) {
+		$data   = self::get_grouped_list( $source, 'timestamp', [], $filter, $cache, $extra_field, $extras, $not, 'ORDER BY timestamp ASC', $limit );
 		$result = [];
 		foreach ( $data as $datum ) {
 			$result[ $datum['timestamp'] ] = $datum;
@@ -582,17 +626,27 @@ class Schema {
 		if ( 0 < count( $extras ) && '' !== $extra_field ) {
 			$where_extra = ' AND ' . $extra_field . ( $not ? ' NOT' : '' ) . " IN ( '" . implode( "', '", $extras ) . "' )";
 		}
-		$cnt = [];
-		foreach ( $count as $c ) {
-			$cnt[] = 'count(distinct(' . $c . ')) as cnt_' . $c;
+		$sel = [];
+		switch ( $source ) {
+			case 'resource':
+				$sel = array_merge( self::browser_performance_select(), [ 'timestamp', 'site', 'id', 'scheme', 'endpoint', 'authority', 'initiator' ] );
+				break;
+			case 'navigation':
+				$sel = array_merge( self::browser_performance_select(), [ 'timestamp', 'site', 'endpoint', 'authent', 'country', 'class', 'device' ] );
+				break;
+			case 'webvital':
+				$sel = array_merge( self::webvitals_select(), [ 'timestamp', 'site', 'endpoint', 'authent', 'country', 'class', 'device' ] );
+				break;
 		}
-		$c = implode( ', ', $cnt );
-		if ( 0 < strlen( $c ) ) {
-			$c = $c . ', ';
+		foreach ( $count as $c ) {
+			$sel[] = 'count(distinct(' . $c . ')) as cnt_' . $c;
 		}
 		global $wpdb;
-		$sql  = 'SELECT ' . ( '' !== $group && 'id' !== $group && 'authority' !== $group ? $group . ', ' : '' ) . $c . 'id, authority, sum(hit) as sum_hit, sum(kb_in) as sum_kb_in, sum(kb_out) as sum_kb_out, sum(hit*latency_avg)/sum(hit) as avg_latency, min(latency_min) as min_latency, max(latency_max) as max_latency FROM ';
-		$sql .= $wpdb->base_prefix . self::$statistics . ' WHERE (' . implode( ' AND ', $filter ) . ') ' . $where_extra . ' GROUP BY ' . $group . ' ' . $order . ( $limit > 0 ? 'LIMIT ' . $limit : '' ) . ';';
+		$sql  = 'SELECT ' . implode( ', ', $sel ) . ' FROM ';
+		$sql .= $wpdb->base_prefix . ( 'resource' === $source ? self::$resources : self::$statistics ) . ' WHERE (' . implode( ' AND ', $filter ) . ') ' . $where_extra . ' GROUP BY ' . $group . ' ' . $order . ( $limit > 0 ? 'LIMIT ' . $limit : '' ) . ';';
+		if ( 'resource' === $source ) {
+			//\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( $sql );
+		}
 		// phpcs:ignore
 		$result = $wpdb->get_results( $sql, ARRAY_A );
 		if ( is_array( $result ) && 0 < count( $result ) ) {

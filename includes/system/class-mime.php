@@ -38,7 +38,7 @@ class Mime {
 	 * @access private
 	 * @var    array    $categories   The available categories.
 	 */
-	private static $categories = [ 'application', 'image', 'model', 'text', 'video', 'audio', 'chemical', 'font', 'message', 'x-conference' ];
+	public static $categories = [ 'application', 'image', 'model', 'text', 'video', 'audio', 'chemical', 'font', 'message', 'x-conference' ];
 
 	/**
 	 * The available subcategories.
@@ -47,7 +47,7 @@ class Mime {
 	 * @access private
 	 * @var    array    $subcategories   The available subcategories.
 	 */
-	private static $subcategories = [ 'binary', 'css', 'der', 'fastinfoset', 'html', 'script', 'json', 'vrml', 'wbxml', 'xml', 'yaml', 'zip' ];
+	public static $subcategories = [ 'binary', 'css', 'der', 'fastinfoset', 'html', 'script', 'json', 'vrml', 'wbxml', 'xml', 'yaml', 'zip' ];
 
 	/**
 	 * The available special categories.
@@ -57,11 +57,14 @@ class Mime {
 	 * @var    array    $specialcategories   The available special categories.
 	 */
 	private static $specialcategories = [
-		'text/css'               => 'css',
-		'text/html'              => 'html',
-		'text/jsx'               => 'script',
-		'application/node'       => 'script',
-		'application/javascript' => 'script',
+		'text/css'                => 'css',
+		'text/html'               => 'html',
+		'text/jsx'                => 'script',
+		'application/node'        => 'script',
+		'application/javascript'  => 'script',
+		'application/json'        => 'json',
+		'application/x-httpd-php' => 'html',
+		'application/x-perl'      => 'html',
 	];
 
 	/**
@@ -78,7 +81,7 @@ class Mime {
 	 * @since 1.0.0
 	 */
 	public static function init() {
-		require_once VIBES_ASSETS_DIR . 'mimes-types.php';
+		require_once VIBES_ASSETS_DIR . 'mime-types.php';
 	}
 
 	/**
@@ -95,6 +98,9 @@ class Mime {
 		if ( preg_match( '/^\/([\w\-]+\/[\w\d\.\-\+]+);/iu', $resource, $matches ) ) {
 			return strtolower( $matches[0] );
 		}
+		if ( preg_match( '/\bhttps?:\/\/[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/))/iu', urldecode( $resource ), $matches ) ) {
+			return 'image/jpeg';
+		}
 		$ext = pathinfo( $resource, PATHINFO_EXTENSION );
 		if ( array_key_exists( $ext, VIBES_MIME_TYPES ) ) {
 			return VIBES_MIME_TYPES[ $ext ];
@@ -110,7 +116,7 @@ class Mime {
 	 * @since   1.0.0
 	 */
 	public static function get_category( $mime ) {
-		if ( '' === $mime ) {
+		if ( '' === $mime || self::$unknown === $mime ) {
 			return self::$unknown;
 		}
 		foreach ( self::$specialcategories as $type => $cat ) {
@@ -125,10 +131,12 @@ class Mime {
 				break;
 			}
 		}
-		foreach ( self::$subcategories as $subcat ) {
-			if ( 0 < strpos( $mime, '+' . $subcat ) ) {
-				$result = $subcat;
-				break;
+		if ( 'image' !== $result ) {
+			foreach ( self::$subcategories as $subcat ) {
+				if ( 0 < strpos( $mime, '+' . $subcat ) ) {
+					$result = $subcat;
+					break;
+				}
 			}
 		}
 		return $result;
@@ -142,8 +150,74 @@ class Mime {
 	 * @since   1.0.0
 	 */
 	public static function get_category_name( $category ) {
-
-		return self::$unknown;
+		switch ( $category ) {
+			case 'application':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Application specific', 'vibes' );
+			case 'image':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Image', 'vibes' );
+			case 'model':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Model', 'vibes' );
+			case 'text':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Text', 'vibes' );
+			case 'video':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Video', 'vibes' );
+			case 'audio':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Audio', 'vibes' );
+			case 'chemical':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Chemical', 'vibes' );
+			case 'font':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Font', 'vibes' );
+			case 'message':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Message', 'vibes' );
+			case 'x-conference':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Conference', 'vibes' );
+			case 'binary':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Binary', 'vibes' );
+			case 'css':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Style sheet', 'vibes' );
+			case 'der':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Certificate', 'vibes' );
+			case 'fastinfoset':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Fast Infoset', 'vibes' );
+			case 'html':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'HTML', 'vibes' );
+			case 'script':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Script', 'vibes' );
+			case 'json':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'JSON', 'vibes' );
+			case 'vrml':
+			case 'wbxml':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'VRML', 'vibes' );
+			case 'xml':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'XML', 'vibes' );
+			case 'yaml':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'YAML', 'vibes' );
+			case 'zip':
+				/* translators: represents the content for the corresponding file type */
+				return __( 'Compressed', 'vibes' );
+			default:
+				return __( 'unknown', 'vibes' );
+		}
 	}
 
 }

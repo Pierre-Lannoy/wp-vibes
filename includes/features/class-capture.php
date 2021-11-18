@@ -15,6 +15,7 @@ use Vibes\System\Device;
 use Vibes\Plugin\Feature\Schema;
 use Vibes\Plugin\Feature\Memory;
 use Vibes\System\GeoIP;
+use Vibes\System\Mime;
 use Vibes\System\Option;
 use Vibes\System\User;
 use Vibes\System\IP;
@@ -87,13 +88,14 @@ class Capture {
 	 * @param   string  $url        The location url.
 	 * @param   integer $authent    Is te call authenticated?
 	 * @param   string  $type       The metrics type.
+	 * @param   string  $initiator  Optional. The metrics type.
 	 * @return  array   A pre-filled, ready to use, record.
 	 * @since    1.0.0
 	 */
-	public static function init_record( $url, $authent, $type ) {
+	public static function init_record( $url, $authent, $type, $initiator = '' ) {
 		$url_parts = wp_parse_url( $url );
-		$host      = '';
-		if ( array_key_exists( 'host', $url_parts ) && isset( $url_parts['host'] ) ) {
+		$host      = '(self)';
+		if ( array_key_exists( 'host', $url_parts ) && isset( $url_parts['host'] ) && '' !== $url_parts['host'] ) {
 			$host = $url_parts['host'];
 		}
 		$geoip               = new GeoIP();
@@ -109,12 +111,35 @@ class Capture {
 		$record['authent']   = 1 === (int) $authent ? 1 : 0;
 		$record['id']        = substr( Http::top_domain( $host, false ), 0, 40 );
 		if ( array_key_exists( 'scheme', $url_parts ) && isset( $url_parts['scheme'] ) ) {
-			$record['scheme'] = $url_parts['scheme'];
+			if ( '' !== $url_parts['scheme'] ) {
+				$record['scheme'] = $url_parts['scheme'];
+			} elseif ( '(self)' === $host ) {
+				$record['scheme'] = 'inline';
+			}
 		}
-		if ( array_key_exists( 'user', $url_parts ) && array_key_exists( 'pass', $url_parts ) && isset( $url_parts['user'] ) && isset( $url_parts['pass'] ) ) {
-			$record['authority'] = substr( $url_parts['user'] . ':' . $url_parts['pass'] . '@' . $url_parts['host'], 0, 250 );
+		if ( array_key_exists( 'user', $url_parts ) && array_key_exists( 'pass', $url_parts ) && isset( $url_parts['user'] ) && isset( $url_parts['pass'] ) && '(self)' !== $host ) {
+			$record['authority'] = substr( $url_parts['user'] . ':' . $url_parts['pass'] . '@' . $host, 0, 250 );
 		} else {
-			$record['authority'] = substr( $url_parts['host'], 0, 250 );
+			$record['authority'] = substr( $host, 0, 250 );
+		}
+		if ( 'resource' === $type ) {
+			switch ( strtolower( $initiator ) ) {
+				case 'xmlhttprequest':
+				case 'beacon':
+					$record['mime'] = 'application/json';
+					break;
+				case 'iframe':
+					$record['mime'] = 'text/html';
+					break;
+				default:
+					$record['mime'] = Mime::guess_type( $url_parts['path'] ?? '' );
+					break;
+			}
+			$record['category'] = Mime::get_category( $record['mime'] );
+			if ( 'img' === strtolower( $initiator ) && 'unknown' === $record['category'] ) {
+				$record['category'] = 'image';
+			}
+			$record['mime'] = substr( $record['mime'], 0, 90 );
 		}
 		return $record;
 	}

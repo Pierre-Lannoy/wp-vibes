@@ -101,7 +101,7 @@ class BeaconRoute extends \WP_REST_Controller {
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( 'Malformed beacon POST request.', [ 'code' => 400 ] );
 			return new \WP_REST_Response( null, 400 );
 		}
-		$record = Capture::init_record( $content['resource'], $content['authenticated'], $content['type'] );
+		$record = Capture::init_record( $content['resource'], $content['authenticated'], $content['type'], $content['initiator'] ?? '' );
 		foreach ( $content['metrics'] as $metric ) {
 			if ( ! ( is_array( $metric ) && array_key_exists( 'name', $metric ) ) ) {
 				\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( 'Malformed beacon POST request.', [ 'code' => 400 ] );

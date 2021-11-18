@@ -75,13 +75,13 @@ class Option {
 		self::$defaults['cut_path']          = 4;
 		self::$defaults['rcut_path']         = 6;
 		self::$defaults['sampling']          = 1000;
-		self::$defaults['resource_sampling'] = 100;
+		self::$defaults['resource_sampling'] = 1000;
 		self::$defaults['capture']           = true;
 		self::$defaults['rcapture']          = true;
 		self::$defaults['livelog']           = true;
 		self::$defaults['smart_filter']      = true;
 		self::$defaults['history']           = 30;
-		self::$defaults['rhistory']          = 2;
+		self::$defaults['rhistory']          = 30;
 		self::$network                       = [ 'version', 'use_cdn', 'download_favicons', 'script_in_footer', 'display_nag', 'metrics', 'cut_path', 'sampling', 'resource_sampling', 'capture', 'rcapture', 'livelog', 'smart_filter', 'history', 'rhistory' ];
 	}
 
