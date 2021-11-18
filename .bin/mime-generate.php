@@ -1,9 +1,12 @@
 <?php
 // phpcs:ignoreFile
 
-const VERSION  = '1.51.0';
+// *********************************************************************
 
+const VERSION  = '1.51.0';
 const SOURCE   = 'https://cdn.jsdelivr.net/npm/mime-db@1.51.0/db.json';
+
+// *********************************************************************
 const TEMPLATE = './mime-types.php';
 const TARGET   = '../assets/mime-types.php';
 const TEMPFILE = './db.json';
