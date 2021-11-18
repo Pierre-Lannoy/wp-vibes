@@ -49,6 +49,14 @@ class Http {
 	public static $schemes = [ 'http', 'https', 'unknown' ];
 
 	/**
+	 * The list of extended schemes.
+	 *
+	 * @since  1.0.0
+	 * @var    array    $extended_schemes    Maintains the extended schemes list.
+	 */
+	public static $extended_schemes = [ 'http', 'https', 'inline', 'unknown' ];
+
+	/**
 	 * The list of summarized HTTP codes.
 	 *
 	 * @since  2.3.0
