@@ -128,7 +128,9 @@ class BeaconRoute extends \WP_REST_Controller {
 						$record['hit'] = 1;
 					}
 					if ( array_key_exists( 'value', $metric ) && in_array( $metric['name'], BrowserPerformance::$unrated_metrics, true ) ) {
-						$record[ $metric['name'] . '_sum' ] = BrowserPerformance::get_storable_value( $metric['name'], (float) $metric['value'] );
+						if ( ! array_key_exists( $metric['name'] . '_sum', $record ) ) {
+							$record[ $metric['name'] . '_sum' ] = BrowserPerformance::get_storable_value( $metric['name'], (float) $metric['value'] );
+						}
 					}
 					if ( array_key_exists( 'initiator', $content ) ) {
 						if ( 'xmlhttprequest' === $content['initiator'] ) {
