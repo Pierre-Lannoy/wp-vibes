@@ -11,6 +11,8 @@
 
 namespace Vibes\System;
 
+use Feather\Icons;
+
 /**
  * Define the mime types functionality.
  *
@@ -223,6 +225,58 @@ class Mime {
 		}
 	}
 
+	/**
+	 * Get a mime category icon.
+	 *
+	 * @param   string  $category   The mime category to get mime category name.
+	 * @return  string  The mime category name.
+	 * @since   1.0.0
+	 */
+	public static function get_category_icon( $category ) {
+		switch ( $category ) {
+			case 'application':
+				return \Feather\Icons::get_base64( 'layout', '#3398DB33', '#73879C' );
+			case 'image':
+				return \Feather\Icons::get_base64( 'image', '#3398DB33', '#73879C' );
+			case 'model':
+				return \Feather\Icons::get_base64( 'grid', '#3398DB33', '#73879C' );
+			case 'text':
+				return \Feather\Icons::get_base64( 'file-text', '#3398DB33', '#73879C' );
+			case 'video':
+				return \Feather\Icons::get_base64( 'video', '#3398DB33', '#73879C' );
+			case 'audio':
+				return \Feather\Icons::get_base64( 'volume', '#3398DB33', '#73879C' );
+			case 'chemical':
+				return \Feather\Icons::get_base64( 'thermometer', '#3398DB33', '#73879C' );
+			case 'font':
+				return \Feather\Icons::get_base64( 'type', '#3398DB33', '#73879C' );
+			case 'message':
+				return \Feather\Icons::get_base64( 'message-square', '#3398DB33', '#73879C' );
+			case 'x-conference':
+				return \Feather\Icons::get_base64( 'tv', '#3398DB33', '#73879C' );
+			case 'binary':
+				return \Feather\Icons::get_base64( 'package', '#3398DB33', '#73879C' );
+			case 'css':
+				return \Feather\Icons::get_base64( 'layers', '#3398DB33', '#73879C' );
+			case 'html':
+				return \Feather\Icons::get_base64( 'globe', '#3398DB33', '#73879C' );
+			case 'script':
+				return \Feather\Icons::get_base64( 'code', '#3398DB33', '#73879C' );
+			case 'json':
+				return \Feather\Icons::get_base64( 'database', '#3398DB33', '#73879C' );
+			case 'vrml':
+			case 'wbxml':
+				return \Feather\Icons::get_base64( 'eye', '#3398DB33', '#73879C' );
+			case 'xml':
+				return \Feather\Icons::get_base64( 'database', '#3398DB33', '#73879C' );
+			case 'yaml':
+				return \Feather\Icons::get_base64( 'code', '#3398DB33', '#73879C' );
+			case 'zip':
+				return \Feather\Icons::get_base64( 'archive', '#3398DB33', '#73879C' );
+			default:
+				return \Feather\Icons::get_base64( 'file', '#3398DB33', '#73879C' );
+		}
+	}
 }
 
 Mime::init();
