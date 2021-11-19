@@ -93,8 +93,9 @@ class Capture {
 	 * @since    1.0.0
 	 */
 	public static function init_record( $url, $authent, $type, $initiator = '' ) {
-		$url_parts = wp_parse_url( $url );
-		$host      = '(self)';
+		$url_parts       = wp_parse_url( $url );
+		$host            = '(self)';
+		$cleaned_enpoint = self::clean_endpoint( $host, $url_parts['path'], 50, false );
 		if ( array_key_exists( 'host', $url_parts ) && isset( $url_parts['host'] ) && '' !== $url_parts['host'] ) {
 			$host = $url_parts['host'];
 		}
@@ -118,7 +119,9 @@ class Capture {
 			}
 		}
 		if ( '' === $record['scheme'] ) {
-			$record['scheme'] = 'inline';
+			$record['scheme']    = 'inline';
+			$record['size_sum']  = mb_strlen( $cleaned_enpoint );
+			$record['cache_sum'] = 0;
 		}
 		if ( array_key_exists( 'user', $url_parts ) && array_key_exists( 'pass', $url_parts ) && isset( $url_parts['user'] ) && isset( $url_parts['pass'] ) && '(self)' !== $host ) {
 			$record['authority'] = substr( $url_parts['user'] . ':' . $url_parts['pass'] . '@' . $host, 0, 250 );
@@ -135,7 +138,7 @@ class Capture {
 					$record['mime'] = 'text/html';
 					break;
 				default:
-					$record['mime'] = Mime::guess_type( self::clean_endpoint( $host, $url_parts['path'], 50, false ) );
+					$record['mime'] = Mime::guess_type( $cleaned_enpoint );
 					break;
 			}
 			$record['category'] = Mime::get_category( $record['mime'] );
