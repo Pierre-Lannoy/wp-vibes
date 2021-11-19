@@ -65,6 +65,7 @@ class Mime {
 		'application/json'        => 'json',
 		'application/x-httpd-php' => 'html',
 		'application/x-perl'      => 'html',
+		'application/x-font-woff' => 'font',
 	];
 
 	/**
@@ -96,7 +97,9 @@ class Mime {
 			return self::$unknown;
 		}
 		if ( preg_match( '/^\/([\w\-]+\/[\w\d\.\-\+]+);/iu', $resource, $matches ) ) {
-			return strtolower( $matches[0] );
+			if ( 1 < count( $matches ) ) {
+				return strtolower( $matches[1] );
+			}
 		}
 		if ( preg_match( '/\bhttps?:\/\/[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/))/iu', urldecode( $resource ), $matches ) ) {
 			return 'image/jpeg';
