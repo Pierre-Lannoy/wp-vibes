@@ -117,6 +117,9 @@ class Capture {
 				$record['scheme'] = 'inline';
 			}
 		}
+		if ( '' === $record['scheme'] ) {
+			$record['scheme'] = 'inline';
+		}
 		if ( array_key_exists( 'user', $url_parts ) && array_key_exists( 'pass', $url_parts ) && isset( $url_parts['user'] ) && isset( $url_parts['pass'] ) && '(self)' !== $host ) {
 			$record['authority'] = substr( $url_parts['user'] . ':' . $url_parts['pass'] . '@' . $host, 0, 250 );
 		} else {
@@ -132,7 +135,7 @@ class Capture {
 					$record['mime'] = 'text/html';
 					break;
 				default:
-					$record['mime'] = Mime::guess_type( $url_parts['path'] ?? '' );
+					$record['mime'] = Mime::guess_type( self::clean_endpoint( $host, $url_parts['path'], 50, false ) );
 					break;
 			}
 			$record['category'] = Mime::get_category( $record['mime'] );
@@ -147,24 +150,27 @@ class Capture {
 	/**
 	 * Clean the endpoint.
 	 *
-	 * @param   string $host       The host for the request.
-	 * @param   string $endpoint   The endpoint to clean.
-	 * @param   int    $cut        Optional. The number of path levels to let.
+	 * @param   string  $host       The host for the request.
+	 * @param   string  $endpoint   The endpoint to clean.
+	 * @param   int     $cut        Optional. The number of path levels to let.
+	 * @param   boolean $filter     Optional. Accepts filtering.
 	 * @return string   The cleaned endpoint.
 	 * @since    1.0.0
 	 */
-	private static function clean_endpoint( $host, $endpoint, $cut = 3 ) {
+	private static function clean_endpoint( $host, $endpoint, $cut = 3, $filter = true ) {
 
-		/**
-		 * Filters the cut level.
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param   int    $cut        The number of path levels to let.
-		 * @param   string $host       The host for the request.
-		 * @param   string $endpoint   The endpoint to clean.
-		 */
-		$cut = (int) apply_filters( 'vibes_path_level', $cut, $host, $endpoint );
+		if ( $filter ) {
+			/**
+			 * Filters the cut level.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param   int    $cut        The number of path levels to keep.
+			 * @param   string $host       The host for the request.
+			 * @param   string $endpoint   The endpoint to clean.
+			 */
+			$cut = (int) apply_filters( 'vibes_path_level', $cut, $host, $endpoint );
+		}
 
 		if ( '/' !== substr( $endpoint, 0, 1 ) ) {
 			$endpoint = '/' . $endpoint;
