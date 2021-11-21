@@ -66,7 +66,7 @@ class Option {
 	 */
 	public static function init() {
 		self::$defaults['use_cdn']           = false;
-		self::$defaults['download_favicons'] = false;
+		self::$defaults['download_favicons'] = true; // TODO:change
 		self::$defaults['script_in_footer']  = false;
 		self::$defaults['display_nag']       = false;
 		self::$defaults['metrics']           = true;

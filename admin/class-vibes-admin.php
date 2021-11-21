@@ -132,11 +132,41 @@ class Vibes_Admin {
 		}
 		if ( Role::SUPER_ADMIN === Role::admin_type() || Role::SINGLE_ADMIN === Role::admin_type() || Role::LOCAL_ADMIN === Role::admin_type() ) {
 			$perfops['analytics'][] = [
+				'name'          => esc_html__( 'Resources', 'vibes' ),
+				/* translators: as in the sentence "Find out and explore resources needed by the pages of your network." or "Find out and explore resources needed by the pages of your website." */
+				'description'   => sprintf( esc_html__( 'Find out and explore resources needed by the pages of your %s.', 'vibes' ), Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
+				'icon_callback' => [ \Vibes\Plugin\Core::class, 'get_base64_logo' ],
+				'slug'          => 'vibes-resource-viewer',
+				/* translators: as in the sentence "DecaLog Viewer" */
+				'page_title'    => sprintf( esc_html__( 'Resources', 'vibes' ), VIBES_PRODUCT_NAME ),
+				'menu_title'    => esc_html__( 'Resources', 'vibes' ),
+				'capability'    => 'manage_options',
+				'callback'      => [ $this, 'get_resources_viewer_page' ],
+				'plugin'        => VIBES_SLUG,
+				'activated'     => Option::network_get( 'rcapture' ),
+				'remedy'        => esc_url( admin_url( 'admin.php?page=vibes-settings' ) ),
+			];
+			$perfops['analytics'][] = [
+				'name'          => esc_html__( 'Web Vitals', 'vibes' ),
+				/* translators: as in the sentence "View and analyze Web Vitals measured in the field for all visited pages of your network." or "View and analyze Web Vitals measured in the field for all visited pages of your website." */
+				'description'   => sprintf( esc_html__( 'View and analyze Web Vitals measured in the field for all the visited pages of your %s.', 'vibes' ), Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
+				'icon_callback' => [ \Vibes\Plugin\Core::class, 'get_base64_logo' ],
+				'slug'          => 'vibes-webvital-viewer',
+				/* translators: as in the sentence "DecaLog Viewer" */
+				'page_title'    => sprintf( esc_html__( 'Web Vitals', 'vibes' ), VIBES_PRODUCT_NAME ),
+				'menu_title'    => esc_html__( 'Web Vitals', 'vibes' ),
+				'capability'    => 'manage_options',
+				'callback'      => [ $this, 'get_webvitals_viewer_page' ],
+				'plugin'        => VIBES_SLUG,
+				'activated'     => Option::network_get( 'capture' ),
+				'remedy'        => esc_url( admin_url( 'admin.php?page=vibes-settings' ) ),
+			];
+			$perfops['analytics'][] = [
 				'name'          => esc_html__( 'API Vibes', 'vibes' ),
 				/* translators: as in the sentence "Find out inbound and outbound API calls made to/from your network." or "Find out inbound and outbound API calls made to/from your website." */
 				'description'   => sprintf( esc_html__( 'Find out inbound and outbound API calls made to/from your %s.', 'vibes' ), Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
 				'icon_callback' => [ \Vibes\Plugin\Core::class, 'get_base64_logo' ],
-				'slug'          => 'vibes-viewer',
+				'slug'          => 'vibes-navigation-viewer',
 				/* translators: as in the sentence "DecaLog Viewer" */
 				'page_title'    => sprintf( esc_html__( 'API Vibes', 'vibes' ), VIBES_PRODUCT_NAME ),
 				'menu_title'    => esc_html__( 'API Vibes', 'vibes' ),
@@ -151,7 +181,7 @@ class Vibes_Admin {
 			$perfops['consoles'][] = [
 				'name'          => esc_html__( 'Live Vibes Signals', 'vibes' ),
 				/* translators: as in the sentence "Check the events that occurred on your network." or "Check the events that occurred on your website." */
-				'description'   => sprintf( esc_html__( 'Displays %s performance signals as soon as they are received by your %s.', 'vibes' ), VIBES_PRODUCT_NAME, Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
+				'description'   => sprintf( esc_html__( 'Displays %1$s performance signals as soon as they are received by your %2$s.', 'vibes' ), VIBES_PRODUCT_NAME, Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
 				'icon_callback' => [ \Vibes\Plugin\Core::class, 'get_base64_logo' ],
 				'slug'          => 'vibes-console',
 				/* translators: as in the sentence "Vibes Viewer" */
@@ -280,8 +310,28 @@ class Vibes_Admin {
 	 * @since 1.0.0
 	 */
 	public function get_viewer_page() {
-		$analytics = AnalyticsFactory::get_analytics();
+		$analytics = AnalyticsFactory::get_analytics( false, 'navigation' );
 		include VIBES_ADMIN_DIR . 'partials/vibes-admin-view-analytics.php';
+	}
+
+	/**
+	 * Get the content of the tools page.
+	 *
+	 * @since 1.0.0
+	 */
+	public function get_resources_viewer_page() {
+		$analytics = AnalyticsFactory::get_analytics( false, 'resource' );
+		include VIBES_ADMIN_DIR . 'partials/vibes-admin-view-resources.php';
+	}
+
+	/**
+	 * Get the content of the tools page.
+	 *
+	 * @since 1.0.0
+	 */
+	public function get_webvitals_viewer_page() {
+		$analytics = AnalyticsFactory::get_analytics( false, 'webvital' );
+		include VIBES_ADMIN_DIR . 'partials/vibes-admin-view-webvitals.php';
 	}
 
 	/**
@@ -411,10 +461,10 @@ class Vibes_Admin {
 		$geo_ip = new GeoIP();
 		if ( $geo_ip->is_installed() ) {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'thumbs-up', 'none', '#00C800' ) . '" />&nbsp;';
-			$help .= sprintf( esc_html__('Your site is currently using %s.', 'vibes' ), '<em>' . $geo_ip->get_full_name() .'</em>' );
+			$help .= sprintf( esc_html__( 'Your site is currently using %s.', 'vibes' ), '<em>' . $geo_ip->get_full_name() . '</em>' );
 		} else {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'alert-triangle', 'none', '#FF8C00' ) . '" />&nbsp;';
-			$help .= sprintf( esc_html__('Your site does not use any IP geographic information plugin. To take advantage of the geographical distribution of calls in Vibes, I recommend you to install the excellent (and free) %s. But it is not mandatory.', 'vibes' ), '<a href="https://wordpress.org/plugins/ip-locator/">IP Locator</a>' );
+			$help .= sprintf( esc_html__( 'Your site does not use any IP geographic information plugin. To take advantage of the geographical distribution of calls in Vibes, I recommend you to install the excellent (and free) %s. But it is not mandatory.', 'vibes' ), '<a href="https://wordpress.org/plugins/ip-locator/">IP Locator</a>' );
 		}
 		add_settings_field(
 			'vibes_plugin_options_geoip',
@@ -423,17 +473,17 @@ class Vibes_Admin {
 			'vibes_plugin_options_section',
 			'vibes_plugin_options_section',
 			[
-				'text' => $help
+				'text' => $help,
 			]
 		);
 		register_setting( 'vibes_plugin_options_section', 'vibes_plugin_options_geoip' );
-		
+
 		if ( \DecaLog\Engine::isDecalogActivated() ) {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'thumbs-up', 'none', '#00C800' ) . '" />&nbsp;';
-			$help .= sprintf( esc_html__('Your site is currently using %s.', 'vibes' ), '<em>' . \DecaLog\Engine::getVersionString() . '</em>' );
+			$help .= sprintf( esc_html__( 'Your site is currently using %s.', 'vibes' ), '<em>' . \DecaLog\Engine::getVersionString() . '</em>' );
 		} else {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'alert-triangle', 'none', '#FF8C00' ) . '" />&nbsp;';
-			$help .= sprintf( esc_html__('Your site does not use any logging plugin. To log all events triggered in Vibes, I recommend you to install the excellent (and free) %s. But it is not mandatory.', 'vibes' ), '<a href="https://wordpress.org/plugins/decalog/">DecaLog</a>' );
+			$help .= sprintf( esc_html__( 'Your site does not use any logging plugin. To log all events triggered in Vibes, I recommend you to install the excellent (and free) %s. But it is not mandatory.', 'vibes' ), '<a href="https://wordpress.org/plugins/decalog/">DecaLog</a>' );
 		}
 		add_settings_field(
 			'vibes_plugin_options_logger',
@@ -442,16 +492,16 @@ class Vibes_Admin {
 			'vibes_plugin_options_section',
 			'vibes_plugin_options_section',
 			[
-				'text' => $help
+				'text' => $help,
 			]
 		);
 		register_setting( 'vibes_plugin_options_section', 'vibes_plugin_options_logger' );
 		if ( SharedMemory::$available ) {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'thumbs-up', 'none', '#00C800' ) . '" />&nbsp;';
-			$help .= esc_html__('Shared memory is available on your server: you can use live console.', 'vibes' );
+			$help .= esc_html__( 'Shared memory is available on your server: you can use live console.', 'vibes' );
 		} else {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'alert-triangle', 'none', '#FF8C00' ) . '" />&nbsp;';
-			$help .= sprintf( esc_html__('Shared memory is not available on your server. To use live console you must activate %s PHP module.', 'vibes' ), '<code>shmop</code>' );
+			$help .= sprintf( esc_html__( 'Shared memory is not available on your server. To use live console you must activate %s PHP module.', 'vibes' ), '<code>shmop</code>' );
 		}
 		add_settings_field(
 			'vibes_plugin_options_shmop',
@@ -460,7 +510,7 @@ class Vibes_Admin {
 			'vibes_plugin_options_section',
 			'vibes_plugin_options_section',
 			[
-				'text' => $help
+				'text' => $help,
 			]
 		);
 		register_setting( 'vibes_plugin_options_section', 'vibes_plugin_options_shmop' );
@@ -606,7 +656,6 @@ class Vibes_Admin {
 			} else {
 				$result[] = [ $level, 'N/A' ];
 			}
-
 		}
 		return $result;
 	}

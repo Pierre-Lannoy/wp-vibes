@@ -112,16 +112,15 @@ class Capture {
 		$record['authent']   = 1 === (int) $authent ? 1 : 0;
 		$record['id']        = substr( Http::top_domain( $host, false ), 0, 40 );
 		if ( array_key_exists( 'scheme', $url_parts ) && isset( $url_parts['scheme'] ) ) {
-			if ( '' !== $url_parts['scheme'] ) {
+			if ( in_array( (string) $url_parts['scheme'], Http::$extended_schemes, true ) ) {
 				$record['scheme'] = $url_parts['scheme'];
-			} elseif ( '(self)' === $host ) {
-				$record['scheme'] = 'inline';
+			} else {
+				$record['scheme']    = 'inline';
+				$record['size_sum']  = mb_strlen( $cleaned_enpoint );
+				$record['cache_sum'] = 0;
 			}
-		}
-		if ( '' === $record['scheme'] ) {
-			$record['scheme']    = 'inline';
-			$record['size_sum']  = mb_strlen( $cleaned_enpoint );
-			$record['cache_sum'] = 0;
+		} else {
+			$record['scheme'] = 'inline';
 		}
 		if ( array_key_exists( 'user', $url_parts ) && array_key_exists( 'pass', $url_parts ) && isset( $url_parts['user'] ) && isset( $url_parts['pass'] ) && '(self)' !== $host ) {
 			$record['authority'] = substr( $url_parts['user'] . ':' . $url_parts['pass'] . '@' . $host, 0, 250 );

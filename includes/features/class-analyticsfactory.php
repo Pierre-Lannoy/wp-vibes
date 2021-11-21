@@ -52,9 +52,10 @@ class AnalyticsFactory {
 	 * Get the content of the tools page.
 	 *
 	 * @param   boolean $reload  Optional. Is it a reload of an already displayed analytics.
+	 * @param   string  $source  Optional. The source of data.
 	 * @since 1.0.0
 	 */
-	public static function get_analytics( $reload = false ) {
+	public static function get_analytics( $reload = false, $source = '' ) {
 		$timezone = Timezone::network_get();
 		// ID.
 		if ( ! ( $id = filter_input( INPUT_GET, 'id' ) ) ) {
@@ -70,27 +71,28 @@ class AnalyticsFactory {
 		if ( empty( $domain ) ) {
 			$domain = '';
 		}
-		// Extra>.
+		// Extra.
 		if ( ! ( $extra = filter_input( INPUT_GET, 'extra' ) ) ) {
 			$extra = filter_input( INPUT_POST, 'extra' );
 		}
 		if ( empty( $extra ) ) {
 			$extra = '';
 		}
-		// Analytics type.
+		// Analytics source & type.
 		if ( ! ( $type = filter_input( INPUT_GET, 'type' ) ) ) {
 			$type = filter_input( INPUT_POST, 'type' );
+		}
+		if ( '' === $source && 0 < strpos( $type, '.' ) ) {
+			$source = substr( $type, 0, strpos( $type, '.' ) );
+			$type   = str_replace( $source . '.', '', $type );
+		}
+		if ( 0 < strpos( $type, '.' ) ) {
+			$type = substr( $type, strpos( $type, '.' ) + 1 );
 		}
 		if ( empty( $type ) || ! in_array( $type, self::$allowed_types ) ) {
 			$type = 'summary';
 		}
 		// Filters.
-		if ( ! ( $context = filter_input( INPUT_GET, 'context' ) ) ) {
-			$context = filter_input( INPUT_POST, 'context' );
-		}
-		if ( empty( $context ) || ( 'inbound' !== $context && 'outbound' !== $context ) ) {
-			$context = 'both';
-		}
 		if ( ! ( $site = filter_input( INPUT_GET, 'site' ) ) ) {
 			$site = filter_input( INPUT_POST, 'site' );
 		}
@@ -120,7 +122,7 @@ class AnalyticsFactory {
 			$end   = $sdatetime->format( 'Y-m-d' );
 		}
 
-		return new Analytics( $domain, $type, $context, $site, $start, $end, $id, $reload, $extra );
+		return new Analytics( $source, $domain, $type, $site, $start, $end, $id, $reload, $extra );
 	}
 
 }

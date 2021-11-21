@@ -54,6 +54,7 @@ class Icons {
 		if ( ! file_exists( $filename ) ) {
 			return ( 'x' === $name ? '' : self::get_raw() );
 		}
+		//phpcs:ignore
 		self::$icons[ $name ] = file_get_contents( $filename );
 		return ( self::get_raw( $name ) );
 	}

@@ -119,6 +119,12 @@ class Schema {
 		} else {
 			return;
 		}
+		if ( array_key_exists( 'host', $record ) ) {
+			if ( 'invalid' === $record['host'] ) {
+				\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'Invalid record.' );
+				return;
+			}
+		}
 		if ( array_key_exists( $type, self::$deletable_fields ) ) {
 			foreach ( self::$deletable_fields[ $type ] as $field ) {
 				if ( array_key_exists( $field, $record ) ) {
@@ -475,19 +481,20 @@ class Schema {
 	/**
 	 * Get the authority.
 	 *
-	 * @param   array $filter   The filter of the query.
+	 * @param   string  $source   The source of data.
+	 * @param   array   $filter   The filter of the query.
 	 * @return  string   The authority.
 	 * @since    1.0.0
 	 */
-	public static function get_authority( $filter ) {
+	public static function get_authority( $source, $filter ) {
 		// phpcs:ignore
-		$id = Cache::id( __FUNCTION__ . serialize( $filter ) );
+		$id = Cache::id( __FUNCTION__ . $source . serialize( $filter ) );
 		$result = Cache::get_global( $id );
 		if ( $result ) {
 			return $result;
 		}
 		global $wpdb;
-		$sql = 'SELECT authority FROM ' . $wpdb->base_prefix . self::$statistics . ' WHERE (' . implode( ' AND ', $filter ) . ') LIMIT 1';
+		$sql = 'SELECT authority FROM ' . $wpdb->base_prefix . ( 'resource' === $source ? self::$resources : self::$statistics ) . ' WHERE (' . implode( ' AND ', $filter ) . ') LIMIT 1';
 		// phpcs:ignore
 		$result = $wpdb->get_results( $sql, ARRAY_A );
 		if ( is_array( $result ) && 0 < count( $result ) ) {
@@ -598,7 +605,7 @@ class Schema {
 	}
 
 	/**
-	 * Get the standard KPIs.
+	 * Get a grouped list.
 	 *
 	 * @param   string  $source      The source of data.
 	 * @param   string  $group       The group of the query.
@@ -610,7 +617,7 @@ class Schema {
 	 * @param   boolean $not         Optional. Exclude extra filter.
 	 * @param   string  $order       Optional. The sort order of results.
 	 * @param   integer $limit       Optional. The number of results to return.
-	 * @return  array   The standard KPIs.
+	 * @return  array   The grouped list.
 	 * @since    1.0.0
 	 */
 	public static function get_grouped_list( $source, $group, $count, $filter, $cache = true, $extra_field = '', $extras = [], $not = false, $order = '', $limit = 0 ) {
@@ -629,7 +636,7 @@ class Schema {
 		$sel = [];
 		switch ( $source ) {
 			case 'resource':
-				$sel = array_merge( self::browser_performance_select(), [ 'timestamp', 'site', 'id', 'scheme', 'endpoint', 'authority', 'initiator' ] );
+				$sel = array_merge( self::browser_performance_select(), [ 'timestamp', 'site', 'id', 'scheme', 'category', 'mime', 'endpoint', 'authority', 'initiator' ] );
 				break;
 			case 'navigation':
 				$sel = array_merge( self::browser_performance_select(), [ 'timestamp', 'site', 'endpoint', 'authent', 'country', 'class', 'device' ] );
@@ -650,6 +657,60 @@ class Schema {
 		// phpcs:ignore
 		$result = $wpdb->get_results( $sql, ARRAY_A );
 		if ( is_array( $result ) && 0 < count( $result ) ) {
+			if ( $cache ) {
+				Cache::set_global( $id, $result, 'infinite' );
+			}
+			return $result;
+		}
+		return [];
+	}
+
+	/**
+	 * Get a cache ration.
+	 *
+	 * @param   string  $source      The source of data.
+	 * @param   array   $filter      The filter of the query.
+	 * @param   boolean $cache       Has the query to be cached.
+	 * @return  array   The cache ratio.
+	 * @since    1.0.0
+	 */
+	public static function get_cache_ratio( $source, $filter, $cache = true ) {
+		// phpcs:ignore
+		$id = Cache::id( __FUNCTION__ . $source . serialize( $filter ) );
+		if ( $cache ) {
+			$result = Cache::get_global( $id );
+			if ( $result ) {
+				return $result;
+			}
+		}
+		$sel = [ 'sum(hit) as sum_hit', 'sum(cache_sum)/sum(hit) as avg_cache' ];
+		switch ( $source ) {
+			case 'resource':
+				$sel = array_merge( $sel, [ 'timestamp', 'site', 'id', 'scheme', 'category', 'mime', 'endpoint', 'authority', 'initiator' ] );
+				break;
+			case 'navigation':
+				$sel = array_merge( $sel, [ 'timestamp', 'site', 'endpoint', 'authent', 'country', 'class', 'device' ] );
+				break;
+		}
+		global $wpdb;
+		$sql  = 'SELECT ' . implode( ', ', $sel ) . ' FROM ';
+		$sql .= $wpdb->base_prefix . ( 'resource' === $source ? self::$resources : self::$statistics ) . ' WHERE (' . implode( ' AND ', $filter ) . ');';
+		// phpcs:ignore
+		$query = $wpdb->get_results( $sql, ARRAY_A );
+		if ( is_array( $query ) && 0 < count( $query ) ) {
+			$q = $query[0];
+			$v = 0;
+			if ( array_key_exists( 'avg_cache', $q ) ) {
+				$v = $q['avg_cache'];
+			}
+			unset( $q['avg_cache'] );
+			$result       = [];
+			$q['cache']   = 'Hit';
+			$q['sum_hit'] = $v;
+			$result[]     = $q;
+			$q['cache']   = 'Miss';
+			$q['sum_hit'] = 1 - $v;
+			$result[]     = $q;
 			if ( $cache ) {
 				Cache::set_global( $id, $result, 'infinite' );
 			}
