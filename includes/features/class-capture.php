@@ -86,6 +86,7 @@ class Capture {
 					'authenticated' => ( 0 < (int) User::get_current_user_id( 0 ) ? 1 : 0 ),
 					'sampling'      => (int) Option::network_get( 'resource_sampling' ),
 					'smartFilter'   => Option::network_get( 'smart_filter' ) ? 1 : 0,
+					'multiMetrics'  => Option::network_get( 'buffer' ) ? 1 : 0,
 				]
 			);
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'Capture engine started.' );
@@ -240,7 +241,7 @@ class Capture {
 					return $result;
 				}
 			}
-			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->critical( 'Signals received and correctly pre-processed.', [ 'code' => 202 ] );
+			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( _n( '%d signal received and correctly pre-processed.', '%d signals received and correctly pre-processed.', count( $content['metrics'] ), 'vibes' ), count( $content['metrics'] ) ), [ 'code' => 202 ] );
 			return new \WP_REST_Response( null, 202 );
 		}
 		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( 'Malformed beacon POST request.', [ 'code' => 400 ] );

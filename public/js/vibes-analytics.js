@@ -1,6 +1,8 @@
 import {getCLS, getFID, getLCP, getTTFB, getFCP} from './web-vitals/web-vitals.js'
 
 let excluded = [];
+let buffer   = [];
+let sending  = false;
 
 function getRandomArbitrary(min, max) {
 	return Math.random() * (max - min) + min;
@@ -10,6 +12,24 @@ function sendAnalytics(metrics) {
 	if ( navigator.sendBeacon ) {
 		navigator.sendBeacon( analyticsSettings.restUrl, JSON.stringify( metrics ) );
 	}
+}
+
+function sendBuffer() {
+	sending = true;
+	if ( 0 < buffer.length ) {
+		sendAnalytics(
+			{
+				type: 'multi',
+				metrics: buffer
+			}
+		);
+		buffer = [];
+	}
+	sending = false;
+}
+
+function bufferizeAnalytics(metrics) {
+	buffer.push( metrics );
 }
 
 function webVitalsReport({name, delta, value, id}) {
@@ -22,7 +42,11 @@ function webVitalsReport({name, delta, value, id}) {
 			value: value,
 		}]
 	}
-	sendAnalytics( analytics );
+	if ( '0' === analyticsSettings.multiMetrics ) {
+		sendAnalytics( analytics );
+	} else {
+		bufferizeAnalytics( analytics );
+	}
 }
 
 function performanceReport(timing,type) {
@@ -98,7 +122,11 @@ function performanceReport(timing,type) {
 			}
 		);
 	}
-	sendAnalytics( analytics );
+	if ( '0' === analyticsSettings.multiMetrics ) {
+		sendAnalytics( analytics );
+	} else {
+		bufferizeAnalytics( analytics );
+	}
 }
 
 function webVitalsObserve() {
@@ -136,6 +164,23 @@ try {
 	navigationObserver.observe( { entryTypes: ['navigation'] } );
 	let resourceObserver = new PerformanceObserver( resourceObserve );
 	resourceObserver.observe( { entryTypes: ['resource'] } );
+	document.addEventListener(
+		'visibilitychange',
+		function logData() {
+		if (document.visibilityState === 'hidden' && ! sending) {
+			sendBuffer();
+		}
+		}
+	);
+	window.addEventListener(
+		'pagehide',
+		event => {
+        if ( ! sending) {
+            sendBuffer();
+        }
+		},
+		false
+	);
 } catch (error) {
 	console.error( 'Vibes analytics error: ' . error );
 }
