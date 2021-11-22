@@ -179,14 +179,14 @@ class Vibes_Admin {
 		}
 		if ( Role::SUPER_ADMIN === Role::admin_type() || Role::SINGLE_ADMIN === Role::admin_type() ) {
 			$perfops['consoles'][] = [
-				'name'          => esc_html__( 'Live Vibes Signals', 'vibes' ),
+				'name'          => esc_html__( 'Vibes Signals', 'vibes' ),
 				/* translators: as in the sentence "Check the events that occurred on your network." or "Check the events that occurred on your website." */
 				'description'   => sprintf( esc_html__( 'Displays %1$s performance signals as soon as they are received by your %2$s.', 'vibes' ), VIBES_PRODUCT_NAME, Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
 				'icon_callback' => [ \Vibes\Plugin\Core::class, 'get_base64_logo' ],
 				'slug'          => 'vibes-console',
 				/* translators: as in the sentence "Vibes Viewer" */
 				'page_title'    => sprintf( esc_html__( '%s Live Performance Signals', 'vibes' ), VIBES_PRODUCT_NAME ),
-				'menu_title'    => sprintf( esc_html__( 'Live %s Signals', 'vibes' ), VIBES_PRODUCT_NAME ),
+				'menu_title'    => esc_html__( 'Vibes Signals', 'vibes' ),
 				'capability'    => 'manage_options',
 				'callback'      => [ $this, 'get_console_page' ],
 				'plugin'        => VIBES_SLUG,
