@@ -604,7 +604,11 @@ class Analytics {
 		if ( 0.1 > $lblank ) {
 			$lblank = 0.1;
 		}
-		$eblank  = 100.0 - $bblank - $lblank;
+		$eblank = 100.0 - $bblank - $lblank;
+		if ( 0 > $eblank ) {
+			$lblank += $eblank;
+			$eblank  = 0;
+		}
 		$tick    = round( 200 * $this->traces_tick / $duration, 3 );
 		$color   = $this->span_colors[ $span['name'] ];
 		$result .= '<div class="vibes-span-timeline" style="background-size: ' . $tick . '% 100%;">';
