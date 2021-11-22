@@ -11,6 +11,7 @@
 
 namespace Vibes\Plugin\Feature;
 
+use Vibes\System\BrowserPerformance;
 use Vibes\System\Device;
 use Vibes\Plugin\Feature\Schema;
 use Vibes\Plugin\Feature\Memory;
@@ -20,6 +21,7 @@ use Vibes\System\Option;
 use Vibes\System\User;
 use Vibes\System\IP;
 use Vibes\System\Http;
+use Vibes\System\WebVitals;
 
 /**
  * Define the captures functionality.
@@ -31,6 +33,14 @@ use Vibes\System\Http;
  * @since   1.0.0
  */
 class Capture {
+
+	/**
+	 * The acceptable types.
+	 *
+	 * @since  1.0.0
+	 * @var    array    $types    The acceptable types.
+	 */
+	protected static $types = [ 'webvital', 'resource', 'navigation' ];
 
 	/**
 	 * Local time zone.
@@ -200,7 +210,7 @@ class Capture {
 	/**
 	 * Records an entry.
 	 *
-	 * @param array          $record     A record of metrics..
+	 * @param array          $record     A record of metrics.
 	 * @since    1.0.0
 	 */
 	public static function record( $record ) {
@@ -208,6 +218,85 @@ class Capture {
 			Schema::store_statistics( $record );
 		}
 		Memory::store_statistics( $record );
+	}
+
+	/**
+	 * Pre-process an entry.
+	 *
+	 * @param array          $content     The body content of the request.
+	 * @return \WP_REST_Response
+	 * @since    1.0.0
+	 */
+	public static function preprocess( $content ) {
+		if ( ( array_key_exists( 'type', $content ) && in_array( $content['type'], self::$types, true ) && array_key_exists( 'resource', $content ) && array_key_exists( 'authenticated', $content ) && array_key_exists( 'metrics', $content ) && is_array( $content['metrics'] ) ) ) {
+			self::single_preprocess( $content );
+			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'Signal received and correctly pre-processed.', [ 'code' => 202 ] );
+			return new \WP_REST_Response( null, 202 );
+		}
+		if ( array_key_exists( 'type', $content ) && 'multi' === $content['type'] && array_key_exists( 'metrics', $content ) && is_array( $content['metrics'] ) ) {
+			foreach ( $content['metrics'] as $metric ) {
+				$result = self::single_preprocess( $metric );
+				if ( true !== $result ) {
+					return $result;
+				}
+			}
+			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->critical( 'Signals received and correctly pre-processed.', [ 'code' => 202 ] );
+			return new \WP_REST_Response( null, 202 );
+		}
+		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( 'Malformed beacon POST request.', [ 'code' => 400 ] );
+		return new \WP_REST_Response( null, 400 );
+	}
+
+	/**
+	 * Pre-process a single entry.
+	 *
+	 * @param array          $content     A record of metrics.
+	 * @return true|\WP_REST_Response   True if all goes OK, a rest response otherwise.
+	 * @since    1.0.0
+	 */
+	private static function single_preprocess( $content ) {
+		$record = self::init_record( $content['resource'], $content['authenticated'], $content['type'], $content['initiator'] ?? '' );
+		foreach ( $content['metrics'] as $metric ) {
+			if ( ! ( is_array( $metric ) && array_key_exists( 'name', $metric ) ) ) {
+				\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( 'Malformed beacon POST request.', [ 'code' => 400 ] );
+				return new \WP_REST_Response( null, 400 );
+			}
+			switch ( $content['type'] ) {
+				case 'webvital':
+					if ( array_key_exists( 'value', $metric ) && in_array( $metric['name'], array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics ), true ) ) {
+						$storable_value = WebVitals::get_storable_value( (string) $metric['name'], (float) $metric['value'] );
+						$rate_field     = WebVitals::get_rate_field( (string) $metric['name'], $storable_value );
+						if ( 'none' !== $rate_field ) {
+							$record[ $metric['name'] . '_sum' ]            = $storable_value;
+							$record[ $metric['name'] . '_' . $rate_field ] = 1;
+
+						}
+					}
+					break;
+				case 'resource':
+				case 'navigation':
+					if ( array_key_exists( 'start', $metric ) && array_key_exists( 'duration', $metric ) && in_array( $metric['name'], BrowserPerformance::$spans, true ) ) {
+						foreach ( [ 'start', 'duration' ] as $field ) {
+							$record[ 'span_' . $metric['name'] . '_' . $field ] = BrowserPerformance::get_storable_value( $metric['name'], (float) $metric[ $field ] );
+						}
+						$record['hit'] = 1;
+					}
+					if ( array_key_exists( 'value', $metric ) && in_array( $metric['name'], BrowserPerformance::$unrated_metrics, true ) ) {
+						if ( ! array_key_exists( $metric['name'] . '_sum', $record ) ) {
+							$record[ $metric['name'] . '_sum' ] = BrowserPerformance::get_storable_value( $metric['name'], (float) $metric['value'] );
+						}
+					}
+					if ( array_key_exists( 'initiator', $content ) ) {
+						if ( 'xmlhttprequest' === $content['initiator'] ) {
+							$content['initiator'] = 'xhr';
+						}
+						$record['initiator'] = substr( $content['initiator'], 0, 6 );
+					}
+					break;
+			}
+		}
+		self::record( $record );
+		return true;
 	}
 
 }

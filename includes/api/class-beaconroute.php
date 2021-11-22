@@ -96,6 +96,14 @@ class BeaconRoute extends \WP_REST_Controller {
 	 * @return \WP_REST_Response
 	 */
 	public function post_beacon( $request ) {
+		return Capture::preprocess( \json_decode( $request->get_body(), true ) );
+	}
+
+	/*public function post_beacon( $request ) {
+		$result = Capture::preprocess( \json_decode( $request->get_body(), true ) );
+
+
+
 		$content = \json_decode( $request->get_body(), true );
 		if ( ! ( array_key_exists( 'type', $content ) && in_array( $content['type'], $this->types, true ) && array_key_exists( 'resource', $content ) && array_key_exists( 'authenticated', $content ) && array_key_exists( 'metrics', $content ) && is_array( $content['metrics'] ) ) ) {
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( 'Malformed beacon POST request.', [ 'code' => 400 ] );
@@ -144,6 +152,6 @@ class BeaconRoute extends \WP_REST_Controller {
 		Capture::record( $record );
 		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'Signal received and correctly pre-processed.', [ 'code' => 202 ] );
 		return new \WP_REST_Response( null, 202 );
-	}
+	}*/
 
 }
