@@ -70,6 +70,16 @@ class UserAgent {
 	}
 
 	/**
+	 * Initialize the class and set its properties.
+	 *
+	 * @since    1.0.0
+	 */
+	public function __construct() {
+		$this->class_is_mobile  = wp_is_mobile();
+		$this->class_is_desktop = ! $this->class_is_mobile;
+	}
+
+	/**
 	 * Get the brand icon base64 encoded.
 	 *
 	 * @return string  The icon base64 encoded.
