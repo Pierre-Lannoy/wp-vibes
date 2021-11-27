@@ -325,15 +325,34 @@ class Schema {
 	private static function webvitals_select() {
 		$sql = [];
 		foreach ( WebVitals::$rated_metrics as $metric ) {
-			$sql[] = 'sum(' . $metric . '_sum)/sum(' . $metric . '_good+' . $metric . '_impr+' . $metric . '_poor+) as avg_' . $metric;
-			foreach ( [ 'sum', 'good', 'impr', 'poor' ] as $field ) {
-				$sql[] = 'sum(' . $metric . '_' . $field . ')/sum(' . $metric . '_good+' . $metric . '_impr+' . $metric . '_poor+) as avg_' . $metric . '_' . $field;
+			$sql[] = 'sum(' . $metric . '_sum)/sum(' . $metric . '_good+' . $metric . '_impr+' . $metric . '_poor) as avg_' . $metric;
+			foreach ( [ 'good', 'impr', 'poor' ] as $field ) {
+				$sql[] = 'sum(' . $metric . '_' . $field . ')/sum(' . $metric . '_good+' . $metric . '_impr+' . $metric . '_poor) as pct_' . $metric . '_' . $field;
 			}
 		}
 		foreach ( WebVitals::$unrated_metrics as $metric ) {
 			$sql[] = 'sum(' . $metric . '_sum)/sum(' . $metric . '_hit) as avg_' . $metric;
 		}
 		return $sql;
+	}
+
+	/**
+	 * Get the web vitals hits sum.
+	 *
+	 * @return  string  The sum definition.
+	 * @since    1.0.0
+	 */
+	private static function webvitals_sum() {
+		$sum = [];
+		foreach ( WebVitals::$rated_metrics as $metric ) {
+			foreach ( [ 'good', 'impr', 'poor' ] as $field ) {
+				$sum[] = 'sum(' . $metric . '_' . $field . ')';
+			}
+		}
+		foreach ( WebVitals::$unrated_metrics as $metric ) {
+			$sum[] = 'sum(' . $metric . '_hit' . ')';
+		}
+		return '(' . implode( '+', $sum ) . ')';
 	}
 
 	/**
@@ -506,19 +525,21 @@ class Schema {
 	}
 
 	/**
-	 * Get the distinct contexts.
+	 * Get the distinct countries.
 	 *
-	 * @param   array   $filter The filter of the query.
-	 * @param   boolean $cache  Optional. Has this query to be cached.
-	 * @return  array   The distinct contexts.
+	 * @param   string  $source     The source of data.
+	 * @param   array   $filter     The filter of the query.
+	 * @param   boolean $cache      Optional. Has this query to be cached.
+	 * @return  array   The distinct countries.
 	 * @since    1.0.0
 	 */
-	public static function get_distinct_context( $filter, $cache = true ) {
-		if ( array_key_exists( 'context', $filter ) ) {
-			unset( $filter['context'] );
+	public static function get_distinct_countries( $source, $filter, $cache = true ) {
+		if ( array_key_exists( 'country', $filter ) ) {
+			unset( $filter['country'] );
 		}
+		$q = (int) Option::network_get( 'quality' );
 		// phpcs:ignore
-		$id = Cache::id( __FUNCTION__ . serialize( $filter ) );
+		$id = Cache::id( __FUNCTION__ . $source . serialize( $filter ) );
 		if ( $cache ) {
 			$result = Cache::get_global( $id );
 			if ( $result ) {
@@ -526,13 +547,15 @@ class Schema {
 			}
 		}
 		global $wpdb;
-		$sql = 'SELECT DISTINCT context FROM ' . $wpdb->base_prefix . self::$statistics . ' WHERE (' . implode( ' AND ', $filter ) . ')';
+		$sql = 'SELECT sum(hit) as sum_hit, country FROM ' . $wpdb->base_prefix . ( 'resource' === $source ? self::$resources : self::$statistics ) . ' WHERE (' . implode( ' AND ', $filter ) . ') GROUP BY country';
 		// phpcs:ignore
 		$result = $wpdb->get_results( $sql, ARRAY_A );
 		if ( is_array( $result ) && 0 < count( $result ) ) {
 			$contexts = [];
 			foreach ( $result as $item ) {
-				$contexts[] = $item['context'];
+				if ( $q < $item['sum_hit'] ) {
+					$contexts[] = $item['country'];
+				}
 			}
 			if ( $cache ) {
 				Cache::set_global( $id, $contexts, 'infinite' );
@@ -617,10 +640,11 @@ class Schema {
 	 * @param   boolean $not         Optional. Exclude extra filter.
 	 * @param   string  $order       Optional. The sort order of results.
 	 * @param   integer $limit       Optional. The number of results to return.
+	 * @param   integer $quality     Optional. Min hit number.
 	 * @return  array   The grouped list.
 	 * @since    1.0.0
 	 */
-	public static function get_grouped_list( $source, $group, $count, $filter, $cache = true, $extra_field = '', $extras = [], $not = false, $order = '', $limit = 0 ) {
+	public static function get_grouped_list( $source, $group, $count, $filter, $cache = true, $extra_field = '', $extras = [], $not = false, $order = '', $limit = 0, $quality = 0 ) {
 		// phpcs:ignore
 		$id = Cache::id( __FUNCTION__ . $source . $group . serialize( $count ) . serialize( $filter ) . $extra_field . serialize( $extras ) . ( $not ? 'no' : 'yes') . $order . (string) $limit);
 		if ( $cache ) {
@@ -631,18 +655,27 @@ class Schema {
 		}
 		$where_extra = '';
 		if ( 0 < count( $extras ) && '' !== $extra_field ) {
-			$where_extra = ' AND ' . $extra_field . ( $not ? ' NOT' : '' ) . " IN ( '" . implode( "', '", $extras ) . "' )";
+			$where_extra .= ' AND ' . $extra_field . ( $not ? ' NOT' : '' ) . " IN ( '" . implode( "', '", $extras ) . "' )";
 		}
 		$sel = [];
 		switch ( $source ) {
 			case 'resource':
 				$sel = array_merge( self::browser_performance_select(), [ 'timestamp', 'site', 'id', 'scheme', 'category', 'mime', 'endpoint', 'authority', 'initiator' ] );
+				if ( 1 < $quality ) {
+					$group .= ' HAVING sum(hit) > ' . $quality;
+				}
 				break;
 			case 'navigation':
 				$sel = array_merge( self::browser_performance_select(), [ 'timestamp', 'site', 'endpoint', 'authent', 'country', 'class', 'device' ] );
+				if ( 1 < $quality ) {
+					$group .= ' HAVING sum(hit) > ' . $quality;
+				}
 				break;
 			case 'webvital':
 				$sel = array_merge( self::webvitals_select(), [ 'timestamp', 'site', 'endpoint', 'authent', 'country', 'class', 'device' ] );
+				if ( 1 < $quality ) {
+					$group .= ' HAVING ' . self::webvitals_sum() . ' > ' . $quality;
+				}
 				break;
 		}
 		foreach ( $count as $c ) {
@@ -651,8 +684,9 @@ class Schema {
 		global $wpdb;
 		$sql  = 'SELECT ' . implode( ', ', $sel ) . ' FROM ';
 		$sql .= $wpdb->base_prefix . ( 'resource' === $source ? self::$resources : self::$statistics ) . ' WHERE (' . implode( ' AND ', $filter ) . ') ' . $where_extra . ' GROUP BY ' . $group . ' ' . $order . ( $limit > 0 ? 'LIMIT ' . $limit : '' ) . ';';
-		if ( 'resource' === $source ) {
+		if ( 'webvital' === $source ) {
 			//\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( $sql );
+			//TODO:error_log($sql);
 		}
 		// phpcs:ignore
 		$result = $wpdb->get_results( $sql, ARRAY_A );

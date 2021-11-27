@@ -16,6 +16,7 @@ use Vibes\System\Blog;
 use Vibes\System\Cache;
 use Vibes\System\Date;
 use Vibes\System\Conversion;
+use Vibes\System\Device;
 use Vibes\System\Mime;
 use Vibes\System\Option;
 use Vibes\System\Role;
@@ -28,6 +29,7 @@ use Vibes\System\UUID;
 use Feather;
 use Vibes\System\GeoIP;
 use Vibes\System\BrowserPerformance;
+use Vibes\System\WebVitals;
 
 
 /**
@@ -96,6 +98,22 @@ class Analytics {
 	 * @var    string    $site    The queried site.
 	 */
 	public $site = 'all';
+
+	/**
+	 * The queried country.
+	 *
+	 * @since  1.0.0
+	 * @var    string    $country    The queried country.
+	 */
+	public $country = 'all';
+
+	/**
+	 * The queried authent.
+	 *
+	 * @since  1.0.0
+	 * @var    string    $authent    The queried authent.
+	 */
+	public $authent = 'all';
 
 	/**
 	 * The start date.
@@ -177,6 +195,14 @@ class Analytics {
 	];
 
 	/**
+	 * Available countries.
+	 *
+	 * @since  1.0.0
+	 * @var    array    $available_countries    The available countries.
+	 */
+	private $available_countries = [];
+
+	/**
 	 * The trace ticks.
 	 *
 	 * @since  1.0.0
@@ -196,9 +222,11 @@ class Analytics {
 	 * @param   string  $id      The queried ID.
 	 * @param   boolean $reload  Is it a reload of an already displayed analytics.
 	 * @param   string  $extra   The extra view to render.
+	 * @param   string  $authent The authent mode.
+	 * @param   string  $country The country.
 	 * @since    1.0.0
 	 */
-	public function __construct( $source, $domain, $type, $site, $start, $end, $id, $reload, $extra ) {
+	public function __construct( $source, $domain, $type, $site, $start, $end, $id, $reload, $extra, $authent, $country ) {
 		$this->source = $source;
 		$this->id     = $id;
 		$this->extra  = $extra;
@@ -239,13 +267,15 @@ class Analytics {
 				case 'endpoint':
 					$this->filter[]   = "endpoint='" . $id . "'";
 					$this->previous[] = "endpoint='" . $id . "'";
-					$this->subdomain  = Schema::get_authority( $this->source, $this->filter );
-					break;
-				case 'country':
-					$this->filter[]   = "country='" . strtoupper( $id ) . "'";
-					$this->previous[] = "country='" . strtoupper( $id ) . "'";
+					if ( 'resource' === $this->source ) {
+						$this->subdomain = Schema::get_authority( $this->source, $this->filter );
+					}
 					break;
 				default:
+					if ( 'webvital' === $this->source ) {
+						$this->filter[]   = "endpoint='" . $id . "'";
+						$this->previous[] = "endpoint='" . $id . "'";
+					}
 					$this->type = 'summary';
 			}
 		}
@@ -271,6 +301,20 @@ class Analytics {
 			$this->previous[] = "timestamp='" . $start->format( 'Y-m-d' ) . "'";
 		} else {
 			$this->previous[] = "timestamp>='" . $start->format( 'Y-m-d' ) . "' and timestamp<='" . $end->format( 'Y-m-d' ) . "'";
+		}
+		if ( 'resource' !== $source ) {
+			if ( 'all' !== $authent ) {
+				$this->filter[] = 'authent=' . $authent;
+			}
+			$this->authent             = $authent;
+			$this->available_countries = Schema::get_distinct_countries( $this->source, $this->filter, ! $this->is_today );
+			if ( 'all' !== strtolower( $country ) && ! in_array( strtoupper( $country ), $this->available_countries, true ) ) {
+				$country = 'all';
+			}
+			if ( 'all' !== strtolower( $country ) ) {
+				$this->filter[] = "country='" . strtoupper( $country ) . "'";
+			}
+			$this->country = strtoupper( $country );
 		}
 	}
 
@@ -300,6 +344,13 @@ class Analytics {
 			$this->source = substr( $query, 0, strpos( $query, '.' ) );
 			$query        = str_replace( $this->source . '.', '', $query );
 		}
+		if ( 0 < strpos( $query, '_' ) ) {
+			$tquery = substr( $query, 0, strpos( $query, '_' ) );
+			$sub    = str_replace( $tquery . '_', '', $query );
+			$query  = $tquery;
+		} else {
+			$sub = '';
+		}
 		switch ( $query ) {
 			case 'top-domains':
 				return $this->query_top( 'domains', (int) $queried );
@@ -324,14 +375,20 @@ class Analytics {
 			case 'authorities':
 				return $this->query_list( 'authorities' );
 			case 'endpoints':
+				if ( 'webvital' === $this->source ) {
+					return $this->query_webvital_list( 'endpoints' );
+				}
 				return $this->query_list( 'endpoints' );
 			case 'sites':
+				if ( 'webvital' === $this->source ) {
+					return $this->query_webvital_list( 'sites' );
+				}
 				return $this->query_list( 'sites' );
-
-
-
-
-
+			case 'class':
+			case 'device':
+				return $this->query_webvital( $query, $sub );
+			case 'main-webvital-chart':
+				return $this->query_webvital_chart();
 
 			case 'main-chart':
 				return $this->query_chart();
@@ -339,9 +396,6 @@ class Analytics {
 				return $this->query_map();
 			case 'kpi':
 				return $this->query_kpi( $queried );
-
-
-
 
 			case 'codes':
 				return $this->query_list( 'codes' );
@@ -359,6 +413,128 @@ class Analytics {
 				return $this->query_pie( 'method', (int) $queried );
 		}
 		return [];
+	}
+
+	/**
+	 * Query statistics table.
+	 *
+	 * @param   array  $row        The type of widget.
+	 * @param   string  $field     The class or device id.
+	 * @return string  The result of the query, ready to encode.
+	 * @since    1.0.0
+	 */
+	private function get_webvital( $row, $field ) {
+		if ( 0 === (int) $row[ 'avg_' . $field ] ) {
+			$value = '-';
+			$level = 'none';
+		} else {
+			$value = WebVitals::display_value( $field, $row[ 'avg_' . $field ] );
+			$level = WebVitals::get_rate_field( $field, $row[ 'avg_' . $field ] );
+		}
+		$result  = '<div class="vibes-webvital-container">';
+		$result .= '<div class="vibes-webvital-text">';
+		$result .= '<span class="vibes-webvital-definition vibes-webvital-definition-' . $level . '">' . WebVitals::$metrics_names[ $field ] . '</span>';
+		$result .= '<span class="vibes-webvital-index vibes-webvital-index-' . $level . '">' . $value . '</span>';
+		$result .= '</div>';
+		$result .= '<div class="vibes-webvital-bar">';
+		$result .= '<div class="vibes-webvital-bar-none">' . esc_html__( 'Not Enough Data', 'vibes' ) . '</div>';
+		$prec    = 0;
+		$shift   = 0;
+		$cpt     = 20;
+		if ( 'none' !== $level ) {
+			foreach ( [ 'good', 'impr', 'poor' ] as $key => $spec ) {
+				$remaining = 0;
+				if ( 'good' === $spec ) {
+					$remaining = (int) round( 100 * ( $row[ 'pct_' . $field . '_impr' ] + $row[ 'pct_' . $field . '_poor' ] ) );
+				}
+				if ( 'impr' === $spec ) {
+					$remaining = (int) round( 100 * $row[ 'pct_' . $field . '_poor' ] );
+				}
+				if ( 0 === $remaining ) {
+					$val = 100 - $shift;
+					$pos = 'width:100%;';
+				} else {
+					$val = (int) round( 100 * $row[ 'pct_' . $field . '_' . $spec ] );
+					$pos = 'width:' . ( $val + 1 + ( 2 * $key ) ) . '%;';
+				}
+				$shift_str = ( 0 === $shift ? '' : 'right:-' . $shift . '%;' );
+				$up_str    = 'top:-' . $cpt . 'px;';
+				if ( 0 === $prec && 0 !== $val ) {
+					$width_str = 'width:100%;';
+				} else {
+					$width_str = 'width:' . ( 0 === $remaining ? $val + 0.1 : $val ) . '%;';
+				}
+				if ( 0 !== $remaining ) {
+					$width_str = 'width:' . ( 100 - $shift ) . '%;';
+				}
+				if ( 0 < $val ) {
+					$result .= '<div class="vibes-webvital-bar-' . $spec . '" style="' . $width_str . $shift_str . $up_str . '"><span class="vibes-webvital-percent" style="' . $pos . '">' . $val . '%</span></div>';
+					$prec   += $val;
+					$cpt    += 20;
+				} else {
+					$val = 0;
+				}
+				$shift += $val;
+			}
+		}
+		$result .= '</div>';
+		$result .= '</div>';
+		return $result;
+	}
+
+
+	/**
+	 * Query statistics table.
+	 *
+	 * @param   string  $type   The type of widget.
+	 * @param   string  $id     The class or device id.
+	 * @return array  The result of the query, ready to encode.
+	 * @since    1.0.0
+	 */
+	private function query_webvital( $type, $id ) {
+		//TODO:\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( print_r($this->filter,true) );
+		$query = Schema::get_grouped_list( $this->source, $type, [], $this->filter, ! $this->is_today, '', [], false, '', 0, Option::site_get( 'quality' ) );
+		$data  = [];
+		if ( 0 < count( $query ) ) {
+			foreach ( $query as $row ) {
+				if ( $id === $row[ $type ] ) {
+					$data[] = $row;
+				}
+			}
+		}
+		if ( 0 === count( $data ) ) {
+			foreach ( WebVitals::$rated_metrics as $metric ) {
+				$data[0][ 'avg_' . $metric ] = 0;
+				foreach ( [ 'good', 'impr', 'poor' ] as $field ) {
+					$data[0][ 'pct_' . $metric . '_' . $field ] = 0;
+				}
+			}
+			foreach ( WebVitals::$unrated_metrics as $metric ) {
+				$data[0][ 'avg_' . $metric ] = 0;
+			}
+		}
+		$data    = $data[0];
+		$result  = '<div class="vibes-webvital-box">';
+		$result .= '<div class="vibes-corewebvital-box">';
+		$result .= $this->get_webvital( $data, 'LCP' );
+		$result .= '<div class="vibes-webvital-separator">&nbsp;</div>';
+		$result .= $this->get_webvital( $data, 'FID' );
+		$result .= '<div class="vibes-webvital-separator">&nbsp;</div>';
+		$result .= $this->get_webvital( $data, 'CLS' );
+		$result .= '<div class="vibes-webvital-separator">&nbsp;</div>';
+		$result .= $this->get_webvital( $data, 'FCP' );
+		$result .= '</div>';
+		$result .= '<div class="vibes-kpiwebvital-box">';
+
+		$result .= '<span>aaa aaa</span>';
+
+		$result .= '<div class="vibes-webvital-separator">&nbsp;</div>';
+
+		$result .= '<span>aaa aaa</span>';
+
+		$result .= '</div>';
+		$result .= '</div>';
+		return [ 'vibes-' . $type . '_' . $id => $result ];
 	}
 
 	/**
@@ -470,7 +646,7 @@ class Analytics {
 		} else {
 			$result  = '<div class="vibes-pie-box">';
 			$result .= '<div class="vibes-pie-graph" style="margin:0 !important;">';
-			$result .= '<div class="vibes-pie-graph-nodata-handler-' . $size . '" id="vibes-pie-' . $type . '"><span style="position: relative; top: 37px;">-&nbsp;' . esc_html__( 'No Data', 'ip-locator' ) . '&nbsp;-</span></div>';
+			$result .= '<div class="vibes-pie-graph-nodata-handler-' . $size . '" id="vibes-pie-' . $type . '"><span style="position: relative; top: 37px;">-&nbsp;' . esc_html__( 'No Data', 'vibes' ) . '&nbsp;-</span></div>';
 			$result .= '</div>';
 			$result .= '</div>';
 			$result .= '</div>';
@@ -595,7 +771,7 @@ class Analytics {
 		$result = '<div class="vibes-span-wrap">';
 		// Span text
 		$result .= '<div class="vibes-span-text">';
-		$result .= '<span class="vibes-span-text-label">' . str_pad( '', ( $level * 3 ) * 6, '&nbsp;' ) . ( 0 === $level ? '' : '&nbsp;&nbsp;' ) . $this->get_span_name( $span['name'] ) . $span['comp']. '</span>';
+		$result .= '<span class="vibes-span-text-label">' . str_pad( '', ( $level * 3 ) * 6, '&nbsp;' ) . ( 0 === $level ? '' : '&nbsp;&nbsp;' ) . $this->get_span_name( $span['name'] ) . $span['comp'] . '</span>';
 		$result .= '<span class="vibes-span-text-time">' . $time . '</span>';
 		$result .= '</div>';
 		// Span timeline
@@ -710,9 +886,6 @@ class Analytics {
 				$group = 'site';
 				break;
 
-
-
-
 			case 'codes':
 				$group = 'code';
 				break;
@@ -805,7 +978,6 @@ class Analytics {
 					$site = Blog::get_blog_url( $row['site'] );
 					$name = '<img style="width:16px;vertical-align:bottom;" src="' . Favicon::get_base64( $site ) . '" />&nbsp;&nbsp;<span class="vibes-table-text"><a href="' . esc_url( $url ) . '">' . $site . '</a></span>';
 					break;
-
 
 				case 'codes':
 					if ( '0' === $name ) {
@@ -910,6 +1082,75 @@ class Analytics {
 	/**
 	 * Query statistics table.
 	 *
+	 * @param   string $type    The type of list.
+	 * @return array  The result of the query, ready to encode.
+	 * @since    1.0.0
+	 */
+	private function query_webvital_list( $type ) {
+		$follow = '';
+		$order  = '';
+		switch ( $type ) {
+			case 'endpoints':
+				$group  = 'endpoint';
+				$follow = 'endpoint';
+				$order  = 'ORDER BY endpoint ASC';
+				break;
+			case 'sites':
+				$group = 'site';
+				$order = 'ORDER BY site DESC';
+				break;
+		}
+		$data    = Schema::get_grouped_list( $this->source, $group, [], $this->filter, ! $this->is_today, '', [], false, $order );
+		$result  = '<table class="vibes-table">';
+		$result .= '<tr>';
+		$result .= '<th>&nbsp;</th>';
+		foreach ( array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics ) as $metric ) {
+			$result .= '<th>' . $metric . '</th>';
+		}
+		$result .= '</tr>';
+		$site    = '';
+		$icon    = '';
+		foreach ( $data as $key => $row ) {
+			$url = $this->get_url(
+				[],
+				[
+					'type' => $follow,
+					'id'   => false === strpos( $group, ',' ) ? $row[ $group ] : 'unknown',
+				]
+			);
+			switch ( $type ) {
+				case 'endpoints':
+					if ( '' === $site ) {
+						$site = Blog::get_blog_url( $row['site'] );
+						$icon = Favicon::get_base64( $site );
+					}
+					$name = '<img style="width:16px;vertical-align:bottom;" src="' . $icon . '" />&nbsp;&nbsp;<span class="vibes-table-text"><a href="' . esc_url( $url ) . '">' . $row['endpoint'] . '</a></span>';
+					break;
+				case 'sites':
+					$url  = $this->get_url(
+						[],
+						[
+							'site' => $row['site'],
+						]
+					);
+					$site = Blog::get_blog_url( $row['site'] );
+					$name = '<img style="width:16px;vertical-align:bottom;" src="' . Favicon::get_base64( $site ) . '" />&nbsp;&nbsp;<span class="vibes-table-text"><a href="' . esc_url( $url ) . '">' . $site . '</a></span>';
+					break;
+			}
+			$result .= '<tr>';
+			$result .= '<td data-th="">' . $name . '</td>';
+			foreach ( array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics ) as $metric ) {
+				$result .= '<td data-th="' . $metric . '"><span class="vibes-list-item-' . WebVitals::get_rate_field( $metric, $row[ 'avg_' . $metric ] ) . '">' . WebVitals::display_value( $metric, $row[ 'avg_' . $metric ] ) . '</span></td>';
+			}
+			$result .= '</tr>';
+		}
+		$result .= '</table>';
+		return [ 'vibes-' . $type => $result ];
+	}
+
+	/**
+	 * Query statistics table.
+	 *
 	 * @return array The result of the query, ready to encode.
 	 * @since    1.0.0
 	 */
@@ -952,6 +1193,171 @@ class Analytics {
 		$result .= '});';
 		$result .= '</script>';
 		return [ 'vibes-map' => $result ];
+	}
+
+	/**
+	 * Query statistics table.
+	 *
+	 * @return array The result of the query, ready to encode.
+	 * @since    1.0.0
+	 */
+	private function query_webvital_chart() {
+		$uuid    = UUID::generate_unique_id( 5 );
+		$data    = Schema::get_time_series( 'webvital', $this->filter, ! $this->is_today );
+		$series  = [];
+		$metrics = array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics );
+		$start   = '';
+		$max     = [];
+		foreach ( $data as $timestamp => $row ) {
+			if ( '' === $start ) {
+				$start = $timestamp;
+			}
+			$ts = 'new Date(' . (string) strtotime( $timestamp ) . '000)';
+			foreach ( $metrics as $metric ) {
+				$val = WebVitals::get_graphable_value( $metric, $row[ 'avg_' . $metric ] );
+				if ( ( array_key_exists( strtolower( $metric ), $max ) && $max[ strtolower( $metric ) ] < $val ) || ! array_key_exists( strtolower( $metric ), $max ) ) {
+					$max[ strtolower( $metric ) ] = $val;
+				}
+				$series[ strtolower( $metric ) ]['avg'][] = [
+					'x' => $ts,
+					'y' => $val,
+				];
+				foreach ( [ 'good', 'impr', 'poor' ] as $field ) {
+					if ( array_key_exists( 'pct_' . $metric . '_' . $field, $row ) ) {
+						$series[ strtolower( $metric ) ][ $field ][] = [
+							'x' => $ts,
+							'y' => round( 100 * $row[ 'pct_' . $metric . '_' . $field ], 1 ),
+						];
+					}
+				}
+			}
+		}
+		$before = [
+			'x' => 'new Date(' . (string) ( strtotime( $start ) - 86400 ) . '000)',
+			'y' => 'null',
+		];
+		$after  = [
+			'x' => 'new Date(' . (string) ( strtotime( $timestamp ) + 86400 ) . '000)',
+			'y' => 'null',
+		];
+		$scale  = [];
+		foreach ( $metrics as $metric ) {
+			$metric = strtolower( $metric );
+			array_unshift( $series[ $metric ]['avg'], $before );
+			$series[ $metric ]['avg'][] = $after;
+			$series[ $metric ]['avg']   = wp_json_encode(
+				[
+					'series' => [
+						[
+							'name' => strtoupper( $metric ),
+							'data' => $series[ $metric ]['avg'],
+						],
+					],
+				],
+			);
+			$series[ $metric ]['avg']   = str_replace( '"x":"new', '"x":new', $series[ $metric ]['avg'] );
+			$series[ $metric ]['avg']   = str_replace( ')","y"', '),"y"', $series[ $metric ]['avg'] );
+			$series[ $metric ]['avg']   = str_replace( '"null"', 'null', $series[ $metric ]['avg'] );
+			foreach ( [ 'good', 'impr', 'poor' ] as $field ) {
+				if ( 'ttfb' !== $metric ) {
+					array_unshift( $series[ $metric ][ $field ], $before );
+					$series[ $metric ][ $field ][] = $after;
+				}
+			}
+			if ( 'ttfb' !== $metric ) {
+				$series[ $metric ]['pct'] = wp_json_encode(
+					[
+						'series' => [
+							[
+								'name' => esc_html__( 'Good', 'vibes' ),
+								'data' => $series[ $metric ]['good'],
+							],
+							[
+								'name' => esc_html__( 'Needs Improvement', 'vibes' ),
+								'data' => $series[ $metric ]['impr'],
+							],
+							[
+								'name' => esc_html__( 'Poor', 'vibes' ),
+								'data' => $series[ $metric ]['poor'],
+							],
+						],
+					],
+				);
+			} else {
+				$series[ $metric ]['pct'] = wp_json_encode(
+					[
+						'series' => [],
+					],
+				);
+			}
+			$series[ $metric ]['pct'] = str_replace( '"x":"new', '"x":new', $series[ $metric ]['pct'] );
+			$series[ $metric ]['pct'] = str_replace( ')","y"', '),"y"', $series[ $metric ]['pct'] );
+			$series[ $metric ]['pct'] = str_replace( '"null"', 'null', $series[ $metric ]['pct'] );
+			if ( 'ttfb' === $metric ) {
+				$scale[ $metric ] = [ 500, 1000, 1500, 2000, 2500 ];
+				$scale[ $metric ] = 'ticks: [' . implode( ',', $scale[ $metric ] ) . '], ';
+				$max[ $metric ]   = '';
+			} else {
+				foreach ( WebVitals::$metrics_rates[ strtoupper( $metric ) ] as $rate ) {
+					$val = ( $rate / WebVitals::$metrics_ratios[ strtoupper( $metric ) ] );
+					if ( $max[ $metric ] < $val ) {
+						$max[ $metric ] = $val;
+					}
+					$scale[ $metric ][] = $val;
+				}
+				$scale[ $metric ] = 'ticks: [' . implode( ',', $scale[ $metric ] ) . '], ';
+				$max[ $metric ]   = 'high: ' . $max[ $metric ] . ', ';
+			}
+		}
+
+		// Rendering.
+		$divisor = $this->duration + 1;
+		while ( 11 < $divisor ) {
+			foreach ( [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397 ] as $divider ) {
+				if ( 0 === $divisor % $divider ) {
+					$divisor = $divisor / $divider;
+					break;
+				}
+			}
+		}
+		$result = '<div class="vibes-multichart-handler">';
+		foreach ( $metrics as $metric ) {
+			$metric  = strtolower( $metric );
+			$result .= '<div class="vibes-multichart-item' . ( 'cls' === $metric ? ' active' : '' ) . '" id="vibes-chart-' . $metric . '">';
+			$result .= '<div class="vibes-multichart-line-container" id="vibes-line-' . $metric . '"></div>';
+			$result .= '<div class="vibes-multichart-bars-container" id="vibes-bars-' . $metric . '"></div>';
+			$result .= '</div>';
+			$result .= '<script>';
+			$result .= 'jQuery(function ($) {';
+			$result .= ' var ' . $metric . '_line_data' . $uuid . ' = ' . $series[ $metric ]['avg'] . ';';
+			$result .= ' var ' . $metric . '_bars_data' . $uuid . ' = ' . $series[ $metric ]['pct'] . ';';
+			$result .= ' var ' . $metric . '_line_tooltip' . $uuid . ' = Chartist.plugins.tooltip({percentage: false, appendToBody: true});';
+			$result .= ' var ' . $metric . '_bars_tooltip' . $uuid . ' = Chartist.plugins.tooltip({percentage: true, appendToBody: true});';
+			$result .= ' var ' . $metric . '_line_option' . $uuid . ' = {';
+			$result .= '  height: 300,';
+			$result .= '  fullWidth: true,';
+			$result .= '  showArea: false,';
+			$result .= '  showLine: true,';
+			$result .= '  showPoint: false,';
+			$result .= '  plugins: [' . $metric . '_line_tooltip' . $uuid . '],';
+			$result .= '  axisX: {scaleMinSpace: 100, type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
+			$result .= '  axisY: {type: Chartist.FixedScaleAxis, ' . $scale[ $metric ] . $max[ $metric ] . 'low: 0, labelInterpolationFnc: function (value) {return value.toString()' . ( 'cls' === $metric ? '' : ' + " ms"' ) . ';}},';
+			$result .= ' };';
+			$result .= ' var ' . $metric . '_bars_option' . $uuid . ' = {';
+			$result .= '  height: 300,';
+			$result .= '  stackBars: true,';
+			$result .= '  stackMode: "accumulate",';
+			$result .= '  seriesBarDistance: 0,high: 100, low: 0,';
+			$result .= '  plugins: [' . $metric . '_bars_tooltip' . $uuid . '],';
+			$result .= '  axisX: {scaleMinSpace: 100, type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
+			$result .= ' };';
+			$result .= ' new Chartist.Line("#vibes-line-' . $metric . '", ' . $metric . '_line_data' . $uuid . ', ' . $metric . '_line_option' . $uuid . ');';
+			$result .= ' new Chartist.Bar("#vibes-bars-' . $metric . '", ' . $metric . '_bars_data' . $uuid . ', ' . $metric . '_bars_option' . $uuid . ');';
+			$result .= '});';
+			$result .= '</script>';
+		}
+		$result .= '</div>';
+		return [ 'vibes-webvital-chart' => $result ];
 	}
 
 	/**
@@ -1171,14 +1577,14 @@ class Analytics {
 		$json_uptime     = str_replace( ')","y"', '),"y"', $json_uptime );
 		$json_uptime     = str_replace( '"null"', 'null', $json_uptime );
 		// Rendering.
-		if ( 4 < $this->duration ) {
-			if ( 1 === $this->duration % 2 ) {
-				$divisor = 6;
-			} else {
-				$divisor = 5;
+		$divisor = $this->duration + 1;
+		while ( 11 < $divisor ) {
+			foreach ( [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397 ] as $divider ) {
+				if ( 0 === $divisor % $divider ) {
+					$divisor = $divisor / $divider;
+					break;
+				}
 			}
-		} else {
-			$divisor = $this->duration + 1;
 		}
 		$result  = '<div class="vibes-multichart-handler">';
 		$result .= '<div class="vibes-multichart-item active" id="vibes-chart-calls">';
@@ -1406,6 +1812,81 @@ class Analytics {
 	}
 
 	/**
+	 * Get the user selector.
+	 *
+	 * @return string  The selector ready to print.
+	 * @since    1.0.0
+	 */
+	public function get_user_selector() {
+		$breadcrumbs[] = [
+			'title' => ' - ' . esc_html__( 'All', 'vibes' ) . ' - ',
+			'url'   => $this->get_url( [ 'authent' ] ),
+		];
+		$breadcrumbs[] = [
+			'title' => esc_html__( 'Anonymous', 'vibes' ),
+			'url'   => $this->get_url( [], [ 'authent' => 0 ] ),
+		];
+		$breadcrumbs[] = [
+			'title' => esc_html__( 'Authenticated', 'vibes' ),
+			'url'   => $this->get_url( [], [ 'authent' => 1 ] ),
+		];
+		if ( 'all' === $this->authent ) {
+			$title = esc_html__( 'All', 'vibes' );
+		} elseif ( 0 === (int) $this->authent ) {
+			$title = esc_html__( 'Anonymous', 'vibes' );
+		} elseif ( 1 === (int) $this->authent ) {
+			$title = esc_html__( 'Authenticated', 'vibes' );
+		}
+		$result = '<select name="users" id="users" data="' . Feather\Icons::get_base64( 'users', 'none', '#5A738E' ) . '" class="vibes-select users" placeholder="' . $title . '" style="display:none;">';
+		foreach ( $breadcrumbs as $breadcrumb ) {
+			$result .= '<option value="' . $breadcrumb['url'] . '">' . $breadcrumb['title'] . '</option>';
+		}
+		$result .= '</select>';
+		$result .= '';
+		return $result;
+	}
+
+	/**
+	 * Get the user selector.
+	 *
+	 * @return string  The selector ready to print.
+	 * @since    1.0.0
+	 */
+	public function get_country_selector() {
+		$breadcrumbs[] = [
+			'title' => ' - ' . esc_html__( 'All', 'vibes' ) . ' - ',
+			'url'   => $this->get_url( [ 'country' ] ),
+		];
+		$b             = [];
+		foreach ( $this->available_countries as $country ) {
+			$b[] = [
+				'title' => L10n::get_country_name( strtoupper( $country ) ),
+				'url'   => $this->get_url( [], [ 'country' => $country ] ),
+			];
+		}
+		uasort(
+			$b,
+			function ( $a, $b ) {
+				if ( $a['title'] === $b['title'] ) {
+					return 0;
+				} return ( strtoupper( $a['title'] ) < strtoupper( $b['title'] ) ) ? -1 : 1;
+			}
+		);
+		$title = esc_html__( 'All', 'vibes' );
+		if ( in_array( $this->country, $this->available_countries, true ) ) {
+			$title = L10n::get_country_name( strtoupper( $this->country ) );
+		}
+		$result = '<select name="countries" id="countries" data="' . Feather\Icons::get_base64( 'globe', 'none', '#5A738E' ) . '" class="vibes-select countries" placeholder="' . $title . '" style="display:none;">';
+		foreach ( array_merge( $breadcrumbs, $b ) as $breadcrumb ) {
+			$result .= '<option value="' . $breadcrumb['url'] . '">' . $breadcrumb['title'] . '</option>';
+		}
+		$result .= '</select>';
+		$result .= '';
+
+		return $result;
+	}
+
+	/**
 	 * Get the title selector.
 	 *
 	 * @return string  The selector ready to print.
@@ -1522,46 +2003,78 @@ class Analytics {
 				];
 				break;
 			case 'endpoint':
-				$title         = esc_html__( 'Endpoint Summary', 'vibes' );
-				$breadcrumbs[] = [
-					'title'    => esc_html__( 'Subdomain Summary', 'vibes' ),
-					'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->subdomain ),
-					'url'      => $this->get_url(
-						[ 'extra' ],
-						[
-							'type'   => 'authority',
-							'domain' => $this->domain,
-							'id'     => $this->subdomain,
-						]
-					),
-				];
-				$breadcrumbs[] = [
-					'title'    => esc_html__( 'Domain Summary', 'vibes' ),
-					'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->domain ),
-					'url'      => $this->get_url(
-						[ 'extra' ],
-						[
-							'type'   => 'domain',
-							'domain' => $this->domain,
-							'id'     => $this->domain,
-						]
-					),
-				];
+				switch ( $this->extra ) {
+					case 'devices':
+						$title         = esc_html__( 'Mobiles Breakdown', 'vibes' );
+						$breadcrumbs[] = [
+							'title'    => esc_html__( 'Endpoint Summary', 'vibes' ),
+							'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->id ),
+							'url'      => $this->get_url(
+								[ 'extra' ],
+								[
+									'type' => 'endpoint',
+									'id'   => $this->id,
+								]
+							),
+						];
+						break;
+					default:
+						$title = esc_html__( 'Endpoint Summary', 'vibes' );
+				}
+				if ( 'resource' === $this->source ) {
+					$breadcrumbs[] = [
+						'title'    => esc_html__( 'Subdomain Summary', 'vibes' ),
+						'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->subdomain ),
+						'url'      => $this->get_url(
+							[ 'extra' ],
+							[
+								'type'   => 'authority',
+								'domain' => $this->domain,
+								'id'     => $this->subdomain,
+							]
+						),
+					];
+					$breadcrumbs[] = [
+						'title'    => esc_html__( 'Domain Summary', 'vibes' ),
+						'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->domain ),
+						'url'      => $this->get_url(
+							[ 'extra' ],
+							[
+								'type'   => 'domain',
+								'domain' => $this->domain,
+								'id'     => $this->domain,
+							]
+						),
+					];
+				}
 				break;
 			case 'country':
 				$title    = esc_html__( 'Country', 'vibes' );
 				$subtitle = L10n::get_country_name( $this->id );
 				break;
+			default:
+				$title    = 'unknow';
+				$subtitle = 'unknown';
 
+		}
+		switch ( $this->source ) {
+			case 'webvital':
+				$name = esc_html__( 'Web Vitals', 'vibes' );
+				break;
+			case 'resource':
+				$name = esc_html__( 'Resources', 'vibes' );
+				break;
+			default:
+				$name = VIBES_PRODUCT_NAME;
 		}
 		$breadcrumbs[] = [
 			'title'    => esc_html__( 'Main Summary', 'vibes' ),
-			'subtitle' => sprintf( esc_html__( 'Return to Vibes main page.', 'vibes' ) ),
+			'subtitle' => sprintf( esc_html__( 'Return to %s main page.', 'vibes' ), $name ),
 			'url'      => $this->get_url( [ 'domain', 'id', 'extra', 'type' ] ),
 		];
-		$result        = '<select name="sources" id="sources" class="vibes-select sources" placeholder="' . $title . '" style="display:none;">';
+		$result        = '<select name="sources" id="sources" data="" class="vibes-select sources" placeholder="' . $title . '" style="display:none;">';
 		foreach ( $breadcrumbs as $breadcrumb ) {
-			$result .= '<option value="' . $breadcrumb['url'] . '">' . $breadcrumb['title'] . '~-' . $breadcrumb['subtitle'] . '-~</span></option>';
+			$result .= '<option value="' . $breadcrumb['url'] . '">' . $breadcrumb['title'] . '~-' . $breadcrumb['subtitle'] . '-~</option>';
 		}
 		$result .= '</select>';
 		$result .= '';
@@ -1610,6 +2123,7 @@ class Analytics {
 			case 'domains':
 			case 'authorities':
 			case 'endpoints':
+			case 'devices':
 				$title = $this->get_title_selector();
 				break;
 		}
@@ -1617,8 +2131,12 @@ class Analytics {
 		$result .= $this->get_site_bar();
 		$result .= '<span class="vibes-title">' . $title . '</span>';
 		$result .= '<span class="vibes-subtitle">' . $subtitle . '</span>';
-		$result .= '<span class="vibes-datepicker">' . $this->get_date_box() . '</span>';
-
+		if ( 'resource' !== $this->source ) {
+			$pickers = $this->get_country_selector() . $this->get_user_selector() . $this->get_date_box();
+		} else {
+			$pickers = $this->get_date_box();
+		}
+		$result .= '<span class="vibes-picker">' . $pickers . '</span>';
 		$result .= '</div>';
 		return $result;
 	}
@@ -1641,6 +2159,42 @@ class Analytics {
 		$result .= '</div>';
 		$result .= '</div>';
 		return $result;
+	}
+
+	/**
+	 * Get the main chart.
+	 *
+	 * @return string  The main chart ready to print.
+	 * @since    1.0.0
+	 */
+	public function get_webvital_chart() {
+		if ( 1 < $this->duration ) {
+			$sep    = '';
+			$detail = '';
+			foreach ( array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics ) as $metric ) {
+				$detail .= $sep . '<span class="vibes-chart-button not-ready left" id="vibes-chart-button-' . strtolower( $metric ) . '" data-position="left" data-tooltip="' . preg_replace( '/\(.*\)/iU', '', WebVitals::$metrics_names[ $metric ] ) . '"><span class="vibes-graph-button">' . $metric . '</span></span>';
+				if ( '' === $sep ) {
+					$sep = '&nbsp;&nbsp;&nbsp;';
+				}
+			}
+			$result  = '<div class="vibes-row">';
+			$result .= '<div class="vibes-box vibes-box-full-line">';
+			$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . esc_html__( 'Metrics Variations', 'vibes' ) . '<span class="vibes-module-more">' . $detail . '</span></span></div>';
+			$result .= '<div class="vibes-module-content" id="vibes-webvital-chart">' . $this->get_graph_placeholder( 274 ) . '</div>';
+			$result .= '</div>';
+			$result .= '</div>';
+			$result .= $this->get_refresh_script(
+				[
+					'query'   => 'main-webvital-chart',
+					'country' => $this->country,
+					'authent' => $this->authent,
+					'queried' => 0,
+				]
+			);
+			return $result;
+		} else {
+			return '';
+		}
 	}
 
 	/**
@@ -1673,6 +2227,75 @@ class Analytics {
 		} else {
 			return '';
 		}
+	}
+
+	/**
+	 * Get the web vital widget.
+	 *
+	 * @return string  The widget ready to print.
+	 * @since    1.0.0
+	 */
+	public function get_webvital_class( $class, $position ) {
+		switch ( $this->type ) {
+			case 'endpoint':
+				$url = $this->get_url(
+					[],
+					[
+						'type'  => 'endpoint',
+						'extra' => 'devices',
+					]
+				);
+				break;
+			default:
+				$url = $this->get_url(
+					[],
+					[
+						'type'  => 'summary',
+						'extra' => 'devices',
+					]
+				);
+		}
+		$result = '<div class="vibes-50-module vibes-50-module-' . $position . '">';
+		if ( 'mobile' === $class && class_exists( 'PODeviceDetector\API\Device' ) ) {
+			$detail  = '<a href="' . esc_url( $url ) . '"><img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'zoom-in', 'none', '#73879C' ) . '" /></a>';
+			$help    = esc_html__( 'View the mobiles breakdown.', 'vibes' );
+			$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . Device::get_class_name( $class ) . '</span><span class="vibes-module-more left" data-position="left" data-tooltip="' . $help . '">' . $detail . '</span></div>';
+		} else {
+			$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . Device::get_class_name( $class ) . '</span></div>';
+		}
+		$result .= '<div class="vibes-module-content" id="vibes-class_' . $class . '">' . $this->get_graph_placeholder( 200 ) . '</div>';
+		$result .= '</div>';
+		$result .= $this->get_refresh_script(
+			[
+				'query'   => $this->source . '.class_' . $class,
+				'country' => $this->country,
+				'authent' => $this->authent,
+				'queried' => 0,
+			]
+		);
+		return $result;
+	}
+
+	/**
+	 * Get the web vital widget.
+	 *
+	 * @return string  The widget ready to print.
+	 * @since    1.0.0
+	 */
+	public function get_webvital_device( $device, $position ) {
+		$result  = '<div class="vibes-50-module vibes-50-module-' . $position . '">';
+		$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . Device::get_device_name( $device ) . '</span></div>';
+		$result .= '<div class="vibes-module-content" id="vibes-device_' . $device . '">' . $this->get_graph_placeholder( 200 ) . '</div>';
+		$result .= '</div>';
+		$result .= $this->get_refresh_script(
+			[
+				'query'   => $this->source . '.device_' . $device,
+				'country' => $this->country,
+				'authent' => $this->authent,
+				'queried' => 0,
+			]
+		);
+		return $result;
 	}
 
 	/**
@@ -1729,6 +2352,50 @@ class Analytics {
 		$result .= $this->get_refresh_script(
 			[
 				'query'   => 'sites',
+				'queried' => 0,
+			]
+		);
+		return $result;
+	}
+
+	/**
+	 * Get the domains list.
+	 *
+	 * @return string  The table ready to print.
+	 * @since    1.0.0
+	 */
+	public function get_webvital_sites_list() {
+		$result  = '<div class="vibes-box vibes-box-full-line">';
+		$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . esc_html__( 'Sites Overview', 'vibes' ) . '</span></div>';
+		$result .= '<div class="vibes-module-content" id="vibes-sites">' . $this->get_graph_placeholder( 200 ) . '</div>';
+		$result .= '</div>';
+		$result .= $this->get_refresh_script(
+			[
+				'query'   => 'webvital.sites',
+				'country' => $this->country,
+				'authent' => $this->authent,
+				'queried' => 0,
+			]
+		);
+		return $result;
+	}
+
+	/**
+	 * Get the domains list.
+	 *
+	 * @return string  The table ready to print.
+	 * @since    1.0.0
+	 */
+	public function get_webvital_endpoints_list() {
+		$result  = '<div class="vibes-box vibes-box-full-line">';
+		$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . esc_html__( 'Endpoints Overview', 'vibes' ) . '</span></div>';
+		$result .= '<div class="vibes-module-content" id="vibes-endpoints">' . $this->get_graph_placeholder( 200 ) . '</div>';
+		$result .= '</div>';
+		$result .= $this->get_refresh_script(
+			[
+				'query'   => 'webvital.endpoints',
+				'country' => $this->country,
+				'authent' => $this->authent,
 				'queried' => 0,
 			]
 		);
@@ -1803,6 +2470,10 @@ class Analytics {
 	 */
 	public function get_extra_list() {
 		switch ( $this->extra ) {
+			case 'devices':
+				$title = esc_html__( 'Mobiles Breakdown', 'vibes' );
+				break;
+
 			case 'codes':
 				$title = esc_html__( 'All HTTP Codes', 'vibes' );
 				break;
@@ -2147,17 +2818,19 @@ class Analytics {
 		if ( '' !== $this->id ) {
 			$result .= '  id:"' . $this->id . '",';
 		}
-		$result .= '  type:"' . $this->source . '.' . $this->type . '",';
+		//$result .= '  type:"' . $this->source . '.' . $this->type . '",';
+		$result .= '  type:"' . $args['query'] . '",';
 		$result .= '  site:"' . $this->site . '",';
 		$result .= '  start:"' . $this->start . '",';
 		$result .= '  end:"' . $this->end . '",';
 		$result .= ' };';
 		$result .= ' $.post(ajaxurl, data, function(response) {';
 		$result .= ' var val = JSON.parse(response);';
+		$result .= ' console.log(val);';
 		$result .= ' $.each(val, function(index, value) {$("#" + index).html(value);});';
-		if ( array_key_exists( 'query', $args ) && 'main-chart' === $args['query'] ) {
+		if ( array_key_exists( 'query', $args ) && ( 'main-chart' === $args['query'] || 'main-webvital-chart' === $args['query'] ) ) {
 			$result .= '$(".vibes-chart-button").removeClass("not-ready");';
-			$result .= '$("#vibes-chart-button-calls").addClass("active");';
+			$result .= '$("#vibes-chart-button-lcp").addClass("active");';
 		}
 		$result .= ' });';
 		$result .= '});';
@@ -2178,6 +2851,10 @@ class Analytics {
 		$params['type']   = $this->source . '.' . $this->type;
 		$params['site']   = $this->site;
 		$params['domain'] = $this->domain;
+		if ( 'resource' !== $this->source ) {
+			$params['authent'] = $this->authent;
+			$params['country'] = $this->country;
+		}
 		if ( '' !== $this->id ) {
 			$params['id'] = $this->id;
 		}
@@ -2271,7 +2948,7 @@ class Analytics {
 	 * @since    1.0.0
 	 */
 	private function get_date_box() {
-		$result  = '<img style="width:13px;vertical-align:middle;" src="' . Feather\Icons::get_base64( 'calendar', 'none', '#5A738E' ) . '" />&nbsp;&nbsp;<span class="vibes-datepicker-value"></span>';
+		$result  = '<span class="vibes-datepicker"><img style="width:13px;vertical-align:middle;" src="' . Feather\Icons::get_base64( 'calendar', 'none', '#5A738E' ) . '" />&nbsp;&nbsp;<span class="vibes-datepicker-value"></span></span>';
 		$result .= '<script>';
 		$result .= 'jQuery(function ($) {';
 		$result .= ' moment.locale("' . L10n::get_display_locale() . '");';

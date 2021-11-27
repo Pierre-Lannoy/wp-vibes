@@ -51,6 +51,7 @@ function webVitalsReport({name, delta, value, id}) {
 
 function performanceReport(timing,type) {
 	let start     = timing.startTime > 0 ? timing.startTime : 0;
+	start         = timing.workerStart > 0 ? timing.workerStart : start;
 	let analytics = {
 		type: type,
 		resource: timing.name,
@@ -62,19 +63,19 @@ function performanceReport(timing,type) {
 			duration: timing.redirectEnd - timing.redirectStart,
 		},{
 			name:  'dns',
-			start: timing.domainLookupStart - start,
+			start: timing.domainLookupStart > start ? timing.domainLookupStart - start : 0,
 			duration: timing.domainLookupEnd - timing.domainLookupStart,
 		}]};
 	if ( 0 < timing.secureConnectionStart) {
 		analytics.metrics.push(
 			{
 				name:  'tcp',
-				start: timing.connectStart - start,
+				start: timing.connectStart > start ? timing.connectStart - start : 0,
 				duration: timing.connectEnd - timing.connectStart,
 			},
 			{
 				name:  'ssl',
-				start: timing.secureConnectionStart - start,
+				start: timing.secureConnectionStart > start ? timing.secureConnectionStart - start : 0,
 				duration: timing.connectEnd - timing.secureConnectionStart,
 			}
 		);
@@ -82,7 +83,7 @@ function performanceReport(timing,type) {
 		analytics.metrics.push(
 			{
 				name:  'tcp',
-				start: timing.connectStart - start,
+				start: timing.connectStart > start ? timing.connectStart - start : 0,
 				duration: timing.connectEnd - timing.connectStart,
 			}
 		);
@@ -90,12 +91,12 @@ function performanceReport(timing,type) {
 	analytics.metrics.push(
 		{
 			name:  'wait',
-			start: timing.requestStart - start,
+			start: timing.requestStart > start ? timing.requestStart - start : timing.requestStart,
 			duration: timing.responseStart - timing.requestStart,
 		},
 		{
 			name:  'download',
-			start: timing.responseStart - start,
+			start: timing.responseStart > start ? timing.responseStart - start : timing.responseStart,
 			duration: timing.responseEnd - timing.responseStart,
 		},
 		{
@@ -104,7 +105,7 @@ function performanceReport(timing,type) {
 		},
 		{
 			name:  'redirects',
-			value: timing.redirectCount,
+			value: timing.redirectCount ? timing.redirectCount : 0,
 		},
 	);
 	if ( 0 < timing.transferSize) {
@@ -164,23 +165,26 @@ try {
 	navigationObserver.observe( { entryTypes: ['navigation'] } );
 	let resourceObserver = new PerformanceObserver( resourceObserve );
 	resourceObserver.observe( { entryTypes: ['resource'] } );
-	document.addEventListener(
-		'visibilitychange',
-		function logData() {
-		if (document.visibilityState === 'hidden' && ! sending) {
-			sendBuffer();
-		}
-		}
-	);
-	window.addEventListener(
-		'pagehide',
-		event => {
-        if ( ! sending) {
-            sendBuffer();
-        }
-		},
-		false
-	);
+	if ( '1' === analyticsSettings.multiMetrics ) {
+		document.addEventListener(
+			'visibilitychange',
+			function logData() {
+				if ( document.visibilityState === 'hidden' && ! sending) {
+					sendBuffer();
+				}
+			}
+		);
+		window.addEventListener(
+			'pagehide',
+			event => {
+				if ( ! sending ) {
+					sendBuffer();
+				}
+			},
+			false
+		);
+	}
+
 } catch (error) {
 	console.error( 'Vibes analytics error: ' . error );
 }

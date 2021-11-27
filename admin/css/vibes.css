@@ -5,11 +5,13 @@
 	--aux-bg-color: #EEEEEE;
 	--aux-font-color: #888888;
 	--pop-box-border: 1px solid rgba(90, 115, 142, 0.2);
+	--pop-box-separator: 1px solid rgba(90, 115, 142, 0.12);
 	--pop-box-hover: rgba(90, 115, 142, 0.2);
 	--table-bg-color: #F9F9FB;
 
 	--title-font-size: 22px;
 	--title-font-weight: 500;
+	--font-strong: 700;
 	--title-letter-spacing: 1.2px;
 	--subtitle-font-size: 14px;
 	--subtitle-font-weight: 400;
@@ -23,6 +25,10 @@
 	--kpi-small-font-size: 10px;
 	--kpi-small-font-weight: 100;
 	--kpi-small-letter-spacing: 0.1px;
+	--webvital-good: #61C87A;
+	--webvital-impr: #F1A344;
+	--webvital-poor: #EB5A4E;
+	--webvital-none: #73879C66;
 }
 
 .vibes-about-logo {
@@ -133,7 +139,7 @@
 	margin-top: -8px;
 	margin-right: 10px;
 	padding: 8px;
-	height:150px;
+	height:310px;
 	width: 47.5%;
 }
 
@@ -147,7 +153,7 @@
 	margin-top: -8px;
 	margin-right: -8px;
 	padding: 8px;
-	height:150px;
+	height:310px;
 	width: 47.5%;
 }
 
@@ -259,7 +265,7 @@
 	pointer-events: none;
 }
 
-.vibes-chart-button img {
+.vibes-chart-button span {
 	padding: 3px;
 	background-color: transparent;
 	top: -2px;
@@ -268,10 +274,34 @@
 
 .vibes-chart-button.active {
 	cursor: default;
-
 }
 
-.vibes-chart-button.active img{
+.vibes-multichart-bars-container {
+	margin-top: -304px;
+}
+
+.vibes-multichart-bars-container .ct-grids,
+.vibes-multichart-bars-container .ct-labels {
+	display: none;
+}
+
+.avibes-multichart-line-container .ct-grids line.ct-horizontal {
+	display: none;
+}
+
+.vibes-multichart-bars-container .ct-series-a .ct-bar {
+	stroke: var(--webvital-good);
+}
+
+.vibes-multichart-bars-container .ct-series-b .ct-bar {
+	stroke: var(--webvital-impr);
+}
+
+.vibes-multichart-bars-container .ct-series-c .ct-bar {
+	stroke: var(--webvital-poor);
+}
+
+.vibes-chart-button.active span{
 	background-color: #CCCCCC;
 	filter: opacity(50%) grayscale(100%);
 	transition: all 0.6s linear ;
@@ -337,7 +367,7 @@
 	margin-left: 6px;
 }
 
-.vibes-datepicker {
+.vibes-picker {
 	margin-right: 8px;
 	float: right;
 	cursor: pointer;
@@ -346,7 +376,7 @@
 	font-size: var(--header-action-font-size);
 }
 
-.vibes-datepicker-value {
+.vibes-picker-value {
 	vertical-align: text-top;
 }
 
@@ -491,7 +521,7 @@
 }
 
 .ct-labels .ct-horizontal {
-	transform: translateX(-18px);
+	transform: translateX(-32px);
 }
 
 .ct-labels .ct-vertical {
@@ -598,6 +628,169 @@
 	color: var(--aux-font-color);
 }
 
+
+.vibes-webvital-box {
+	display: inline-flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-content: baseline;
+	justify-content: space-around;
+	align-items: baseline;
+	width: 100%;
+}
+
+.vibes-kpiwebvital-box {
+	flex-grow: 1;
+	flex-shrink: 1;
+}
+
+.vibes-corewebvital-box {
+	flex-grow: 2;
+	flex-shrink: 2;
+}
+
+.vibes-webvital-separator {
+	border-bottom: var(--pop-box-separator);
+	line-height: 0;
+	margin: 8px 2px;
+}
+
+.vibes-webvital-definition {
+	font-size: var(--subtitle-font-size);
+	font-weight: var(--subtitle-font-weight);
+	color: var(--main-font-color);
+	padding-left: 6px;
+}
+
+.vibes-webvital-definition a{
+	font-size: var(--subtitle-font-size);
+	font-weight: var(--font-strong);
+	color: var(--main-font-color);
+	text-decoration: none;
+}
+
+.vibes-webvital-definition:before {
+	margin-right: 6px;
+}
+
+.vibes-webvital-definition-good:before {
+	content: '●';
+	color: var(--webvital-good);
+}
+
+.vibes-webvital-definition-impr:before {
+	content: '▲';
+	color: var(--webvital-impr);
+}
+
+.vibes-webvital-definition-poor:before {
+	content: '■';
+	color: var(--webvital-poor);
+}
+
+.vibes-webvital-definition-none:before {
+	content: '×';
+	color: var(--webvital-none);
+}
+
+.vibes-webvital-index {
+	float: right;
+	margin-right: 20px;
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.vibes-webvital-index-good {
+	color: var(--webvital-good);
+}
+
+.vibes-webvital-index-impr {
+	color: var(--webvital-impr);
+}
+
+.vibes-webvital-index-poor {
+	color: var(--webvital-poor);
+}
+
+.vibes-webvital-index-none {
+	color: var(--webvital-none);
+}
+
+.vibes-webvital-bar {
+	padding: 8px 8px 8px 2px;
+	height: 20px;
+}
+
+.vibes-webvital-bar-none {
+	color: var(--webvital-none);
+	text-align: center;
+	vertical-align: middle;
+	background-color: #EEEEEE;
+	border-radius: 20px;
+	height: 20px;
+	width: 100%;
+	text-transform: uppercase;
+	font-size: x-small;
+	line-height: 2.1em;
+}
+
+.vibes-webvital-bar-good {
+	color: #FFFFFF;
+	text-align: left;
+	vertical-align: middle;
+	background-color: var(--webvital-good);
+	border-radius: 20px;
+	height: 20px;
+	position: relative;
+}
+
+.vibes-webvital-bar-impr {
+	color: #FFFFFF;
+	text-align: left;
+	vertical-align: middle;
+	background-color: var(--webvital-impr);
+	border-radius: 20px;
+	height: 20px;
+	position: relative;
+}
+
+.vibes-webvital-bar-poor {
+	color: #FFFFFF;
+	text-align: left;
+	vertical-align: middle;
+	background-color: var(--webvital-poor);
+	border-radius: 20px;
+	height: 20px;
+	position: relative;
+}
+
+.vibes-webvital-percent {
+	font-size: xx-small;
+	font-weight: 700;
+	vertical-align: middle;
+	display: inline-block;
+	text-align: center;
+}
+
+.vibes-list-item-good {
+	color: var(--webvital-good);
+	font-weight: 600;
+}
+
+.vibes-list-item-impr {
+	color: var(--webvital-impr);
+	font-weight: 600;
+}
+
+.vibes-list-item-poor {
+	color: var(--webvital-poor);
+	font-weight: 600;
+}
+
+.vibes-list-item-hint {
+	font-weight: 600;
+}
+
 .vibes-map-handler {
 	vertical-align: middle;
 	text-align: center;
@@ -648,7 +841,7 @@ button.btn {
 		padding: 2px 8px;
 	}
 	.vibes-switch,
-	.vibes-datepicker {
+	.vibes-picker {
 		padding: 2px 8px;
 	}
 	.vibes-site {
@@ -849,11 +1042,18 @@ button.btn {
 	visibility: hidden;
 	pointer-events: none;
 }
+
 .vibes-select.opened .vibes-options {
 	opacity: 1;
 	visibility: visible;
 	pointer-events: all;
 }
+
+.vibes-select.countries.opened .vibes-options-container {
+	height: 100px;
+	overflow-y: scroll;
+}
+
 .vibes-options:before {
 	position: absolute;
 	display: block;
@@ -975,4 +1175,29 @@ button.btn {
 	border-radius: 3px;
 	margin:0;
 	vertical-align: text-top;
+}
+
+.vibes-datepicker-value,
+.vibes-exergue {
+	vertical-align: middle;
+}
+
+.vibes-picker .vibes-select-wrapper,
+.vibes-datepicker {
+	margin-left:24px;
+}
+
+.users .vibes-option {
+	margin: 0 !important;
+}
+
+::-webkit-scrollbar {
+	-webkit-appearance: none;
+	width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+	border-radius: 4px;
+	background-color: rgba(0, 0, 0, .5);
+	box-shadow: 0 0 1px rgba(255, 255, 255, .5);
 }

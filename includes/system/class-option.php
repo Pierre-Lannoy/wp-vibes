@@ -83,7 +83,8 @@ class Option {
 		self::$defaults['buffer']            = true;
 		self::$defaults['history']           = 30;
 		self::$defaults['rhistory']          = 30;
-		self::$network                       = [ 'version', 'use_cdn', 'download_favicons', 'script_in_footer', 'display_nag', 'metrics', 'cut_path', 'sampling', 'resource_sampling', 'capture', 'rcapture', 'livelog', 'smart_filter', 'buffer', 'history', 'rhistory' ];
+		self::$defaults['quality']           = 2;
+		self::$network                       = [ 'version', 'use_cdn', 'download_favicons', 'script_in_footer', 'display_nag', 'metrics', 'cut_path', 'sampling', 'resource_sampling', 'capture', 'rcapture', 'livelog', 'smart_filter', 'buffer', 'history', 'rhistory', 'quality' ];
 	}
 
 	/**
