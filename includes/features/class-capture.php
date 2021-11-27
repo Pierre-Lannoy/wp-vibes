@@ -279,6 +279,10 @@ class Capture {
 					if ( array_key_exists( 'start', $metric ) && array_key_exists( 'duration', $metric ) && in_array( $metric['name'], BrowserPerformance::$spans, true ) ) {
 						foreach ( [ 'start', 'duration' ] as $field ) {
 							$record[ 'span_' . $metric['name'] . '_' . $field ] = BrowserPerformance::get_storable_value( $metric['name'], (float) $metric[ $field ] );
+							if ( 0 > $record[ 'span_' . $metric['name'] . '_' . $field ] ) {
+								\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( 'Negative value.' ); //TODO:change it!
+								return true;
+							}
 						}
 						$record['hit'] = 1;
 					}
