@@ -30,7 +30,7 @@ class WebVitals {
 	 * @since  1.0.0
 	 * @var    array    $rated_metrics    Maintains the rated metrics list.
 	 */
-	public static $rated_metrics = [ 'CLS', 'FID', 'LCP', 'FCP' ];
+	public static $rated_metrics = [ 'LCP', 'FID', 'CLS', 'FCP' ];
 
 	/**
 	 * The list of unrated metrics.
@@ -61,7 +61,7 @@ class WebVitals {
 	 * @var    array    $metrics_display    Maintains the metrics display ratios list.
 	 */
 	public static $metrics_display = [
-		'CLS'  => 1000,
+		'CLS'  => 1,
 		'FID'  => 1,
 		'LCP'  => 1,
 		'FCP'  => 1,
@@ -89,7 +89,7 @@ class WebVitals {
 	 * @var    array    $metrics_rates    Maintains the metrics rates list.
 	 */
 	public static $metrics_rates = [
-		'CLS' => [ 10, 25 ],
+		'CLS' => [ 10000, 25000 ],
 		'FID' => [ 100, 300 ],
 		'LCP' => [ 2500, 4000 ],
 		'FCP' => [ 1800, 3000 ],
@@ -110,6 +110,62 @@ class WebVitals {
 	];
 
 	/**
+	 * The list of metrics units.
+	 *
+	 * @since  1.0.0
+	 * @var    array    $metrics_units    Maintains the metrics units list.
+	 */
+	public static $metrics_dunits = [
+		'CLS'  => '',
+		'FID'  => 'ms',
+		'LCP'  => 's',
+		'FCP'  => 's',
+		'TTFB' => 'ms',
+	];
+
+	/**
+	 * The list of metrics display ratios.
+	 *
+	 * @since  1.0.0
+	 * @var    array    $metrics_display    Maintains the metrics display ratios list.
+	 */
+	public static $metrics_ddisplay = [
+		'CLS'  => 1,
+		'FID'  => 1,
+		'LCP'  => 0.001,
+		'FCP'  => 0.001,
+		'TTFB' => 1,
+	];
+
+	/**
+	 * The list of metrics precisions.
+	 *
+	 * @since  1.0.0
+	 * @var    array    $metrics_precisions    Maintains the metrics precisions list.
+	 */
+	public static $metrics_dprecisions = [
+		'CLS'  => 2,
+		'FID'  => 0,
+		'LCP'  => 1,
+		'FCP'  => 1,
+		'TTFB' => 0,
+	];
+
+	/**
+	 * The list of metrics names.
+	 *
+	 * @since  1.0.0
+	 * @var    array    $metrics_names    Maintains the metrics names list.
+	 */
+	public static $metrics_names = [
+		'CLS'  => 'Cumulative Layout Shift (<a href="https://web.dev/cls/" target="_blank">CLS</a>)',
+		'FID'  => 'First Input Delay (<a href="https://web.dev/fid/" target="_blank">FID</a>)',
+		'LCP'  => 'Largest Contentful Paint (<a href="https://web.dev/lcp/" target="_blank">LCP</a>)',
+		'FCP'  => 'First Contentful Paint (<a href="https://web.dev/fcp/" target="_blank">FCP</a>)',
+		'TTFB' => 'Time to First Byte (<a href="https://web.dev/ttfb/" target="_blank">TTFB</a>)',
+	];
+
+	/**
 	 * Get the rate field.
 	 *
 	 * @param   string      $metric The metric name.
@@ -118,6 +174,9 @@ class WebVitals {
 	 * @since 1.0.0
 	 */
 	public static function get_rate_field( $metric, $value ) {
+		if ( 0.0 === (float) $value ) {
+			return 'none';
+		}
 		if ( in_array( $metric, self::$unrated_metrics, true ) ) {
 			return 'hit';
 		}
@@ -170,6 +229,55 @@ class WebVitals {
 			$precision = self::$metrics_precisions[ $metric ];
 		}
 		return round( $value, $precision );
+	}
+
+	/**
+	 * Get the graphable value.
+	 *
+	 * @param   string      $metric The metric name.
+	 * @param   integer     $value  The current storable value of the metric.
+	 * @return  null|float  The graphable value.
+	 * @since 1.0.0
+	 */
+	public static function get_graphable_value( $metric, $value ) {
+		if ( 0.0 === (float) $value ) {
+			return null;
+		}
+		return self::get_displayable_value( $metric, $value );
+	}
+
+	/**
+	 * Get the displayable value.
+	 *
+	 * @param   string      $metric The metric name.
+	 * @param   integer     $value  The current storable value of the metric.
+	 * @return  float  The displayable value.
+	 * @since 1.0.0
+	 */
+	public static function display_value( $metric, $value ) {
+		if ( 0.0 === (float) $value ) {
+			return '-';
+		}
+		if ( array_key_exists( $metric, self::$metrics_ratios ) ) {
+			$value /= self::$metrics_ratios[ $metric ];
+		}
+		if ( array_key_exists( $metric, self::$metrics_ddisplay ) ) {
+			$value *= self::$metrics_ddisplay[ $metric ];
+		}
+		$precision = 0;
+		if ( array_key_exists( $metric, self::$metrics_dprecisions ) ) {
+			$precision = self::$metrics_dprecisions[ $metric ];
+		}
+		$unit = '';
+		if ( array_key_exists( $metric, self::$metrics_dunits ) ) {
+			$unit = '&nbsp;' . self::$metrics_dunits[ $metric ];
+		}
+		$val = (string) round( $value, $precision );
+		if ( 0 < $precision && false === strpos( $val, '.' ) ) {
+			$val .= '.';
+			$val  = str_pad( $val, strlen( $val ) + $precision, '0' );
+		}
+		return $val . $unit;
 	}
 
 	/**
