@@ -12,13 +12,6 @@
 namespace Vibes\API;
 
 use Vibes\Plugin\Feature\Capture;
-use Vibes\Plugin\Feature\Schema;
-use Vibes\System\Blog;
-use Vibes\System\BrowserPerformance;
-use Vibes\System\Role;
-use Vibes\Plugin\Feature\Wpcli;
-use Vibes\Plugin\Feature\Memory;
-use Vibes\System\WebVitals;
 
 /**
  * Define the item operations functionality.
@@ -98,60 +91,5 @@ class BeaconRoute extends \WP_REST_Controller {
 	public function post_beacon( $request ) {
 		return Capture::preprocess( \json_decode( $request->get_body(), true ) );
 	}
-
-	/*public function post_beacon( $request ) {
-		$result = Capture::preprocess( \json_decode( $request->get_body(), true ) );
-
-
-
-		$content = \json_decode( $request->get_body(), true );
-		if ( ! ( array_key_exists( 'type', $content ) && in_array( $content['type'], $this->types, true ) && array_key_exists( 'resource', $content ) && array_key_exists( 'authenticated', $content ) && array_key_exists( 'metrics', $content ) && is_array( $content['metrics'] ) ) ) {
-			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( 'Malformed beacon POST request.', [ 'code' => 400 ] );
-			return new \WP_REST_Response( null, 400 );
-		}
-		$record = Capture::init_record( $content['resource'], $content['authenticated'], $content['type'], $content['initiator'] ?? '' );
-		foreach ( $content['metrics'] as $metric ) {
-			if ( ! ( is_array( $metric ) && array_key_exists( 'name', $metric ) ) ) {
-				\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( 'Malformed beacon POST request.', [ 'code' => 400 ] );
-				return new \WP_REST_Response( null, 400 );
-			}
-			switch ( $content['type'] ) {
-				case 'webvital':
-					if ( array_key_exists( 'value', $metric ) && in_array( $metric['name'], array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics ), true ) ) {
-						$storable_value = WebVitals::get_storable_value( (string) $metric['name'], (float) $metric['value'] );
-						$rate_field     = WebVitals::get_rate_field( (string) $metric['name'], $storable_value );
-						if ( 'none' !== $rate_field ) {
-							$record[ $metric['name'] . '_sum' ]            = $storable_value;
-							$record[ $metric['name'] . '_' . $rate_field ] = 1;
-
-						}
-					}
-					break;
-				case 'resource':
-				case 'navigation':
-					if ( array_key_exists( 'start', $metric ) && array_key_exists( 'duration', $metric ) && in_array( $metric['name'], BrowserPerformance::$spans, true ) ) {
-						foreach ( [ 'start', 'duration' ] as $field ) {
-							$record[ 'span_' . $metric['name'] . '_' . $field ] = BrowserPerformance::get_storable_value( $metric['name'], (float) $metric[ $field ] );
-						}
-						$record['hit'] = 1;
-					}
-					if ( array_key_exists( 'value', $metric ) && in_array( $metric['name'], BrowserPerformance::$unrated_metrics, true ) ) {
-						if ( ! array_key_exists( $metric['name'] . '_sum', $record ) ) {
-							$record[ $metric['name'] . '_sum' ] = BrowserPerformance::get_storable_value( $metric['name'], (float) $metric['value'] );
-						}
-					}
-					if ( array_key_exists( 'initiator', $content ) ) {
-						if ( 'xmlhttprequest' === $content['initiator'] ) {
-							$content['initiator'] = 'xhr';
-						}
-						$record['initiator'] = substr( $content['initiator'], 0, 6 );
-					}
-					break;
-			}
-		}
-		Capture::record( $record );
-		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'Signal received and correctly pre-processed.', [ 'code' => 202 ] );
-		return new \WP_REST_Response( null, 202 );
-	}*/
 
 }
