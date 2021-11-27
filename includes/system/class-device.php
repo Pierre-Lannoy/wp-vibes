@@ -37,7 +37,7 @@ class Device {
 	 * The list of available types.
 	 *
 	 * @since  1.0.0
-	 * @var    array    $verbs    Maintains the types list.
+	 * @var    array    $types    Maintains the types list.
 	 */
 	public static $types = [ 'smartphone', 'featurephone', 'tablet', 'phablet', 'console', 'portable_media_player', 'car_browser', 'tv', 'smart_display', 'smart_speaker', 'wearable', 'peripheral', 'camera', 'other' ];
 
@@ -76,6 +76,27 @@ class Device {
 			return 'bot';
 		}
 		return 'other';
+	}
+
+	/**
+	 * Get class name.
+	 *
+	 * @since 1.0.0
+	 */
+	public static function get_class_name( $class = '' ) {
+		if ( '' === $class ) {
+			$class = self::get_class();
+		}
+		switch ( $class ) {
+			case 'bot':
+				return esc_html__( 'Bot', 'vibes' );
+			case 'desktop':
+				return esc_html__( 'Desktop', 'vibes' );
+			case 'mobile':
+				return esc_html__( 'Mobile', 'vibes' );
+			default:
+				return esc_html__( 'Other', 'vibes' );
+		}
 	}
 
 	/**
@@ -139,6 +160,49 @@ class Device {
 			}
 		}
 		return 'other';
+	}
+
+
+
+	/**
+	 * Get device name.
+	 *
+	 * @since 1.0.0
+	 */
+	public static function get_device_name( $device = '' ) {
+		if ( '' === $device ) {
+			$device = self::get_device();
+		}
+		switch ( $device ) {
+			case 'smartphone':
+				return esc_html__( 'Smartphone', 'vibes' );
+			case 'featurephone':
+				return esc_html__( 'Feature Phone', 'vibes' );
+			case 'tablet':
+				return esc_html__( 'Tablet', 'vibes' );
+			case 'phablet':
+				return esc_html__( 'Phablet', 'vibes' );
+			case 'console':
+				return esc_html__( 'Game Console', 'vibes' );
+			case 'portable_media_player':
+				return esc_html__( 'Portable Media Player', 'vibes' );
+			case 'car_browser':
+				return esc_html__( 'Car Browser', 'vibes' );
+			case 'tv':
+				return esc_html__( 'TV', 'vibes' );
+			case 'smart_display':
+				return esc_html__( 'Smart Display', 'vibes' );
+			case 'smart_speaker':
+				return esc_html__( 'Smart Speaker', 'vibes' );
+			case 'wearable':
+				return esc_html__( 'Wearable', 'vibes' );
+			case 'peripheral':
+				return esc_html__( 'Peripheral', 'vibes' );
+			case 'camera':
+				return esc_html__( 'Camera', 'vibes' );
+			default:
+				return esc_html__( 'Other', 'vibes' );
+		}
 	}
 
 	/**
