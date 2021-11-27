@@ -33,7 +33,7 @@ class AnalyticsFactory {
 	 * @since  1.0.0
 	 * @var    array    $allowed_types    Maintain the allowed types.
 	 */
-	private static $allowed_types = [ 'domain', 'domains', 'authority', 'authorities', 'endpoint', 'endpoints' ];
+	private static $allowed_types = [ 'domain', 'domains', 'authority', 'authorities', 'endpoint', 'endpoints', 'devices' ];
 
 	/**
 	 * Ajax callback.
@@ -82,14 +82,14 @@ class AnalyticsFactory {
 		if ( ! ( $type = filter_input( INPUT_GET, 'type' ) ) ) {
 			$type = filter_input( INPUT_POST, 'type' );
 		}
-		if ( '' === $source && 0 < strpos( $type, '.' ) ) {
+		if ( false !== strpos( $type, '.' ) ) {
 			$source = substr( $type, 0, strpos( $type, '.' ) );
 			$type   = str_replace( $source . '.', '', $type );
 		}
-		if ( 0 < strpos( $type, '.' ) ) {
-			$type = substr( $type, strpos( $type, '.' ) + 1 );
+		if ( 0 < strpos( $type, '_' ) ) {
+			$type = substr( $type, strpos( $type, '_' ) + 1 );
 		}
-		if ( empty( $type ) || ! in_array( $type, self::$allowed_types ) ) {
+		if ( ! isset( $type ) || ! in_array( (string) $type, self::$allowed_types, true ) ) {
 			$type = 'summary';
 		}
 		// Filters.
@@ -98,6 +98,19 @@ class AnalyticsFactory {
 		}
 		if ( empty( $site ) || ! Blog::is_blog_exists( (int) $site ) ) {
 			$site = 'all';
+		}
+		$authent = filter_input( INPUT_GET, 'authent' );
+		if ( ! isset( $authent ) ) {
+			$authent = filter_input( INPUT_POST, 'authent' );
+		}
+		if ( ! isset( $authent ) ) {
+			$authent = 'all';
+		}
+		if ( ! ( $country = filter_input( INPUT_POST, 'country' ) ) ) {
+			$country = filter_input( INPUT_GET, 'country' );
+		}
+		if ( '' === $country ) {
+			$country = 'all';
 		}
 		if ( ! ( $start = filter_input( INPUT_GET, 'start' ) ) ) {
 			$start = filter_input( INPUT_POST, 'start' );
@@ -121,8 +134,7 @@ class AnalyticsFactory {
 			$start = $edatetime->format( 'Y-m-d' );
 			$end   = $sdatetime->format( 'Y-m-d' );
 		}
-
-		return new Analytics( $source, $domain, $type, $site, $start, $end, $id, $reload, $extra );
+		return new Analytics( $source, $domain, $type, $site, $start, $end, $id, $reload, $extra, $authent, $country );
 	}
 
 }
