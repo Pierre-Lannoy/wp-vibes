@@ -10,93 +10,63 @@
  */
 
 use Vibes\System\Role;
+use Vibes\System\Device;
 
 wp_enqueue_script( 'vibes-moment-with-locale' );
 wp_enqueue_script( 'vibes-daterangepicker' );
-wp_enqueue_script( 'vibes-switchery' );
 wp_enqueue_script( 'vibes-chartist' );
 wp_enqueue_script( 'vibes-chartist-tooltip' );
-wp_enqueue_script( 'vibes-jvectormap' );
-wp_enqueue_script( 'vibes-jvectormap-world' );
 wp_enqueue_script( VIBES_ASSETS_ID );
 wp_enqueue_style( VIBES_ASSETS_ID );
 wp_enqueue_style( 'vibes-daterangepicker' );
-wp_enqueue_style( 'vibes-switchery' );
 wp_enqueue_style( 'vibes-tooltip' );
 wp_enqueue_style( 'vibes-chartist' );
 wp_enqueue_style( 'vibes-chartist-tooltip' );
-wp_enqueue_style( 'vibes-jvectormap' );
 
 
 ?>
 
 <div class="wrap">
-	<div class="vibes-dashboard">
-		<div class="vibes-row">
-			<?php echo $analytics->get_title_bar() ?>
-		</div>
+    <div class="vibes-dashboard">
         <div class="vibes-row">
-	        <?php echo $analytics->get_kpi_bar() ?>
+			<?php echo $analytics->get_title_bar(); ?>
         </div>
-        <?php if ( 'summary' === $analytics->type && '' === $analytics->extra ) { ?>
+		<?php if ( ( 'summary' === $analytics->type || 'endpoint' === $analytics->type )  && '' === $analytics->extra ) { ?>
             <div class="vibes-row">
-                <div class="vibes-box vibes-box-40-60-line">
-                    <?php echo $analytics->get_top_domain_box() ?>
-                    <?php echo $analytics->get_map_box() ?>
+                <div class="vibes-box vibes-box-50-50-line">
+					<?php echo $analytics->get_webvital_class( 'mobile', 'left' ); ?>
+					<?php echo $analytics->get_webvital_class( 'desktop', 'right' ); ?>
                 </div>
+            </div>
+            <div class="vibes-row first-full-row">
+				<?php echo $analytics->get_webvital_chart() ?>
             </div>
 		<?php } ?>
-		<?php if ( 'domain' === $analytics->type && '' === $analytics->extra ) { ?>
-            <div class="vibes-row">
-                <div class="vibes-box vibes-box-40-60-line">
-					<?php echo $analytics->get_top_authority_box() ?>
-					<?php echo $analytics->get_map_box() ?>
+		<?php if ( 'summary' === $analytics->type  && '' === $analytics->extra ) { ?>
+			<?php $network = ( Role::SUPER_ADMIN === Role::admin_type() && 'all' === $analytics->site ); ?>
+			<?php if ( $network ) { ?>
+                <div class="vibes-row last-full-row">
+					<?php echo $analytics->get_webvital_sites_list(); ?>
                 </div>
-            </div>
-		<?php } ?>
-		<?php if ( 'authority' === $analytics->type && '' === $analytics->extra ) { ?>
-            <div class="vibes-row">
-                <div class="vibes-box vibes-box-40-60-line">
-					<?php echo $analytics->get_top_endpoint_box() ?>
-					<?php echo $analytics->get_map_box() ?>
-                </div>
-            </div>
-		<?php } ?>
-		<?php if ( ( 'summary' === $analytics->type || 'domain' === $analytics->type || 'authority' === $analytics->type || 'endpoint' === $analytics->type ) && '' === $analytics->extra ) { ?>
-			<?php echo $analytics->get_main_chart() ?>
-            <div class="vibes-row">
-                <div class="vibes-box vibes-box-33-33-33-line">
-					<?php echo $analytics->get_codes_box() ?>
-					<?php echo $analytics->get_security_box() ?>
-					<?php echo $analytics->get_method_box() ?>
-                </div>
-            </div>
-			<?php if ( Role::SUPER_ADMIN === Role::admin_type() && 'all' === $analytics->site) { ?>
-                <div class="vibes-row last-row">
-					<?php echo $analytics->get_sites_list() ?>
+			<?php } else { ?>
+                <div class="vibes-row last-full-row">
+					<?php echo $analytics->get_webvital_endpoints_list(); ?>
                 </div>
 			<?php } ?>
 		<?php } ?>
+		<?php if ( 'devices' === $analytics->extra ) { ?>
+			<?php foreach ( Device::$types as $key => $device ) { ?>
+				<?php if ( ! ( $key & 1 ) ) { ?>
+                    <div class="vibes-row">
+                    <div class="vibes-box vibes-box-50-50-line">
+					<?php echo $analytics->get_webvital_device( $device, 'left' ); ?>
+				<?php } else { ?>
+					<?php echo $analytics->get_webvital_device( $device, 'right' ); ?>
+                    </div>
+                    </div>
+				<?php } ?>
+			<?php } ?>
+		<?php } ?>
 
-		<?php if ( 'domains' === $analytics->type && '' === $analytics->extra ) { ?>
-            <div class="vibes-row">
-	            <?php echo $analytics->get_domains_list() ?>
-            </div>
-		<?php } ?>
-		<?php if ( 'authorities' === $analytics->type && '' === $analytics->extra ) { ?>
-            <div class="vibes-row">
-				<?php echo $analytics->get_authorities_list() ?>
-            </div>
-		<?php } ?>
-		<?php if ( 'endpoints' === $analytics->type && '' === $analytics->extra ) { ?>
-            <div class="vibes-row">
-				<?php echo $analytics->get_endpoints_list() ?>
-            </div>
-		<?php } ?>
-		<?php if ( '' !== $analytics->extra ) { ?>
-            <div class="vibes-row">
-				<?php echo $analytics->get_extra_list() ?>
-            </div>
-		<?php } ?>
-	</div>
+    </div>
 </div>

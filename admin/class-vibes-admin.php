@@ -61,11 +61,9 @@ class Vibes_Admin {
 		$this->assets->register_style( VIBES_ASSETS_ID, VIBES_ADMIN_URL, 'css/vibes.min.css' );
 		$this->assets->register_style( VIBES_LIVELOG_ID, VIBES_ADMIN_URL, 'css/livelog.min.css' );
 		$this->assets->register_style( 'vibes-daterangepicker', VIBES_ADMIN_URL, 'css/daterangepicker.min.css' );
-		$this->assets->register_style( 'vibes-switchery', VIBES_ADMIN_URL, 'css/switchery.min.css' );
 		$this->assets->register_style( 'vibes-tooltip', VIBES_ADMIN_URL, 'css/tooltip.min.css' );
 		$this->assets->register_style( 'vibes-chartist', VIBES_ADMIN_URL, 'css/chartist.min.css' );
 		$this->assets->register_style( 'vibes-chartist-tooltip', VIBES_ADMIN_URL, 'css/chartist-plugin-tooltip.min.css' );
-		$this->assets->register_style( 'vibes-jvectormap', VIBES_ADMIN_URL, 'css/jquery-jvectormap-2.0.3.min.css' );
 
 	}
 
@@ -80,11 +78,8 @@ class Vibes_Admin {
 		$this->assets->register_script( VIBES_LIVELOG_ID, VIBES_ADMIN_URL, 'js/livelog.min.js', [ 'jquery' ] );
 		$this->assets->register_script( 'vibes-moment-with-locale', VIBES_ADMIN_URL, 'js/moment-with-locales.min.js', [ 'jquery' ] );
 		$this->assets->register_script( 'vibes-daterangepicker', VIBES_ADMIN_URL, 'js/daterangepicker.min.js', [ 'jquery' ] );
-		$this->assets->register_script( 'vibes-switchery', VIBES_ADMIN_URL, 'js/switchery.min.js', [ 'jquery' ] );
 		$this->assets->register_script( 'vibes-chartist', VIBES_ADMIN_URL, 'js/chartist.min.js', [ 'jquery' ] );
 		$this->assets->register_script( 'vibes-chartist-tooltip', VIBES_ADMIN_URL, 'js/chartist-plugin-tooltip.min.js', [ 'vibes-chartist' ] );
-		$this->assets->register_script( 'vibes-jvectormap', VIBES_ADMIN_URL, 'js/jquery-jvectormap-2.0.3.min.js', [ 'jquery' ] );
-		$this->assets->register_script( 'vibes-jvectormap-world', VIBES_ADMIN_URL, 'js/jquery-jvectormap-world-mill.min.js', [ 'jquery' ] );
 	}
 
 	/**
@@ -162,18 +157,18 @@ class Vibes_Admin {
 				'remedy'        => esc_url( admin_url( 'admin.php?page=vibes-settings' ) ),
 			];
 			$perfops['analytics'][] = [
-				'name'          => esc_html__( 'API Vibes', 'vibes' ),
+				'name'          => esc_html__( 'Performances', 'vibes' ),
 				/* translators: as in the sentence "Find out inbound and outbound API calls made to/from your network." or "Find out inbound and outbound API calls made to/from your website." */
-				'description'   => sprintf( esc_html__( 'Find out inbound and outbound API calls made to/from your %s.', 'vibes' ), Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
+				'description'   => sprintf( esc_html__( 'View and analyze your %s\'s performances from a user point of view.', 'vibes' ), Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
 				'icon_callback' => [ \Vibes\Plugin\Core::class, 'get_base64_logo' ],
 				'slug'          => 'vibes-navigation-viewer',
 				/* translators: as in the sentence "DecaLog Viewer" */
-				'page_title'    => sprintf( esc_html__( 'API Vibes', 'vibes' ), VIBES_PRODUCT_NAME ),
-				'menu_title'    => esc_html__( 'API Vibes', 'vibes' ),
+				'page_title'    => sprintf( esc_html__( 'Performances', 'vibes' ), VIBES_PRODUCT_NAME ),
+				'menu_title'    => esc_html__( 'Performances', 'vibes' ),
 				'capability'    => 'manage_options',
 				'callback'      => [ $this, 'get_viewer_page' ],
 				'plugin'        => VIBES_SLUG,
-				'activated'     => Option::network_get( 'outbound_capture' ) || Option::network_get( 'inbound_capture' ),
+				'activated'     => Option::network_get( 'capture' ),
 				'remedy'        => esc_url( admin_url( 'admin.php?page=vibes-settings' ) ),
 			];
 		}
