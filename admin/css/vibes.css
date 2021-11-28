@@ -29,6 +29,7 @@
 	--webvital-impr: #F1A344;
 	--webvital-poor: #EB5A4E;
 	--webvital-none: #73879C66;
+	--webvital-kpi-bg-color: #73879C33;
 }
 
 .vibes-about-logo {
@@ -632,21 +633,38 @@
 .vibes-webvital-box {
 	display: inline-flex;
 	flex-direction: row;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	align-content: baseline;
 	justify-content: space-around;
-	align-items: baseline;
+	align-items: flex-start;
 	width: 100%;
 }
 
 .vibes-kpiwebvital-box {
 	flex-grow: 1;
 	flex-shrink: 1;
+	text-align: center;
+	margin-left: 10px;
+	flex-basis: min-content;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: space-evenly;
+	align-content: center;
+	align-items: center;
+	height: 270px;
 }
 
 .vibes-corewebvital-box {
-	flex-grow: 2;
-	flex-shrink: 2;
+	flex-grow: 3;
+	flex-shrink: 3;
+}
+
+.vibes-kpiwebvital-item {
+	padding: 10px;
+	border-radius: 4px;
+	background: var(--webvital-kpi-bg-color);
+	width: 90%;
 }
 
 .vibes-webvital-separator {
@@ -712,9 +730,37 @@
 	color: var(--webvital-poor);
 }
 
-.vibes-webvital-index-none {
+.vibes-webvital-index-none{
 	color: var(--webvital-none);
+	font-size: 18px;
+	font-weight: 700;
 }
+
+.vibes-kpiwebvital-unit{
+	color: var(--webvital-none);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.vibes-kpiwebvital-number {
+	color: var(--main-font-color);
+	font-size: 18px;
+	font-weight: 700;
+	margin-top: 8px;
+}
+
+.vibes-kpiwebvital-title {
+	font-size: var(--subtitle-font-size);
+	font-weight: var(--subtitle-font-weight);
+	color: var(--main-font-color);
+}
+.vibes-kpiwebvital-title a {
+	font-size: var(--subtitle-font-size);
+	font-weight: var(--font-strong);
+	color: var(--main-font-color);
+	text-decoration: none;
+}
+
 
 .vibes-webvital-bar {
 	padding: 8px 8px 8px 2px;

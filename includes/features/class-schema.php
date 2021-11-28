@@ -326,12 +326,14 @@ class Schema {
 		$sql = [];
 		foreach ( WebVitals::$rated_metrics as $metric ) {
 			$sql[] = 'sum(' . $metric . '_sum)/sum(' . $metric . '_good+' . $metric . '_impr+' . $metric . '_poor) as avg_' . $metric;
+			$sql[] = 'sum(' . $metric . '_good+' . $metric . '_impr+' . $metric . '_poor) as hit_' . $metric;
 			foreach ( [ 'good', 'impr', 'poor' ] as $field ) {
 				$sql[] = 'sum(' . $metric . '_' . $field . ')/sum(' . $metric . '_good+' . $metric . '_impr+' . $metric . '_poor) as pct_' . $metric . '_' . $field;
 			}
 		}
 		foreach ( WebVitals::$unrated_metrics as $metric ) {
 			$sql[] = 'sum(' . $metric . '_sum)/sum(' . $metric . '_hit) as avg_' . $metric;
+			$sql[] = 'sum(' . $metric . '_hit) as hit_' . $metric;
 		}
 		return $sql;
 	}

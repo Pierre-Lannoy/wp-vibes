@@ -492,7 +492,6 @@ class Analytics {
 	 * @since    1.0.0
 	 */
 	private function query_webvital( $type, $id ) {
-		//TODO:\DecaLog\Engine::eventsLogger( VIBES_SLUG )->warning( print_r($this->filter,true) );
 		$query = Schema::get_grouped_list( $this->source, $type, [], $this->filter, ! $this->is_today, '', [], false, '', 0, Option::site_get( 'quality' ) );
 		$data  = [];
 		if ( 0 < count( $query ) ) {
@@ -512,8 +511,24 @@ class Analytics {
 			foreach ( WebVitals::$unrated_metrics as $metric ) {
 				$data[0][ 'avg_' . $metric ] = 0;
 			}
+			$data[0]['q'] = 0.0;
+		} else {
+			$data[0]['q'] = 0.0;
+			$idx          = Option::network_get( 'qstat' );
+			foreach ( array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics ) as $metric ) {
+				$q = $data[0][ 'hit_' . $metric ] / $idx;
+				if ( 1 < $q ) {
+					$q = 1.0;
+				}
+				$data[0]['q'] += $q * 20;
+			}
 		}
-		$data    = $data[0];
+		$data = $data[0];
+		$q    = (string) round( $data['q'], 5 );
+		if ( false === strpos( $q, '.' ) ) {
+			$q .= '.';
+			$q  = str_pad( $q, strlen( $q ) + 1, '0' );
+		}
 		$result  = '<div class="vibes-webvital-box">';
 		$result .= '<div class="vibes-corewebvital-box">';
 		$result .= $this->get_webvital( $data, 'LCP' );
@@ -525,13 +540,20 @@ class Analytics {
 		$result .= $this->get_webvital( $data, 'FCP' );
 		$result .= '</div>';
 		$result .= '<div class="vibes-kpiwebvital-box">';
-
-		$result .= '<span>aaa aaa</span>';
-
-		$result .= '<div class="vibes-webvital-separator">&nbsp;</div>';
-
-		$result .= '<span>aaa aaa</span>';
-
+		$result .= '<div class="vibes-kpiwebvital-item">';
+		$result .= '<div class="vibes-kpiwebvital-title">' . WebVitals::$metrics_names['TTFB'] . '</div>';
+		$result .= '<div class="vibes-kpiwebvital-value">';
+		$result .= '<div class="vibes-kpiwebvital-number">' . str_replace( '&nbsp;ms', '', WebVitals::display_value( 'TTFB', $data['avg_TTFB'] ) ) . '</div>';
+		$result .= '<div class="vibes-kpiwebvital-unit">ms</div>';
+		$result .= '</div>';
+		$result .= '</div>';
+		$result .= '<div class="vibes-kpiwebvital-item">';
+		$result .= '<div class="vibes-kpiwebvital-title">' . esc_html__( 'Confidence Index', 'vibes' ) . '</div>';
+		$result .= '<div class="vibes-kpiwebvital-value">';
+		$result .= '<div class="vibes-kpiwebvital-number">' . $q . '</div>';
+		$result .= '<div class="vibes-kpiwebvital-unit">%</div>';
+		$result .= '</div>';
+		$result .= '</div>';
 		$result .= '</div>';
 		$result .= '</div>';
 		return [ 'vibes-' . $type . '_' . $id => $result ];
@@ -2053,8 +2075,13 @@ class Analytics {
 				$subtitle = L10n::get_country_name( $this->id );
 				break;
 			default:
-				$title    = 'unknow';
-				$subtitle = 'unknown';
+				switch ( $this->extra ) {
+					case 'devices':
+						$title = esc_html__( 'Mobiles Breakdown', 'vibes' );
+						break;
+					default:
+						$title = esc_html__( 'Main Summary', 'vibes' );
+				}
 
 		}
 		switch ( $this->source ) {
@@ -2115,7 +2142,11 @@ class Analytics {
 		$subtitle = $this->id;
 		switch ( $this->type ) {
 			case 'summary':
-				$title = esc_html__( 'Main Summary', 'vibes' );
+				if ( '' === $this->extra ) {
+					$title = esc_html__( 'Main Summary', 'vibes' );
+				} else {
+					$title = $this->get_title_selector();
+				}
 				break;
 			case 'domain':
 			case 'authority':
