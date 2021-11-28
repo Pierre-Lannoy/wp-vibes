@@ -38,7 +38,7 @@ function webVitalsReport({name, delta, value, id}) {
 		resource: location ? location.href : '-',
 		authenticated: analyticsSettings.authenticated,
 		metrics: [{
-			name:  name,
+			name: name,
 			value: value,
 		}]
 	}
@@ -58,23 +58,23 @@ function performanceReport(timing,type) {
 		authenticated: analyticsSettings.authenticated,
 		initiator: timing.initiatorType,
 		metrics: [{
-			name:  'redirect',
+			name: 'redirect',
 			start: timing.redirectStart > start ? timing.redirectStart - start : 0,
 			duration: timing.redirectEnd - timing.redirectStart,
 		},{
-			name:  'dns',
+			name: 'dns',
 			start: timing.domainLookupStart > start ? timing.domainLookupStart - start : 0,
 			duration: timing.domainLookupEnd - timing.domainLookupStart,
 		}]};
 	if ( 0 < timing.secureConnectionStart) {
 		analytics.metrics.push(
 			{
-				name:  'tcp',
+				name: 'tcp',
 				start: timing.connectStart > start ? timing.connectStart - start : 0,
 				duration: timing.connectEnd - timing.connectStart,
 			},
 			{
-				name:  'ssl',
+				name: 'ssl',
 				start: timing.secureConnectionStart > start ? timing.secureConnectionStart - start : 0,
 				duration: timing.connectEnd - timing.secureConnectionStart,
 			}
@@ -82,7 +82,7 @@ function performanceReport(timing,type) {
 	} else {
 		analytics.metrics.push(
 			{
-				name:  'tcp',
+				name: 'tcp',
 				start: timing.connectStart > start ? timing.connectStart - start : 0,
 				duration: timing.connectEnd - timing.connectStart,
 			}
@@ -90,35 +90,49 @@ function performanceReport(timing,type) {
 	}
 	analytics.metrics.push(
 		{
-			name:  'wait',
-			start: timing.requestStart > start ? timing.requestStart - start : timing.requestStart,
-			duration: timing.responseStart - timing.requestStart,
-		},
-		{
-			name:  'download',
-			start: timing.responseStart > start ? timing.responseStart - start : timing.responseStart,
-			duration: timing.responseEnd - timing.responseStart,
-		},
-		{
-			name:  'load',
-			value: timing.duration,
-		},
-		{
-			name:  'redirects',
+			name: 'redirects',
 			value: timing.redirectCount ? timing.redirectCount : 0,
 		},
 	);
 	if ( 0 < timing.transferSize) {
 		analytics.metrics.push(
 			{
-				name:  'size',
+				name: 'wait',
+				start: timing.requestStart > start ? timing.requestStart - start : timing.requestStart,
+				duration: timing.responseStart - timing.requestStart,
+			},
+			{
+				name: 'download',
+				start: timing.responseStart > start ? timing.responseStart - start : timing.responseStart,
+				duration: timing.responseEnd - timing.responseStart,
+			},
+			{
+				name: 'load',
+				value: timing.duration,
+			},
+			{
+				name: 'size',
 				value: timing.transferSize,
 			},
 		);
 	} else {
 		analytics.metrics.push(
 			{
-				name:  'cache',
+				name: 'wait',
+				start: timing.connectEnd,
+				duration: 0,
+			},
+			{
+				name: 'download',
+				start: timing.connectEnd,
+				duration: 0,
+			},
+			{
+				name: 'load',
+				value: 0,
+			},
+			{
+				name: 'cache',
 				value: 1,
 			}
 		);
