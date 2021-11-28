@@ -389,28 +389,6 @@ class Analytics {
 				return $this->query_webvital( $query, $sub );
 			case 'main-webvital-chart':
 				return $this->query_webvital_chart();
-
-			case 'main-chart':
-				return $this->query_chart();
-			case 'map':
-				return $this->query_map();
-			case 'kpi':
-				return $this->query_kpi( $queried );
-
-			case 'codes':
-				return $this->query_list( 'codes' );
-			case 'schemes':
-				return $this->query_list( 'schemes' );
-			case 'methods':
-				return $this->query_list( 'methods' );
-			case 'countries':
-				return $this->query_list( 'countries' );
-			case 'code':
-				return $this->query_pie( 'code', (int) $queried );
-			case 'sssssssssecurity':
-				return $this->query_pie( 'sssssssssecurity', (int) $queried );
-			case 'method':
-				return $this->query_pie( 'method', (int) $queried );
 		}
 		return [];
 	}
@@ -1176,53 +1154,6 @@ class Analytics {
 	 * @return array The result of the query, ready to encode.
 	 * @since    1.0.0
 	 */
-	private function query_map() {
-		$uuid   = UUID::generate_unique_id( 5 );
-		$data   = Schema::get_grouped_list( $this->source, 'country', [], $this->filter, ! $this->is_today, '', [], false, 'ORDER BY sum_hit DESC' );
-		$series = [];
-		foreach ( $data as $datum ) {
-			if ( array_key_exists( 'country', $datum ) && ! empty( $datum['country'] ) ) {
-				$series[ strtoupper( $datum['country'] ) ] = $datum['sum_hit'];
-			}
-		}
-		$plus    = '<img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'plus-square', 'none', '#73879C' ) . '"/>';
-		$minus   = '<img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'minus-square', 'none', '#73879C' ) . '"/>';
-		$result  = '<div class="vibes-map-handler">';
-		$result .= '</div>';
-		$result .= '<script>';
-		$result .= 'jQuery(function ($) {';
-		$result .= ' var mapdata' . $uuid . ' = ' . wp_json_encode( $series ) . ';';
-		$result .= ' $(".vibes-map-handler").vectorMap({';
-		$result .= ' map: "world_mill",';
-		$result .= ' backgroundColor: "#FFFFFF",';
-		$result .= ' series: {';
-		$result .= '  regions: [{';
-		$result .= '   values: mapdata' . $uuid . ',';
-		$result .= '   scale: ["#BDC7D1", "#73879C"],';
-		$result .= '   normalizeFunction: "polynomial"';
-		$result .= '  }]';
-		$result .= ' },';
-		$result .= '  regionStyle: {';
-		$result .= '   initial: {fill: "#EEEEEE", "fill-opacity": 0.7},';
-		$result .= '   hover: {"fill-opacity": 1,cursor: "default"},';
-		$result .= '   selected: {},';
-		$result .= '   selectedHover: {},';
-		$result .= ' },';
-		$result .= ' onRegionTipShow: function(e, el, code){if (mapdata' . $uuid . '[code]){el.html(el.html() + " (" + mapdata' . $uuid . '[code] + " ' . esc_html__( 'calls', 'vibes' ) . ')")};},';
-		$result .= ' });';
-		$result .= ' $(".jvectormap-zoomin").html(\'' . $plus . '\');';
-		$result .= ' $(".jvectormap-zoomout").html(\'' . $minus . '\');';
-		$result .= '});';
-		$result .= '</script>';
-		return [ 'vibes-map' => $result ];
-	}
-
-	/**
-	 * Query statistics table.
-	 *
-	 * @return array The result of the query, ready to encode.
-	 * @since    1.0.0
-	 */
 	private function query_webvital_chart() {
 		$uuid    = UUID::generate_unique_id( 5 );
 		$data    = Schema::get_time_series( 'webvital', $this->filter, ! $this->is_today );
@@ -1380,457 +1311,6 @@ class Analytics {
 		}
 		$result .= '</div>';
 		return [ 'vibes-webvital-chart' => $result ];
-	}
-
-	/**
-	 * Query statistics table.
-	 *
-	 * @return array The result of the query, ready to encode.
-	 * @since    1.0.0
-	 */
-	private function query_chart() {
-		$uuid           = UUID::generate_unique_id( 5 );
-		$data_total     = Schema::get_time_series( $this->filter, ! $this->is_today, '', [], false );
-		$data_uptime    = Schema::get_time_series( $this->filter, ! $this->is_today, 'code', Http::$http_failure_codes, true );
-		$data_error     = Schema::get_time_series( $this->filter, ! $this->is_today, 'code', array_diff( Http::$http_error_codes, Http::$http_quota_codes ), false );
-		$data_success   = Schema::get_time_series( $this->filter, ! $this->is_today, 'code', Http::$http_success_codes, false );
-		$data_quota     = Schema::get_time_series( $this->filter, ! $this->is_today, 'code', Http::$http_quota_codes, false );
-		$series_uptime  = [];
-		$suc            = [];
-		$err            = [];
-		$quo            = [];
-		$series_success = [];
-		$series_error   = [];
-		$series_quota   = [];
-		$call_max       = 0;
-		$kbin           = [];
-		$kbout          = [];
-		$series_kbin    = [];
-		$series_kbout   = [];
-		$data_max       = 0;
-		$start          = '';
-		foreach ( $data_total as $timestamp => $total ) {
-			if ( '' === $start ) {
-				$start = $timestamp;
-			}
-			$ts = 'new Date(' . (string) strtotime( $timestamp ) . '000)';
-			// Calls.
-			if ( array_key_exists( $timestamp, $data_success ) ) {
-				$val = $data_success[ $timestamp ]['sum_hit'];
-				if ( $val > $call_max ) {
-					$call_max = $val;
-				}
-				$suc[] = [
-					'x' => $ts,
-					'y' => $val,
-				];
-			} else {
-				$suc[] = [
-					'x' => $ts,
-					'y' => 0,
-				];
-			}
-			if ( array_key_exists( $timestamp, $data_error ) ) {
-				$val = $data_error[ $timestamp ]['sum_hit'];
-				if ( $val > $call_max ) {
-					$call_max = $val;
-				}
-				$err[] = [
-					'x' => $ts,
-					'y' => $val,
-				];
-			} else {
-				$err[] = [
-					'x' => $ts,
-					'y' => 0,
-				];
-			}
-			if ( array_key_exists( $timestamp, $data_quota ) ) {
-				$val = $data_quota[ $timestamp ]['sum_hit'];
-				if ( $val > $call_max ) {
-					$call_max = $val;
-				}
-				$quo[] = [
-					'x' => $ts,
-					'y' => $val,
-				];
-			} else {
-				$quo[] = [
-					'x' => $ts,
-					'y' => 0,
-				];
-			}
-			// Data.
-			$val = $total['sum_kb_in'] * 1024;
-			if ( $val > $data_max ) {
-				$data_max = $val;
-			}
-			$kbin[] = [
-				'x' => $ts,
-				'y' => $val,
-			];
-			$val    = $total['sum_kb_out'] * 1024;
-			if ( $val > $data_max ) {
-				$data_max = $val;
-			}
-			$kbout[] = [
-				'x' => $ts,
-				'y' => $val,
-			];
-			// Uptime.
-			if ( array_key_exists( $timestamp, $data_uptime ) ) {
-				if ( 0 !== $total['sum_hit'] ) {
-					$val             = round( $data_uptime[ $timestamp ]['sum_hit'] * 100 / $total['sum_hit'], 2 );
-					$series_uptime[] = [
-						'x' => $ts,
-						'y' => $val,
-					];
-				} else {
-					$series_uptime[] = [
-						'x' => $ts,
-						'y' => 100,
-					];
-				}
-			} else {
-				$series_uptime[] = [
-					'x' => $ts,
-					'y' => 100,
-				];
-			}
-		}
-		$before = [
-			'x' => 'new Date(' . (string) ( strtotime( $start ) - 86400 ) . '000)',
-			'y' => 'null',
-		];
-		$after  = [
-			'x' => 'new Date(' . (string) ( strtotime( $timestamp ) + 86400 ) . '000)',
-			'y' => 'null',
-		];
-		// Calls.
-		$short     = Conversion::number_shorten( $call_max, 2, true );
-		$call_max  = 0.5 + floor( $call_max / $short['divisor'] );
-		$call_abbr = $short['abbreviation'];
-		foreach ( $suc as $item ) {
-			$item['y']        = $item['y'] / $short['divisor'];
-			$series_success[] = $item;
-		}
-		foreach ( $err as $item ) {
-			$item['y']      = $item['y'] / $short['divisor'];
-			$series_error[] = $item;
-		}
-		foreach ( $quo as $item ) {
-			$item['y']      = $item['y'] / $short['divisor'];
-			$series_quota[] = $item;
-		}
-		array_unshift( $series_success, $before );
-		array_unshift( $series_error, $before );
-		array_unshift( $series_quota, $before );
-		$series_success[] = $after;
-		$series_error[]   = $after;
-		$series_quota[]   = $after;
-		$json_call        = wp_json_encode(
-			[
-				'series' => [
-					[
-						'name' => esc_html__( 'Success', 'vibes' ),
-						'data' => $series_success,
-					],
-					[
-						'name' => esc_html__( 'Error', 'vibes' ),
-						'data' => $series_error,
-					],
-					[
-						'name' => esc_html__( 'Quota Error', 'vibes' ),
-						'data' => $series_quota,
-					],
-				],
-			]
-		);
-		$json_call        = str_replace( '"x":"new', '"x":new', $json_call );
-		$json_call        = str_replace( ')","y"', '),"y"', $json_call );
-		$json_call        = str_replace( '"null"', 'null', $json_call );
-		// Data.
-		$short     = Conversion::data_shorten( $data_max, 2, true );
-		$data_max  = (int) ceil( $data_max / $short['divisor'] );
-		$data_abbr = $short['abbreviation'];
-		foreach ( $kbin as $kb ) {
-			$kb['y']       = $kb['y'] / $short['divisor'];
-			$series_kbin[] = $kb;
-		}
-		foreach ( $kbout as $kb ) {
-			$kb['y']        = $kb['y'] / $short['divisor'];
-			$series_kbout[] = $kb;
-		}
-		array_unshift( $series_kbin, $before );
-		array_unshift( $series_kbout, $before );
-		$series_kbin[]  = $after;
-		$series_kbout[] = $after;
-		$json_data      = wp_json_encode(
-			[
-				'series' => [
-					[
-						'name' => esc_html__( 'Incoming Data', 'vibes' ),
-						'data' => $series_kbin,
-					],
-					[
-						'name' => esc_html__( 'Outcoming Data', 'vibes' ),
-						'data' => $series_kbout,
-					],
-				],
-			]
-		);
-		$json_data      = str_replace( '"x":"new', '"x":new', $json_data );
-		$json_data      = str_replace( ')","y"', '),"y"', $json_data );
-		$json_data      = str_replace( '"null"', 'null', $json_data );
-		// Uptime.
-		array_unshift( $series_uptime, $before );
-		$series_uptime[] = $after;
-		$json_uptime     = wp_json_encode(
-			[
-				'series' => [
-					[
-						'name' => esc_html__( 'Perceived Uptime', 'vibes' ),
-						'data' => $series_uptime,
-					],
-				],
-			]
-		);
-		$json_uptime     = str_replace( '"x":"new', '"x":new', $json_uptime );
-		$json_uptime     = str_replace( ')","y"', '),"y"', $json_uptime );
-		$json_uptime     = str_replace( '"null"', 'null', $json_uptime );
-		// Rendering.
-		$divisor = $this->duration + 1;
-		while ( 11 < $divisor ) {
-			foreach ( [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397 ] as $divider ) {
-				if ( 0 === $divisor % $divider ) {
-					$divisor = $divisor / $divider;
-					break;
-				}
-			}
-		}
-		$result  = '<div class="vibes-multichart-handler">';
-		$result .= '<div class="vibes-multichart-item active" id="vibes-chart-calls">';
-		$result .= '</div>';
-		$result .= '<script>';
-		$result .= 'jQuery(function ($) {';
-		$result .= ' var call_data' . $uuid . ' = ' . $json_call . ';';
-		$result .= ' var call_tooltip' . $uuid . ' = Chartist.plugins.tooltip({percentage: false, appendToBody: true});';
-		$result .= ' var call_option' . $uuid . ' = {';
-		$result .= '  height: 300,';
-		$result .= '  fullWidth: true,';
-		$result .= '  showArea: true,';
-		$result .= '  showLine: true,';
-		$result .= '  showPoint: false,';
-		$result .= '  plugins: [call_tooltip' . $uuid . '],';
-		$result .= '  axisX: {scaleMinSpace: 100, type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
-		$result .= '  axisY: {type: Chartist.AutoScaleAxis, low: 0, high: ' . $call_max . ', labelInterpolationFnc: function (value) {return value.toString() + " ' . $call_abbr . '";}},';
-		$result .= ' };';
-		$result .= ' new Chartist.Line("#vibes-chart-calls", call_data' . $uuid . ', call_option' . $uuid . ');';
-		$result .= '});';
-		$result .= '</script>';
-		$result .= '<div class="vibes-multichart-item" id="vibes-chart-data">';
-		$result .= '</div>';
-		$result .= '<script>';
-		$result .= 'jQuery(function ($) {';
-		$result .= ' var data_data' . $uuid . ' = ' . $json_data . ';';
-		$result .= ' var data_tooltip' . $uuid . ' = Chartist.plugins.tooltip({percentage: false, appendToBody: true});';
-		$result .= ' var data_option' . $uuid . ' = {';
-		$result .= '  height: 300,';
-		$result .= '  fullWidth: true,';
-		$result .= '  showArea: true,';
-		$result .= '  showLine: true,';
-		$result .= '  showPoint: false,';
-		$result .= '  plugins: [data_tooltip' . $uuid . '],';
-		$result .= '  axisX: {type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
-		$result .= '  axisY: {type: Chartist.AutoScaleAxis, low: 0, high: ' . $data_max . ', labelInterpolationFnc: function (value) {return value.toString() + " ' . $data_abbr . '";}},';
-		$result .= ' };';
-		$result .= ' new Chartist.Line("#vibes-chart-data", data_data' . $uuid . ', data_option' . $uuid . ');';
-		$result .= '});';
-		$result .= '</script>';
-		$result .= '<div class="vibes-multichart-item" id="vibes-chart-uptime">';
-		$result .= '</div>';
-		$result .= '<script>';
-		$result .= 'jQuery(function ($) {';
-		$result .= ' var uptime_data' . $uuid . ' = ' . $json_uptime . ';';
-		$result .= ' var uptime_tooltip' . $uuid . ' = Chartist.plugins.tooltip({percentage: false, appendToBody: true});';
-		$result .= ' var uptime_option' . $uuid . ' = {';
-		$result .= '  height: 300,';
-		$result .= '  fullWidth: true,';
-		$result .= '  showArea: true,';
-		$result .= '  showLine: true,';
-		$result .= '  showPoint: false,';
-		$result .= '  plugins: [uptime_tooltip' . $uuid . '],';
-		$result .= '  axisX: {scaleMinSpace: 100, type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
-		$result .= '  axisY: {type: Chartist.AutoScaleAxis, labelInterpolationFnc: function (value) {return value.toString() + " %";}},';
-		$result .= ' };';
-		$result .= ' new Chartist.Line("#vibes-chart-uptime", uptime_data' . $uuid . ', uptime_option' . $uuid . ');';
-		$result .= '});';
-		$result .= '</script>';
-		$result .= '</div>';
-		return [ 'vibes-main-chart' => $result ];
-	}
-
-	/**
-	 * Query statistics table.
-	 *
-	 * @param   mixed $queried The query params.
-	 * @return array  The result of the query, ready to encode.
-	 * @since    1.0.0
-	 */
-	private function query_kpi( $queried ) {
-		$result = [];
-		if ( 'call' === $queried ) {
-			$data     = Schema::get_std_kpi( $this->filter, ! $this->is_today );
-			$pdata    = Schema::get_std_kpi( $this->previous );
-			$current  = 0.0;
-			$previous = 0.0;
-			if ( is_array( $data ) && array_key_exists( 'sum_hit', $data ) && ! empty( $data['sum_hit'] ) ) {
-				$current = (float) $data['sum_hit'];
-			}
-			if ( is_array( $pdata ) && array_key_exists( 'sum_hit', $pdata ) && ! empty( $pdata['sum_hit'] ) ) {
-				$previous = (float) $pdata['sum_hit'];
-			}
-			$result[ 'kpi-main-' . $queried ] = Conversion::number_shorten( $current, 1, false, '&nbsp;' );
-			if ( 0.0 !== $current && 0.0 !== $previous ) {
-				$percent = round( 100 * ( $current - $previous ) / $previous, 1 );
-				if ( 0.1 > abs( $percent ) ) {
-					$percent = 0;
-				}
-				$result[ 'kpi-index-' . $queried ] = '<span style="color:' . ( 0 <= $percent ? '#18BB9C' : '#E74C3C' ) . ';">' . ( 0 < $percent ? '.' : '' ) . $percent . '&nbsp;%</span>';
-			} elseif ( 0.0 === $previous && 0.0 !== $current ) {
-				$result[ 'kpi-index-' . $queried ] = '<span style="color:#18BB9C;">+∞</span>';
-			} elseif ( 0.0 !== $previous && 100 !== $previous && 0.0 === $current ) {
-				$result[ 'kpi-index-' . $queried ] = '<span style="color:#E74C3C;">-∞</span>';
-			}
-			if ( is_array( $data ) && array_key_exists( 'avg_latency', $data ) && ! empty( $data['avg_latency'] ) ) {
-				$result[ 'kpi-bottom-' . $queried ] = '<span class="vibes-kpi-large-bottom-text">' . sprintf( esc_html__( 'avg latency: %s ms.', 'vibes' ), (int) $data['avg_latency'] ) . '</span>';
-			}
-		}
-		if ( 'data' === $queried ) {
-			$data         = Schema::get_std_kpi( $this->filter, ! $this->is_today );
-			$pdata        = Schema::get_std_kpi( $this->previous );
-			$current_in   = 0.0;
-			$current_out  = 0.0;
-			$previous_in  = 0.0;
-			$previous_out = 0.0;
-			if ( is_array( $data ) && array_key_exists( 'sum_kb_in', $data ) && ! empty( $data['sum_kb_in'] ) ) {
-				$current_in = (float) $data['sum_kb_in'] * 1024;
-			}
-			if ( is_array( $data ) && array_key_exists( 'sum_kb_out', $data ) && ! empty( $data['sum_kb_out'] ) ) {
-				$current_out = (float) $data['sum_kb_out'] * 1024;
-			}
-			if ( is_array( $pdata ) && array_key_exists( 'sum_kb_in', $pdata ) && ! empty( $pdata['sum_kb_in'] ) ) {
-				$previous_in = (float) $pdata['sum_kb_in'] * 1024;
-			}
-			if ( is_array( $pdata ) && array_key_exists( 'sum_kb_out', $pdata ) && ! empty( $pdata['sum_kb_out'] ) ) {
-				$previous_out = (float) $pdata['sum_kb_out'] * 1024;
-			}
-			$current                          = $current_in + $current_out;
-			$previous                         = $previous_in + $previous_out;
-			$result[ 'kpi-main-' . $queried ] = Conversion::data_shorten( $current, 1, false, '&nbsp;' );
-			if ( 0.0 !== $current && 0.0 !== $previous ) {
-				$percent = round( 100 * ( $current - $previous ) / $previous, 1 );
-				if ( 0.1 > abs( $percent ) ) {
-					$percent = 0;
-				}
-				$result[ 'kpi-index-' . $queried ] = '<span style="color:' . ( 0 <= $percent ? '#18BB9C' : '#E74C3C' ) . ';">' . ( 0 < $percent ? '.' : '' ) . $percent . '&nbsp;%</span>';
-			} elseif ( 0.0 === $previous && 0.0 !== $current ) {
-				$result[ 'kpi-index-' . $queried ] = '<span style="color:#18BB9C;">+∞</span>';
-			} elseif ( 0.0 !== $previous && 100 !== $previous && 0.0 === $current ) {
-				$result[ 'kpi-index-' . $queried ] = '<span style="color:#E74C3C;">-∞</span>';
-			}
-			$in                                 = '<img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'arrow-down-right', 'none', '#73879C' ) . '" /><span class="vibes-kpi-large-bottom-text">' . Conversion::data_shorten( $current_in, 2, false, '&nbsp;' ) . '</span>';
-			$out                                = '<span class="vibes-kpi-large-bottom-text">' . Conversion::data_shorten( $current_out, 2, false, '&nbsp;' ) . '</span><img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'arrow-up-right', 'none', '#73879C' ) . '" />';
-			$result[ 'kpi-bottom-' . $queried ] = $in . ' &nbsp;&nbsp; ' . $out;
-		}
-		if ( 'server' === $queried || 'quota' === $queried || 'pass' === $queried || 'uptime' === $queried ) {
-			$not = false;
-			if ( 'server' === $queried ) {
-				$codes = Http::$http_error_codes;
-			} elseif ( 'quota' === $queried ) {
-				$codes = Http::$http_quota_codes;
-			} elseif ( 'pass' === $queried ) {
-				$codes = Http::$http_effective_pass_codes;
-			} elseif ( 'uptime' === $queried ) {
-				$codes = Http::$http_failure_codes;
-				$not   = true;
-			}
-			$base        = Schema::get_std_kpi( $this->filter, ! $this->is_today );
-			$pbase       = Schema::get_std_kpi( $this->previous );
-			$data        = Schema::get_std_kpi( $this->filter, ! $this->is_today, 'code', $codes, $not );
-			$pdata       = Schema::get_std_kpi( $this->previous, true, 'code', $codes, $not );
-			$base_value  = 0.0;
-			$pbase_value = 0.0;
-			$data_value  = 0.0;
-			$pdata_value = 0.0;
-			$current     = 0.0;
-			$previous    = 0.0;
-			if ( is_array( $data ) && array_key_exists( 'sum_hit', $base ) && ! empty( $base['sum_hit'] ) ) {
-				$base_value = (float) $base['sum_hit'];
-			}
-			if ( is_array( $pbase ) && array_key_exists( 'sum_hit', $pbase ) && ! empty( $pbase['sum_hit'] ) ) {
-				$pbase_value = (float) $pbase['sum_hit'];
-			}
-			if ( is_array( $data ) && array_key_exists( 'sum_hit', $data ) && ! empty( $data['sum_hit'] ) ) {
-				$data_value = (float) $data['sum_hit'];
-			}
-			if ( is_array( $pdata ) && array_key_exists( 'sum_hit', $pdata ) && ! empty( $pdata['sum_hit'] ) ) {
-				$pdata_value = (float) $pdata['sum_hit'];
-			}
-			if ( 0.0 !== $base_value && 0.0 !== $data_value ) {
-				$current                          = 100 * $data_value / $base_value;
-				$result[ 'kpi-main-' . $queried ] = round( $current, 1 ) . '&nbsp;%';
-			} else {
-				if ( 0.0 !== $data_value ) {
-					$result[ 'kpi-main-' . $queried ] = '100&nbsp;%';
-				} elseif ( 0.0 !== $base_value ) {
-					$result[ 'kpi-main-' . $queried ] = '0&nbsp;%';
-				} else {
-					$result[ 'kpi-main-' . $queried ] = '-';
-				}
-			}
-			if ( 0.0 !== $pbase_value && 0.0 !== $pdata_value ) {
-				$previous = 100 * $pdata_value / $pbase_value;
-			} else {
-				if ( 0.0 !== $pdata_value ) {
-					$previous = 100.0;
-				}
-			}
-			if ( 0.0 !== $current && 0.0 !== $previous ) {
-				$percent = round( 100 * ( $current - $previous ) / $previous, 1 );
-				if ( 0.1 > abs( $percent ) ) {
-					$percent = 0;
-				}
-				$result[ 'kpi-index-' . $queried ] = '<span style="color:' . ( 0 <= $percent ? '#18BB9C' : '#E74C3C' ) . ';">' . ( 0 < $percent ? '.' : '' ) . $percent . '&nbsp;%</span>';
-			} elseif ( 0.0 === $previous && 0.0 !== $current ) {
-				$result[ 'kpi-index-' . $queried ] = '<span style="color:#18BB9C;">+∞</span>';
-			} elseif ( 0.0 !== $previous && 100 !== $previous && 0.0 === $current ) {
-				$result[ 'kpi-index-' . $queried ] = '<span style="color:#E74C3C;">-∞</span>';
-			}
-			switch ( $queried ) {
-				case 'server':
-					$result[ 'kpi-bottom-' . $queried ] = '<span class="vibes-kpi-large-bottom-text">' . sprintf( esc_html__( '%s calls in error', 'vibes' ), Conversion::number_shorten( $data_value, 2, false, '&nbsp;' ) ) . '</span>';
-					break;
-				case 'quota':
-					$result[ 'kpi-bottom-' . $queried ] = '<span class="vibes-kpi-large-bottom-text">' . sprintf( esc_html__( '%s blocked calls', 'vibes' ), Conversion::number_shorten( $data_value, 2, false, '&nbsp;' ) ) . '</span>';
-					break;
-				case 'pass':
-					$result[ 'kpi-bottom-' . $queried ] = '<span class="vibes-kpi-large-bottom-text">' . sprintf( esc_html__( '%s successful calls', 'vibes' ), Conversion::number_shorten( $data_value, 2, false, '&nbsp;' ) ) . '</span>';
-					break;
-				case 'uptime':
-					if ( 0.0 !== $base_value ) {
-						$duration = implode( ', ', Date::get_age_array_from_seconds( $this->duration * DAY_IN_SECONDS * ( 1 - ( $data_value / $base_value ) ), true, true ) );
-						if ( '' === $duration ) {
-							$duration = esc_html__( 'no downtime', 'vibes' );
-						} else {
-							$duration = sprintf( esc_html__( 'down %s', 'vibes' ), $duration );
-						}
-						$result[ 'kpi-bottom-' . $queried ] = '<span class="vibes-kpi-large-bottom-text">' . $duration . '</span>';
-					}
-					break;
-			}
-		}
-		return $result;
 	}
 
 	/**
@@ -2168,26 +1648,6 @@ class Analytics {
 			$pickers = $this->get_date_box();
 		}
 		$result .= '<span class="vibes-picker">' . $pickers . '</span>';
-		$result .= '</div>';
-		return $result;
-	}
-
-	/**
-	 * Get the KPI bar.
-	 *
-	 * @return string  The bar ready to print.
-	 * @since    1.0.0
-	 */
-	public function get_kpi_bar() {
-		$result  = '<div class="vibes-box vibes-box-full-line">';
-		$result .= '<div class="vibes-kpi-bar">';
-		$result .= '<div class="vibes-kpi-large">' . $this->get_large_kpi( 'call' ) . '</div>';
-		$result .= '<div class="vibes-kpi-large">' . $this->get_large_kpi( 'data' ) . '</div>';
-		$result .= '<div class="vibes-kpi-large">' . $this->get_large_kpi( 'server' ) . '</div>';
-		$result .= '<div class="vibes-kpi-large">' . $this->get_large_kpi( 'quota' ) . '</div>';
-		$result .= '<div class="vibes-kpi-large">' . $this->get_large_kpi( 'pass' ) . '</div>';
-		$result .= '<div class="vibes-kpi-large">' . $this->get_large_kpi( 'uptime' ) . '</div>';
-		$result .= '</div>';
 		$result .= '</div>';
 		return $result;
 	}
@@ -2615,58 +2075,6 @@ class Analytics {
 	}
 
 	/**
-	 * Get the map box.
-	 *
-	 * @return string  The box ready to print.
-	 * @since    1.0.0
-	 */
-	public function get_map_box() {
-		switch ( $this->type ) {
-			case 'domain':
-				$url = $this->get_url(
-					[],
-					[
-						'type'   => 'authorities',
-						'domain' => $this->domain,
-						'extra'  => 'countries',
-					]
-				);
-				break;
-			case 'authority':
-				$url = $this->get_url(
-					[],
-					[
-						'type'   => 'endpoints',
-						'domain' => $this->domain,
-						'extra'  => 'countries',
-					]
-				);
-				break;
-			default:
-				$url = $this->get_url(
-					[ 'domain' ],
-					[
-						'type'  => 'domains',
-						'extra' => 'countries',
-					]
-				);
-		}
-		$detail  = '<a href="' . esc_url( $url ) . '"><img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'zoom-in', 'none', '#73879C' ) . '" /></a>';
-		$help    = esc_html__( 'View the details of all countries.', 'vibes' );
-		$result  = '<div class="vibes-60-module">';
-		$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . esc_html__( 'Countries', 'vibes' ) . '</span><span class="vibes-module-more left" data-position="left" data-tooltip="' . $help . '">' . $detail . '</span></div>';
-		$result .= '<div class="vibes-module-content" id="vibes-map">' . $this->get_graph_placeholder( 200 ) . '</div>';
-		$result .= '</div>';
-		$result .= $this->get_refresh_script(
-			[
-				'query'   => 'map',
-				'queried' => 0,
-			]
-		);
-		return $result;
-	}
-
-	/**
 	 * Get the catgory box.
 	 *
 	 * @return string  The box ready to print.
@@ -2687,7 +2095,7 @@ class Analytics {
 	}
 
 	/**
-	 * Get the map box.
+	 * Get the initiator box.
 	 *
 	 * @return string  The box ready to print.
 	 * @since    1.0.0
@@ -2707,7 +2115,7 @@ class Analytics {
 	}
 
 	/**
-	 * Get the map box.
+	 * Get the security box.
 	 *
 	 * @return string  The box ready to print.
 	 * @since    1.0.0
@@ -2727,7 +2135,7 @@ class Analytics {
 	}
 
 	/**
-	 * Get the map box.
+	 * Get the cache box.
 	 *
 	 * @return string  The box ready to print.
 	 * @since    1.0.0
@@ -2747,61 +2155,6 @@ class Analytics {
 	}
 
 	/**
-	 * Get a large kpi box.
-	 *
-	 * @param   string $kpi     The kpi to render.
-	 * @return string  The box ready to print.
-	 * @since    1.0.0
-	 */
-	private function get_large_kpi( $kpi ) {
-		switch ( $kpi ) {
-			case 'call':
-				$icon  = Feather\Icons::get_base64( 'hash', 'none', '#73879C' );
-				$title = esc_html_x( 'Number of Calls', 'Noun - Number API calls.', 'vibes' );
-				$help  = esc_html__( 'Number of API calls.', 'vibes' );
-				break;
-			case 'data':
-				$icon  = Feather\Icons::get_base64( 'link-2', 'none', '#73879C' );
-				$title = esc_html_x( 'Data Volume', 'Noun - Volume of transferred data.', 'vibes' );
-				$help  = esc_html__( 'Volume of transferred data.', 'vibes' );
-				break;
-			case 'server':
-				$icon  = Feather\Icons::get_base64( 'x-octagon', 'none', '#73879C' );
-				$title = esc_html_x( 'Server Error Rate', 'Noun - Ratio of the number of HTTP errors to the total number of calls.', 'vibes' );
-				$help  = esc_html__( 'Ratio of the number of HTTP errors to the total number of calls.', 'vibes' );
-				break;
-			case 'quota':
-				$icon  = Feather\Icons::get_base64( 'shield-off', 'none', '#73879C' );
-				$title = esc_html_x( 'Quotas Error Rate', 'Noun - Ratio of the quota enforcement number to the total number of calls.', 'vibes' );
-				$help  = esc_html__( 'Ratio of the quota enforcement number to the total number of calls.', 'vibes' );
-				break;
-			case 'pass':
-				$icon  = Feather\Icons::get_base64( 'check-circle', 'none', '#73879C' );
-				$title = esc_html_x( 'Effective Pass Rate', 'Noun - Ratio of the number of HTTP success to the total number of calls.', 'vibes' );
-				$help  = esc_html__( 'Ratio of the number of HTTP success to the total number of calls.', 'vibes' );
-				break;
-			case 'uptime':
-				$icon  = Feather\Icons::get_base64( 'activity', 'none', '#73879C' );
-				$title = esc_html_x( 'Perceived Uptime', 'Noun - Perceived uptime, from the viewpoint of the site.', 'vibes' );
-				$help  = esc_html__( 'Perceived uptime, from the viewpoint of the site.', 'vibes' );
-				break;
-		}
-		$top       = '<img style="width:12px;vertical-align:baseline;" src="' . $icon . '" />&nbsp;&nbsp;<span style="cursor:help;" class="vibes-kpi-large-top-text bottom" data-position="bottom" data-tooltip="' . $help . '">' . $title . '</span>';
-		$indicator = '&nbsp;';
-		$bottom    = '<span class="vibes-kpi-large-bottom-text">&nbsp;</span>';
-		$result    = '<div class="vibes-kpi-large-top">' . $top . '</div>';
-		$result   .= '<div class="vibes-kpi-large-middle"><div class="vibes-kpi-large-middle-left" id="kpi-main-' . $kpi . '">' . $this->get_value_placeholder() . '</div><div class="vibes-kpi-large-middle-right" id="kpi-index-' . $kpi . '">' . $indicator . '</div></div>';
-		$result   .= '<div class="vibes-kpi-large-bottom" id="kpi-bottom-' . $kpi . '">' . $bottom . '</div>';
-		$result   .= $this->get_refresh_script(
-			[
-				'query'   => 'kpi',
-				'queried' => $kpi,
-			]
-		);
-		return $result;
-	}
-
-	/**
 	 * Get a placeholder for graph.
 	 *
 	 * @param   integer $height The height of the placeholder.
@@ -2810,16 +2163,6 @@ class Analytics {
 	 */
 	private function get_graph_placeholder( $height ) {
 		return '<p style="text-align:center;line-height:' . $height . 'px;"><img style="width:40px;vertical-align:middle;" src="' . VIBES_ADMIN_URL . 'medias/bars.svg" /></p>';
-	}
-
-	/**
-	 * Get a placeholder for value.
-	 *
-	 * @return string  The placeholder, ready to print.
-	 * @since    1.0.0
-	 */
-	private function get_value_placeholder() {
-		return '<img style="width:26px;vertical-align:middle;" src="' . VIBES_ADMIN_URL . 'medias/three-dots.svg" />';
 	}
 
 	/**
@@ -2911,65 +2254,6 @@ class Analytics {
 			}
 		}
 		return $url;
-	}
-
-	/**
-	 * Get a large kpi box.
-	 *
-	 * @return string  The box ready to print.
-	 * @since    1.0.0
-	 */
-	private function get_switch_box( $bound ) {
-		$enabled = false;
-		$other   = false;
-		$other_t = 'both';
-		if ( 'inbound' === $bound ) {
-			$enabled = $this->has_inbound;
-			$other   = $this->is_outbound;
-			$other_t = 'outbound';
-		}
-		if ( 'outbound' === $bound ) {
-			$enabled = $this->has_outbound;
-			$other   = $this->is_inbound;
-			$other_t = 'inbound';
-		}
-		if ( $enabled ) {
-			$opacity = '';
-			if ( 'inbound' === $bound ) {
-				$checked = $this->is_inbound;
-			}
-			if ( 'outbound' === $bound ) {
-				$checked = $this->is_outbound;
-			}
-		} else {
-			$opacity = ' style="opacity:0.4"';
-			$checked = false;
-		}
-		$result = '<input type="checkbox" class="vibes-input-' . $bound . '-switch"' . ( $checked ? ' checked' : '' ) . ' />';
-		// phpcs:ignore
-		$result .= '&nbsp;<span class="vibes-text-' . $bound . '-switch"' . $opacity . '>' . esc_html__( $bound, 'vibes' ) . '</span>';
-		$result .= '<script>';
-		$result .= 'jQuery(function ($) {';
-		$result .= ' var elem = document.querySelector(".vibes-input-' . $bound . '-switch");';
-		$result .= ' var params = {size: "small", color: "#5A738E", disabledOpacity:0.6 };';
-		$result .= ' var ' . $bound . ' = new Switchery(elem, params);';
-		if ( $enabled ) {
-			$result .= ' ' . $bound . '.enable();';
-		} else {
-			$result .= ' ' . $bound . '.disable();';
-		}
-		$result .= ' elem.onchange = function() {';
-		$result .= '  var url="' . $this->get_url( [ 'context' ], [ 'domain' => $this->domain ] ) . '";';
-		if ( $other ) {
-			$result .= ' if (!elem.checked) {url = url + "&context=' . $other_t . '";}';
-		} else {
-			$result .= ' if (elem.checked) {url = url + "&context=' . $other_t . '";}';
-		}
-		$result .= '  $(location).attr("href", url);';
-		$result .= ' };';
-		$result .= '});';
-		$result .= '</script>';
-		return $result;
 	}
 
 	/**
