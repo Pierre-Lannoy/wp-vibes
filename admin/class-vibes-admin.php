@@ -22,6 +22,7 @@ use Vibes\System\Timezone;
 use Vibes\System\GeoIP;
 use Vibes\System\Environment;
 use PerfOpsOne\Menus;
+use PerfOpsOne\AdminBar;
 use Vibes\System\SharedMemory;
 use Vibes\Plugin\Feature\Memory;
 
@@ -218,6 +219,7 @@ class Vibes_Admin {
 	public function init_admin_menus() {
 		add_filter( 'init_perfopsone_admin_menus', [ $this, 'init_perfopsone_admin_menus' ] );
 		Menus::initialize();
+		AdminBar::initialize();
 	}
 
 	/**
@@ -364,6 +366,36 @@ class Vibes_Admin {
 									$this->save_options();
 								} elseif ( ! empty( $_POST ) && array_key_exists( 'reset-to-defaults', $_POST ) ) {
 									$this->reset_options();
+								}
+							}
+							break;
+						case 'install-decalog':
+							if ( class_exists( 'PerfOpsOne\Installer' ) ) {
+								$result = \PerfOpsOne\Installer::do( 'decalog', true );
+								if ( '' === $result ) {
+									add_settings_error( 'vibes_no_error', '', esc_html__( 'Plugin successfully installed and activated with default settings.', 'vibes' ), 'info' );
+								} else {
+									add_settings_error( 'vibes_install_error', '', sprintf( esc_html__( 'Unable to install or activate the plugin. Error message: %s.', 'vibes' ), $result ), 'error' );
+								}
+							}
+							break;
+						case 'install-podd':
+							if ( class_exists( 'PerfOpsOne\Installer' ) ) {
+								$result = \PerfOpsOne\Installer::do( 'device-detector', true );
+								if ( '' === $result ) {
+									add_settings_error( 'vibes_no_error', '', esc_html__( 'Plugin successfully installed and activated with default settings.', 'vibes' ), 'info' );
+								} else {
+									add_settings_error( 'vibes_install_error', '', sprintf( esc_html__( 'Unable to install or activate the plugin. Error message: %s.', 'vibes' ), $result ), 'error' );
+								}
+							}
+							break;
+						case 'install-iplocator':
+							if ( class_exists( 'PerfOpsOne\Installer' ) ) {
+								$result = \PerfOpsOne\Installer::do( 'ip-locator', true );
+								if ( '' === $result ) {
+									add_settings_error( 'vibes_no_error', '', esc_html__( 'Plugin successfully installed and activated with default settings.', 'vibes' ), 'info' );
+								} else {
+									add_settings_error( 'vibes_install_error', '', sprintf( esc_html__( 'Unable to install or activate the plugin. Error message: %s.', 'vibes' ), $result ), 'error' );
 								}
 							}
 							break;
