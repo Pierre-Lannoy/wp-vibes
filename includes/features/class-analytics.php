@@ -156,7 +156,7 @@ class Analytics {
 	private $filter = [];
 
 	/**
-	 * The query filter fro the previous range.
+	 * The query filter for the previous range.
 	 *
 	 * @since  1.0.0
 	 * @var    array    $previous    The query filter fro the previous range.
@@ -186,8 +186,8 @@ class Analytics {
 	 * @var    array    $colors    The colors array.
 	 */
 	private $span_colors = [
-		'redirect' => '#73879C',
-		'dns'      => '#73879C',
+		'redirect' => '#3398DB',
+		'dns'      => '#3398DB',
 		'tcp'      => '#3398DB',
 		'ssl'      => '#3398DB',
 		'wait'     => '#9B59B6',
@@ -378,17 +378,22 @@ class Analytics {
 				if ( 'webvital' === $this->source ) {
 					return $this->query_webvital_list( 'endpoints' );
 				}
-				return $this->query_list( 'endpoints' );
+				return $this->query_navigation_list( 'endpoints' );
 			case 'sites':
 				if ( 'webvital' === $this->source ) {
 					return $this->query_webvital_list( 'sites' );
 				}
-				return $this->query_list( 'sites' );
+				return $this->query_navigation_list( 'sites' );
 			case 'class':
 			case 'device':
-				return $this->query_webvital( $query, $sub );
+				if ( 'webvital' === $this->source ) {
+					return $this->query_webvital( $query, $sub );
+				}
+				return $this->query_navigation( $query, $sub );
 			case 'main-webvital-chart':
 				return $this->query_webvital_chart();
+			case 'main-navigation-chart':
+				return $this->query_navigation_chart();
 		}
 		return [];
 	}
@@ -459,7 +464,6 @@ class Analytics {
 		$result .= '</div>';
 		return $result;
 	}
-
 
 	/**
 	 * Query statistics table.
@@ -807,9 +811,8 @@ class Analytics {
 	 * @since    1.0.0
 	 */
 	private function get_spans( $row ) {
-		$result   = '<div class="vibes-spans-wrap" style="width:100%">';
-		$duration = 0;
-		$spans    = [];
+		$result = '<div class="vibes-spans-wrap" style="width:100%">';
+		$spans  = [];
 		foreach ( BrowserPerformance::$spans as $span ) {
 			if ( array_key_exists( 'avg_span_' . $span . '_start', $row ) && array_key_exists( 'avg_span_' . $span . '_duration', $row ) ) {
 				$s = [];
@@ -821,9 +824,11 @@ class Analytics {
 				$s['name']     = $span;
 				$s['start']    = $row[ 'avg_span_' . $span . '_start' ];
 				$s['duration'] = $row[ 'avg_span_' . $span . '_duration' ];
-				$duration     += $s['duration'];
 				$spans[]       = $s;
 			}
+		}
+		if ( array_key_exists( 'avg_span_download_start', $row ) && array_key_exists( 'avg_span_download_duration', $row ) ) {
+			$duration = $row['avg_span_download_start'] + $row['avg_span_download_duration'] + 1;
 		}
 		if ( 0 < $duration % $this->traces_tick ) {
 			$duration = $this->traces_tick * ( 1 + (int) ( $duration / $this->traces_tick ) );
@@ -832,14 +837,43 @@ class Analytics {
 		}
 		if ( 3 * $this->traces_tick > $duration ) {
 			$duration = 3 * $this->traces_tick;
-		}/* else {
-			$duration *= 1.02;
-		}*/
+		}
 		foreach ( $spans as $span ) {
 			$result .= $this->get_span( $span, 0, 0, $duration * 1.02 );
 		}
 		$result .= '</div>';
 		return $result;
+	}
+
+	/**
+	 * Query statistics table.
+	 *
+	 * @param   string  $type   The type of widget.
+	 * @param   string  $id     The class or device id.
+	 * @return array  The result of the query, ready to encode.
+	 * @since    1.0.0
+	 */
+	private function query_navigation( $type, $id ) {
+		$query = Schema::get_grouped_list( $this->source, $type, [], $this->filter, ! $this->is_today, '', [], false, '', 0, Option::site_get( 'quality' ) );
+		$data  = [];
+		if ( 0 < count( $query ) ) {
+			foreach ( $query as $row ) {
+				if ( $id === $row[ $type ] ) {
+					$data[] = $row;
+				}
+			}
+		}
+		if ( 0 !== count( $data ) ) {
+			$result = '<div class="vibes-span-widget">' . $this->get_spans( $data[0] ) . '</div>';
+		} else {
+			$result  = '<div class="vibes-pie-box">';
+			$result .= '<div class="vibes-pie-graph" style="margin:0 !important;">';
+			$result .= '<div class="vibes-pie-graph-nodata-handler-200" id="vibes-pie-' . $type . '"><span style="position: relative; top: 37px;">-&nbsp;' . esc_html__( 'Not Enough Data', 'vibes' ) . '&nbsp;-</span></div>';
+			$result .= '</div>';
+			$result .= '</div>';
+			$result .= '</div>';
+		}
+		return [ 'vibes-' . $type . '_' . $id => $result ];
 	}
 
 	/**
@@ -884,19 +918,6 @@ class Analytics {
 				break;
 			case 'sites':
 				$group = 'site';
-				break;
-
-			case 'codes':
-				$group = 'code';
-				break;
-			case 'schemes':
-				$group = 'scheme';
-				break;
-			case 'methods':
-				$group = 'verb';
-				break;
-			case 'countries':
-				$group = 'country';
 				break;
 		}
 		$data         = Schema::get_grouped_list( $this->source, $group, $count, $this->filter, ! $this->is_today, '', [], false, 'ORDER BY sum_hit DESC' );
@@ -978,80 +999,14 @@ class Analytics {
 					$site = Blog::get_blog_url( $row['site'] );
 					$name = '<img style="width:16px;vertical-align:bottom;" src="' . Favicon::get_base64( $site ) . '" />&nbsp;&nbsp;<span class="vibes-table-text"><a href="' . esc_url( $url ) . '">' . $site . '</a></span>';
 					break;
-
-				case 'codes':
-					if ( '0' === $name ) {
-						$name = '000';
-					}
-					$code = (int) $name;
-					if ( 100 > $code ) {
-						$http = '0xx';
-					} elseif ( 200 > $code ) {
-						$http = '1xx';
-					} elseif ( 300 > $code ) {
-						$http = '2xx';
-					} elseif ( 400 > $code ) {
-						$http = '3xx';
-					} elseif ( 500 > $code ) {
-						$http = '4xx';
-					} elseif ( 600 > $code ) {
-						$http = '5xx';
-					} else {
-						$http = 'nxx';
-					}
-					$name  = '<span class="vibes-http vibes-http-' . $http . '">' . $name . '</span>&nbsp;&nbsp;<span class="vibes-table-text">' . Http::$http_status_codes[ $code ] . '</span>';
-					$group = 'code';
-					break;
-				case 'schemes':
-					$icon = Feather\Icons::get_base64( 'unlock', 'none', '#E74C3C' );
-					if ( 'HTTPS' === strtoupper( $name ) ) {
-						$icon = Feather\Icons::get_base64( 'lock', 'none', '#18BB9C' );
-					}
-					$name  = '<img style="width:14px;vertical-align:text-top;" src="' . $icon . '" />&nbsp;&nbsp;<span class="vibes-table-text">' . strtoupper( $name ) . '</span>';
-					$group = 'scheme';
-					break;
-				case 'methods':
-					$name  = '<img style="width:14px;vertical-align:text-bottom;" src="' . Feather\Icons::get_base64( 'code', 'none', '#73879C' ) . '" />&nbsp;&nbsp;<span class="vibes-table-text">' . strtoupper( $name ) . '</span>';
-					$group = 'verb';
-					break;
-				case 'countries':
-					if ( $other ) {
-						$name = esc_html__( 'Other', 'vibes' );
-					} else {
-						$country_name = L10n::get_country_name( $name );
-						$icon         = $geoip->get_flag_from_country_code( $name, '', 'width:16px;vertical-align:baseline;' );
-						$name         = $icon . '&nbsp;&nbsp;<span class="vibes-table-text" style="vertical-align: text-bottom;">' . $country_name . '</span>';
-					}
-					$group = 'country';
-					break;
 			}
 			$calls = Conversion::number_shorten( $row['sum_hit'] * $factor, 2, false, '&nbsp;' );
-			//$in    = '<img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'arrow-down-right', 'none', '#73879C' ) . '" /><span class="vibes-table-text">' . Conversion::data_shorten( $row['sum_kb_in'] * 1024, 2, false, '&nbsp;' ) . '</span>';
-			//$out   = '<span class="vibes-table-text">' . Conversion::data_shorten( $row['sum_kb_out'] * 1024, 2, false, '&nbsp;' ) . '</span><img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'arrow-up-right', 'none', '#73879C' ) . '" />';
 			if ( 0 < $row['avg_size'] ) {
 				$data = Conversion::data_shorten( (int) $row['avg_size'], 2, false, '&nbsp;' );
 			} else {
 				$data = '-';
 			}
-			$cache = round( 100 * $row['avg_cache'], 1 ) . '%';
-
-			/*if ( 1 < $row['sum_hit'] ) {
-				$min = Conversion::number_shorten( $row['min_latency'], 0 );
-				if ( false !== strpos( $min, 'K' ) ) {
-					$min = str_replace( 'K', esc_html_x( 's', 'Unit symbol - Stands for "second".', 'vibes' ), $min );
-				} else {
-					$min = $min . esc_html_x( 'ms', 'Unit symbol - Stands for "millisecond".', 'vibes' );
-				}
-				$max = Conversion::number_shorten( $row['max_latency'], 0 );
-				if ( false !== strpos( $max, 'K' ) ) {
-					$max = str_replace( 'K', esc_html_x( 's', 'Unit symbol - Stands for "second".', 'vibes' ), $max );
-				} else {
-					$max = $max . esc_html_x( 'ms', 'Unit symbol - Stands for "millisecond".', 'vibes' );
-				}
-				$latency = (int) $row['avg_latency'] . '&nbsp;' . esc_html_x( 'ms', 'Unit symbol - Stands for "millisecond".', 'vibes' ) . '&nbsp;<small>(' . $min . '→' . $max . ')</small>';
-			} else {
-				$latency = (int) $row['avg_latency'] . '&nbsp;' . esc_html_x( 'ms', 'Unit symbol - Stands for "millisecond".', 'vibes' );
-			}*/
+			$cache   = round( 100 * $row['avg_cache'], 1 ) . '%';
 			$latency = (int) $row['avg_load'] . '&nbsp;' . esc_html_x( 'ms', 'Unit symbol - Stands for "millisecond".', 'vibes' );
 			if ( 'codes' === $type && '0' === $row[ $group ] ) {
 				$latency = '-';
@@ -1142,6 +1097,94 @@ class Analytics {
 			foreach ( array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics ) as $metric ) {
 				$result .= '<td data-th="' . $metric . '"><span class="vibes-list-item-' . WebVitals::get_rate_field( $metric, $row[ 'avg_' . $metric ] ) . '">' . WebVitals::display_value( $metric, $row[ 'avg_' . $metric ] ) . '</span></td>';
 			}
+			$result .= '</tr>';
+		}
+		$result .= '</table>';
+		return [ 'vibes-' . $type => $result ];
+	}
+
+	/**
+	 * Query statistics table.
+	 *
+	 * @param   string $type    The type of list.
+	 * @return array  The result of the query, ready to encode.
+	 * @since    1.0.0
+	 */
+	private function query_navigation_list( $type ) {
+		$follow = '';
+		$order  = '';
+		switch ( $type ) {
+			case 'endpoints':
+				$group  = 'endpoint';
+				$follow = 'endpoint';
+				$order  = 'ORDER BY endpoint ASC';
+				break;
+			case 'sites':
+				$group = 'site';
+				$order = 'ORDER BY site DESC';
+				break;
+		}
+		$data          = Schema::get_grouped_list( $this->source, $group, [], $this->filter, ! $this->is_today, '', [], false, $order );
+		$factor        = $this->sampling_factor();
+		$calls_name    = esc_html__( 'Hits', 'vibes' );
+		$redirect_name = esc_html__( 'Redirects', 'vibes' );
+		$data_name     = esc_html__( 'Size', 'vibes' );
+		$latency_name  = esc_html__( 'Latency', 'vibes' );
+		$cache_name    = esc_html__( 'Browser Cache', 'vibes' );
+		$result        = '<table class="vibes-table">';
+		$result       .= '<tr>';
+		$result       .= '<th>&nbsp;</th>';
+		$result       .= '<th>' . $calls_name . '</th>';
+		$result       .= '<th>' . $redirect_name . '</th>';
+		$result       .= '<th>' . $data_name . '</th>';
+		$result       .= '<th>' . $latency_name . '</th>';
+		$result       .= '<th>' . $cache_name . '</th>';
+		$result       .= '</tr>';
+		$site          = '';
+		$icon          = '';
+		foreach ( $data as $key => $row ) {
+			$url = $this->get_url(
+				[],
+				[
+					'type' => $follow,
+					'id'   => false === strpos( $group, ',' ) ? $row[ $group ] : 'unknown',
+				]
+			);
+			switch ( $type ) {
+				case 'endpoints':
+					if ( '' === $site ) {
+						$site = Blog::get_blog_url( $row['site'] );
+						$icon = Favicon::get_base64( $site );
+					}
+					$name = '<img style="width:16px;vertical-align:bottom;" src="' . $icon . '" />&nbsp;&nbsp;<span class="vibes-table-text"><a href="' . esc_url( $url ) . '">' . $row['endpoint'] . '</a></span>';
+					break;
+				case 'sites':
+					$url  = $this->get_url(
+						[],
+						[
+							'site' => $row['site'],
+						]
+					);
+					$site = Blog::get_blog_url( $row['site'] );
+					$name = '<img style="width:16px;vertical-align:bottom;" src="' . Favicon::get_base64( $site ) . '" />&nbsp;&nbsp;<span class="vibes-table-text"><a href="' . esc_url( $url ) . '">' . $site . '</a></span>';
+					break;
+			}
+			$calls = Conversion::number_shorten( $row['sum_hit'] * $factor, 2, false, '&nbsp;' );
+			$redir = (int) $row['avg_redirects'];
+			if ( 0 < $row['avg_size'] ) {
+				$data = Conversion::data_shorten( (int) $row['avg_size'], 2, false, '&nbsp;' );
+			} else {
+				$data = '-';
+			}
+			$cache   = round( 100 * $row['avg_cache'], 1 ) . '%';
+			$latency = (int) $row['avg_load'] . '&nbsp;' . esc_html_x( 'ms', 'Unit symbol - Stands for "millisecond".', 'vibes' );
+			$result .= '<tr>';
+			$result .= '<td data-th="">' . $name . '</td>';
+			$result .= '<td data-th="' . $calls_name . '">' . $calls . '</td>';
+			$result .= '<td data-th="' . $redirect_name . '">' . $redir . '</td>';
+			$result .= '<td data-th="' . $data_name . '">' . $data . '</td>';
+			$result .= '<td data-th="' . $latency_name . '">' . $latency . '</td>';
+			$result .= '<td data-th="' . $cache_name . '">' . $cache . '</td>';
 			$result .= '</tr>';
 		}
 		$result .= '</table>';
@@ -1314,6 +1357,151 @@ class Analytics {
 	}
 
 	/**
+	 * Query statistics table.
+	 *
+	 * @return array The result of the query, ready to encode.
+	 * @since    1.0.0
+	 */
+	private function query_navigation_chart() {
+		$uuid      = UUID::generate_unique_id( 5 );
+		$data      = Schema::get_time_series( 'navigation', $this->filter, ! $this->is_today );
+		$series    = [];
+		$metrics   = [];
+		$metrics[] = [ 'avg_load', 'avg_span_wait_duration', 'avg_span_download_duration' ];
+		$metrics[] = [ 'avg_span_redirect_duration', 'avg_span_dns_duration', 'avg_span_tcp_duration' ];
+		$start     = '';
+		$max       = [];
+		$max[0]    = [];
+		$max[1]    = [];
+		foreach ( $data as $timestamp => $row ) {
+			if ( '' === $start ) {
+				$start = $timestamp;
+			}
+			$ts = 'new Date(' . (string) strtotime( $timestamp ) . '000)';
+			foreach ( $metrics as $key => $stack ) {
+				foreach ( $stack as $metric ) {
+					$val = $row[ $metric ];
+					if ( ( array_key_exists( $metric, $max[ $key ] ) && $max[ $key ][ $metric ] < $val ) || ! array_key_exists( $metric, $max[ $key ] ) ) {
+						$max[ $key ][ $metric ] = $val;
+					}
+					$series[ $metric ]['avg'][] = [
+						'x' => $ts,
+						'y' => $val,
+					];
+				}
+			}
+		}
+		$before = [
+			'x' => 'new Date(' . (string) ( strtotime( $start ) - 86400 ) . '000)',
+			'y' => 'null',
+		];
+		$after  = [
+			'x' => 'new Date(' . (string) ( strtotime( $timestamp ) + 86400 ) . '000)',
+			'y' => 'null',
+		];
+		foreach ( $metrics as $stack ) {
+			foreach ( $stack as $metric ) {
+				array_unshift( $series[ $metric ]['avg'], $before );
+				$series[ $metric ]['avg'][] = $after;
+			}
+		}
+
+		$series['stack0']['avg'] = wp_json_encode(
+			[
+				'series' => [
+					[
+						'name' => esc_html__( 'Latency', 'vibes' ),
+						'data' => $series['avg_load']['avg'],
+					],
+					[
+						'name' => esc_html__( 'Wait', 'vibes' ),
+						'data' => $series['avg_span_wait_duration']['avg'],
+					],
+					[
+						'name' => esc_html__( 'Download', 'vibes' ),
+						'data' => $series['avg_span_download_duration']['avg'],
+					],
+				],
+			],
+		);
+		$series['stack1']['avg'] = wp_json_encode(
+			[
+				'series' => [
+					[
+						'name' => esc_html__( 'Redirections', 'vibes' ),
+						'data' => $series['avg_span_redirect_duration']['avg'],
+					],
+					[
+						'name' => esc_html__( 'DNS Lookup', 'vibes' ),
+						'data' => $series['avg_span_dns_duration']['avg'],
+					],
+					[
+						'name' => esc_html__( 'Connection', 'vibes' ),
+						'data' => $series['avg_span_redirect_duration']['avg'],
+					],
+				],
+			],
+		);
+		foreach ( $metrics as $key => $stack ) {
+			$series[ 'stack' . $key ]['avg'] = str_replace( '"x":"new', '"x":new', $series[ 'stack' . $key ]['avg'] );
+			$series[ 'stack' . $key ]['avg'] = str_replace( ')","y"', '),"y"', $series[ 'stack' . $key ]['avg'] );
+			$series[ 'stack' . $key ]['avg'] = str_replace( '"null"', 'null', $series[ 'stack' . $key ]['avg'] );
+		}
+
+		// Rendering.
+		$divisor = $this->duration + 1;
+		while ( 11 < $divisor ) {
+			foreach ( [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397 ] as $divider ) {
+				if ( 0 === $divisor % $divider ) {
+					$divisor = $divisor / $divider;
+					break;
+				}
+			}
+		}
+		$result  = '<div class="vibes-multichart-handler">';
+		$result .= '<div class="vibes-multichart-item active" id="vibes-chart-time">';
+		$result .= '</div>';
+		$result .= '<script>';
+		$result .= 'jQuery(function ($) {';
+		$result .= ' var time_data' . $uuid . ' = ' . $series['stack0']['avg'] . ';';
+		$result .= ' var time_tooltip' . $uuid . ' = Chartist.plugins.tooltip({percentage: false, appendToBody: true});';
+		$result .= ' var time_option' . $uuid . ' = {';
+		$result .= '  height: 300,';
+		$result .= '  fullWidth: true,';
+		$result .= '  showArea: true,';
+		$result .= '  showLine: true,';
+		$result .= '  showPoint: false,';
+		$result .= '  plugins: [time_tooltip' . $uuid . '],';
+		$result .= '  axisX: {scaleMinSpace: 100, type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
+		$result .= '  axisY: {type: Chartist.FixedScaleAxis, ticks: [1000, 2000, 3000],low: 0, labelInterpolationFnc: function (value) {return value.toString() + " ms";}},';
+		$result .= ' };';
+		$result .= ' new Chartist.Line("#vibes-chart-time", time_data' . $uuid . ', time_option' . $uuid . ');';
+		$result .= '});';
+		$result .= '</script>';
+		$result .= '<div class="vibes-multichart-item" id="vibes-chart-net">';
+		$result .= '</div>';
+		$result .= '<script>';
+		$result .= 'jQuery(function ($) {';
+		$result .= ' var net_net' . $uuid . ' = ' . $series['stack1']['avg'] . ';';
+		$result .= ' var net_tooltip' . $uuid . ' = Chartist.plugins.tooltip({percentage: false, appendToBody: true});';
+		$result .= ' var net_option' . $uuid . ' = {';
+		$result .= '  height: 300,';
+		$result .= '  fullWidth: true,';
+		$result .= '  showArea: true,';
+		$result .= '  showLine: true,';
+		$result .= '  showPoint: false,';
+		$result .= '  plugins: [net_tooltip' . $uuid . '],';
+		$result .= '  axisX: {type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
+		$result .= '  axisY: {type: Chartist.AutoScaleAxis, labelInterpolationFnc: function (value) {return value.toString() + " ms";}},';
+		$result .= ' };';
+		$result .= ' new Chartist.Line("#vibes-chart-net", net_net' . $uuid . ', net_option' . $uuid . ');';
+		$result .= '});';
+		$result .= '</script>';
+		$result .= '</div>';
+		return [ 'vibes-navigation-chart' => $result ];
+	}
+
+	/**
 	 * Get the user selector.
 	 *
 	 * @return string  The selector ready to print.
@@ -1397,43 +1585,13 @@ class Analytics {
 	public function get_title_selector() {
 		switch ( $this->type ) {
 			case 'domains':
-				switch ( $this->extra ) {
-					case 'codes':
-						$title = esc_html__( 'HTTP Codes Details', 'vibes' );
-						break;
-					case 'schemes':
-						$title = esc_html__( 'Protocols Details', 'vibes' );
-						break;
-					case 'methods':
-						$title = esc_html__( 'Methods Details', 'vibes' );
-						break;
-					case 'countries':
-						$title = esc_html__( 'Countries Details', 'vibes' );
-						break;
-					default:
-						$title = esc_html__( 'Domains Details', 'vibes' );
-				}
+				$title = esc_html__( 'Domains Details', 'vibes' );
 				break;
 			case 'domain':
 				$title = esc_html__( 'Domain Summary', 'vibes' );
 				break;
 			case 'authorities':
-				switch ( $this->extra ) {
-					case 'codes':
-						$title = esc_html__( 'HTTP Codes Details', 'vibes' );
-						break;
-					case 'schemes':
-						$title = esc_html__( 'Protocols Details', 'vibes' );
-						break;
-					case 'methods':
-						$title = esc_html__( 'Methods Details', 'vibes' );
-						break;
-					case 'countries':
-						$title = esc_html__( 'Countries Details', 'vibes' );
-						break;
-					default:
-						$title = esc_html__( 'Domain Details', 'vibes' );
-				}
+				$title         = esc_html__( 'Domain Details', 'vibes' );
 				$breadcrumbs[] = [
 					'title'    => esc_html__( 'Domain Summary', 'vibes' ),
 					'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->domain ),
@@ -1463,22 +1621,7 @@ class Analytics {
 				];
 				break;
 			case 'endpoints':
-				switch ( $this->extra ) {
-					case 'codes':
-						$title = esc_html__( 'HTTP Codes Details', 'vibes' );
-						break;
-					case 'schemes':
-						$title = esc_html__( 'Protocols Details', 'vibes' );
-						break;
-					case 'methods':
-						$title = esc_html__( 'Methods Details', 'vibes' );
-						break;
-					case 'countries':
-						$title = esc_html__( 'Countries Details', 'vibes' );
-						break;
-					default:
-						$title = esc_html__( 'Subdomain Details', 'vibes' );
-				}
+				$title         = esc_html__( 'Subdomain Details', 'vibes' );
 				$breadcrumbs[] = [
 					'title'    => esc_html__( 'Subdomain Summary', 'vibes' ),
 					'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->subdomain ),
@@ -1562,7 +1705,6 @@ class Analytics {
 					default:
 						$title = esc_html__( 'Main Summary', 'vibes' );
 				}
-
 		}
 		switch ( $this->source ) {
 			case 'webvital':
@@ -1570,6 +1712,9 @@ class Analytics {
 				break;
 			case 'resource':
 				$name = esc_html__( 'Resources', 'vibes' );
+				break;
+			case 'navigation':
+				$name = esc_html__( 'Performances', 'vibes' );
 				break;
 			default:
 				$name = VIBES_PRODUCT_NAME;
@@ -1670,7 +1815,7 @@ class Analytics {
 			}
 			$result  = '<div class="vibes-row">';
 			$result .= '<div class="vibes-box vibes-box-full-line">';
-			$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . esc_html__( 'Metrics Variations', 'vibes' ) . '<span class="vibes-module-more">' . $detail . '</span></span></div>';
+			$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . esc_html__( 'Web Vitals Variations', 'vibes' ) . '<span class="vibes-module-more">' . $detail . '</span></span></div>';
 			$result .= '<div class="vibes-module-content" id="vibes-webvital-chart">' . $this->get_graph_placeholder( 274 ) . '</div>';
 			$result .= '</div>';
 			$result .= '</div>';
@@ -1694,23 +1839,23 @@ class Analytics {
 	 * @return string  The main chart ready to print.
 	 * @since    1.0.0
 	 */
-	public function get_main_chart() {
+	public function get_navigation_chart() {
 		if ( 1 < $this->duration ) {
-			$help_calls  = esc_html__( 'Responses types distribution.', 'vibes' );
-			$help_data   = esc_html__( 'Data volume distribution.', 'vibes' );
-			$help_uptime = esc_html__( 'Uptime variation.', 'vibes' );
-			$detail      = '<span class="vibes-chart-button not-ready left" id="vibes-chart-button-calls" data-position="left" data-tooltip="' . $help_calls . '"><img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'hash', 'none', '#73879C' ) . '" /></span>';
-			$detail     .= '&nbsp;&nbsp;&nbsp;<span class="vibes-chart-button not-ready left" id="vibes-chart-button-data" data-position="left" data-tooltip="' . $help_data . '"><img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'link-2', 'none', '#73879C' ) . '" /></span>&nbsp;&nbsp;&nbsp;';
-			$detail     .= '<span class="vibes-chart-button not-ready left" id="vibes-chart-button-uptime" data-position="left" data-tooltip="' . $help_uptime . '"><img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'activity', 'none', '#73879C' ) . '" /></span>';
-			$result      = '<div class="vibes-row">';
-			$result     .= '<div class="vibes-box vibes-box-full-line">';
-			$result     .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . esc_html__( 'Metrics Variations', 'vibes' ) . '<span class="vibes-module-more">' . $detail . '</span></span></div>';
-			$result     .= '<div class="vibes-module-content" id="vibes-main-chart">' . $this->get_graph_placeholder( 274 ) . '</div>';
-			$result     .= '</div>';
-			$result     .= '</div>';
-			$result     .= $this->get_refresh_script(
+			$help_time = esc_html__( 'Timings distribution.', 'vibes' );
+			$help_net  = esc_html__( 'Network stages.', 'vibes' );
+			$detail    = '<span class="vibes-chart-button not-ready left" id="vibes-chart-button-time" data-position="left" data-tooltip="' . $help_time . '"><span class="vibes-graph-button" style="padding: 1px 3px;"><img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'clock', 'none', '#73879C' ) . '" /></span></span>';
+			$detail   .= '&nbsp;&nbsp;&nbsp;<span class="vibes-chart-button not-ready left" id="vibes-chart-button-net" data-position="left" data-tooltip="' . $help_net . '"><span class="vibes-graph-button" style="padding: 1px 3px;"><img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'link', 'none', '#73879C' ) . '"/></span></span>';
+			$result    = '<div class="vibes-row">';
+			$result   .= '<div class="vibes-box vibes-box-full-line">';
+			$result   .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . esc_html__( 'Metrics Variations', 'vibes' ) . '<span class="vibes-module-more">' . $detail . '</span></span></div>';
+			$result   .= '<div class="vibes-module-content" id="vibes-navigation-chart">' . $this->get_graph_placeholder( 274 ) . '</div>';
+			$result   .= '</div>';
+			$result   .= '</div>';
+			$result   .= $this->get_refresh_script(
 				[
-					'query'   => 'main-chart',
+					'query'   => 'main-navigation-chart',
+					'country' => $this->country,
+					'authent' => $this->authent,
 					'queried' => 0,
 				]
 			);
@@ -1768,6 +1913,53 @@ class Analytics {
 	}
 
 	/**
+	 * Get the navigation widget.
+	 *
+	 * @return string  The widget ready to print.
+	 * @since    1.0.0
+	 */
+	public function get_navigation_class( $class, $position ) {
+		switch ( $this->type ) {
+			case 'endpoint':
+				$url = $this->get_url(
+					[],
+					[
+						'type'  => 'endpoint',
+						'extra' => 'devices',
+					]
+				);
+				break;
+			default:
+				$url = $this->get_url(
+					[],
+					[
+						'type'  => 'summary',
+						'extra' => 'devices',
+					]
+				);
+		}
+		$result = '<div class="vibes-50-module-small vibes-50-module vibes-50-module-' . $position . '">';
+		if ( 'mobile' === $class && class_exists( 'PODeviceDetector\API\Device' ) ) {
+			$detail  = '<a href="' . esc_url( $url ) . '"><img style="width:12px;vertical-align:baseline;" src="' . Feather\Icons::get_base64( 'zoom-in', 'none', '#73879C' ) . '" /></a>';
+			$help    = esc_html__( 'View the mobiles breakdown.', 'vibes' );
+			$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . Device::get_class_name( $class ) . '</span><span class="vibes-module-more left" data-position="left" data-tooltip="' . $help . '">' . $detail . '</span></div>';
+		} else {
+			$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . Device::get_class_name( $class ) . '</span></div>';
+		}
+		$result .= '<div class="vibes-module-content" id="vibes-class_' . $class . '">' . $this->get_graph_placeholder( 100 ) . '</div>';
+		$result .= '</div>';
+		$result .= $this->get_refresh_script(
+			[
+				'query'   => $this->source . '.class_' . $class,
+				'country' => $this->country,
+				'authent' => $this->authent,
+				'queried' => 0,
+			]
+		);
+		return $result;
+	}
+
+	/**
 	 * Get the web vital widget.
 	 *
 	 * @return string  The widget ready to print.
@@ -1777,6 +1969,28 @@ class Analytics {
 		$result  = '<div class="vibes-50-module vibes-50-module-' . $position . '">';
 		$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . Device::get_device_name( $device ) . '</span></div>';
 		$result .= '<div class="vibes-module-content" id="vibes-device_' . $device . '">' . $this->get_graph_placeholder( 200 ) . '</div>';
+		$result .= '</div>';
+		$result .= $this->get_refresh_script(
+			[
+				'query'   => $this->source . '.device_' . $device,
+				'country' => $this->country,
+				'authent' => $this->authent,
+				'queried' => 0,
+			]
+		);
+		return $result;
+	}
+
+	/**
+	 * Get the navigation widget.
+	 *
+	 * @return string  The widget ready to print.
+	 * @since    1.0.0
+	 */
+	public function get_navigation_device( $device, $position ) {
+		$result  = '<div class="vibes-50-module vibes-50-module-small vibes-50-module-' . $position . '">';
+		$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . Device::get_device_name( $device ) . '</span></div>';
+		$result .= '<div class="vibes-module-content" id="vibes-device_' . $device . '">' . $this->get_graph_placeholder( 100 ) . '</div>';
 		$result .= '</div>';
 		$result .= $this->get_refresh_script(
 			[
@@ -1877,6 +2091,28 @@ class Analytics {
 	 * @return string  The table ready to print.
 	 * @since    1.0.0
 	 */
+	public function get_navigation_sites_list() {
+		$result  = '<div class="vibes-box vibes-box-full-line">';
+		$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . esc_html__( 'Sites Overview', 'vibes' ) . '</span></div>';
+		$result .= '<div class="vibes-module-content" id="vibes-sites">' . $this->get_graph_placeholder( 200 ) . '</div>';
+		$result .= '</div>';
+		$result .= $this->get_refresh_script(
+			[
+				'query'   => 'navigation.sites',
+				'country' => $this->country,
+				'authent' => $this->authent,
+				'queried' => 0,
+			]
+		);
+		return $result;
+	}
+
+	/**
+	 * Get the domains list.
+	 *
+	 * @return string  The table ready to print.
+	 * @since    1.0.0
+	 */
 	public function get_webvital_endpoints_list() {
 		$result  = '<div class="vibes-box vibes-box-full-line">';
 		$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . esc_html__( 'Endpoints Overview', 'vibes' ) . '</span></div>';
@@ -1885,6 +2121,28 @@ class Analytics {
 		$result .= $this->get_refresh_script(
 			[
 				'query'   => 'webvital.endpoints',
+				'country' => $this->country,
+				'authent' => $this->authent,
+				'queried' => 0,
+			]
+		);
+		return $result;
+	}
+
+	/**
+	 * Get the domains list.
+	 *
+	 * @return string  The table ready to print.
+	 * @since    1.0.0
+	 */
+	public function get_navigation_endpoints_list() {
+		$result  = '<div class="vibes-box vibes-box-full-line">';
+		$result .= '<div class="vibes-module-title-bar"><span class="vibes-module-title">' . esc_html__( 'Endpoints Overview', 'vibes' ) . '</span></div>';
+		$result .= '<div class="vibes-module-content" id="vibes-endpoints">' . $this->get_graph_placeholder( 200 ) . '</div>';
+		$result .= '</div>';
+		$result .= $this->get_refresh_script(
+			[
+				'query'   => 'navigation.endpoints',
 				'country' => $this->country,
 				'authent' => $this->authent,
 				'queried' => 0,
@@ -1963,19 +2221,6 @@ class Analytics {
 		switch ( $this->extra ) {
 			case 'devices':
 				$title = esc_html__( 'Mobiles Breakdown', 'vibes' );
-				break;
-
-			case 'codes':
-				$title = esc_html__( 'All HTTP Codes', 'vibes' );
-				break;
-			case 'schemes':
-				$title = esc_html__( 'All Protocols', 'vibes' );
-				break;
-			case 'methods':
-				$title = esc_html__( 'All Methods', 'vibes' );
-				break;
-			case 'countries':
-				$title = esc_html__( 'All Countries', 'vibes' );
 				break;
 			default:
 				$title = esc_html__( 'All Endpoints', 'vibes' );
@@ -2192,7 +2437,6 @@ class Analytics {
 		if ( '' !== $this->id ) {
 			$result .= '  id:"' . $this->id . '",';
 		}
-		//$result .= '  type:"' . $this->source . '.' . $this->type . '",';
 		$result .= '  type:"' . $args['query'] . '",';
 		$result .= '  site:"' . $this->site . '",';
 		$result .= '  start:"' . $this->start . '",';
@@ -2200,11 +2444,14 @@ class Analytics {
 		$result .= ' };';
 		$result .= ' $.post(ajaxurl, data, function(response) {';
 		$result .= ' var val = JSON.parse(response);';
-		$result .= ' console.log(val);';
 		$result .= ' $.each(val, function(index, value) {$("#" + index).html(value);});';
-		if ( array_key_exists( 'query', $args ) && ( 'main-chart' === $args['query'] || 'main-webvital-chart' === $args['query'] ) ) {
+		if ( array_key_exists( 'query', $args ) && ( 'main-webvital-chart' === $args['query'] ) ) {
 			$result .= '$(".vibes-chart-button").removeClass("not-ready");';
 			$result .= '$("#vibes-chart-button-lcp").addClass("active");';
+		}
+		if ( array_key_exists( 'query', $args ) && ( 'main-navigation-chart' === $args['query'] ) ) {
+			$result .= '$(".vibes-chart-button").removeClass("not-ready");';
+			$result .= '$("#vibes-chart-button-time").addClass("active");';
 		}
 		$result .= ' });';
 		$result .= '});';

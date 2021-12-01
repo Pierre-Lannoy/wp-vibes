@@ -34,23 +34,23 @@ wp_enqueue_style( 'vibes-chartist-tooltip' );
 		<?php if ( ( 'summary' === $analytics->type || 'endpoint' === $analytics->type )  && '' === $analytics->extra ) { ?>
             <div class="vibes-row">
                 <div class="vibes-box vibes-box-50-50-line">
-					<?php echo $analytics->get_webvital_class( 'mobile', 'left' ); ?>
-					<?php echo $analytics->get_webvital_class( 'desktop', 'right' ); ?>
+					<?php echo $analytics->get_navigation_class( 'mobile', 'left' ); ?>
+					<?php echo $analytics->get_navigation_class( 'desktop', 'right' ); ?>
                 </div>
             </div>
             <div class="vibes-row first-full-row">
-				<?php echo $analytics->get_webvital_chart() ?>
+				<?php echo $analytics->get_navigation_chart() ?>
             </div>
 		<?php } ?>
 		<?php if ( 'summary' === $analytics->type  && '' === $analytics->extra ) { ?>
 			<?php $network = ( Role::SUPER_ADMIN === Role::admin_type() && 'all' === $analytics->site ); ?>
 			<?php if ( $network ) { ?>
                 <div class="vibes-row last-full-row">
-					<?php echo $analytics->get_webvital_sites_list(); ?>
+					<?php echo $analytics->get_navigation_sites_list(); ?>
                 </div>
 			<?php } else { ?>
                 <div class="vibes-row last-full-row">
-					<?php echo $analytics->get_webvital_endpoints_list(); ?>
+					<?php echo $analytics->get_navigation_endpoints_list(); ?>
                 </div>
 			<?php } ?>
 		<?php } ?>
@@ -59,9 +59,9 @@ wp_enqueue_style( 'vibes-chartist-tooltip' );
 				<?php if ( ! ( $key & 1 ) ) { ?>
                     <div class="vibes-row">
                     <div class="vibes-box vibes-box-50-50-line">
-					<?php echo $analytics->get_webvital_device( $device, 'left' ); ?>
+					<?php echo $analytics->get_navigation_device( $device, 'left' ); ?>
 				<?php } else { ?>
-					<?php echo $analytics->get_webvital_device( $device, 'right' ); ?>
+					<?php echo $analytics->get_navigation_device( $device, 'right' ); ?>
                     </div>
                     </div>
 				<?php } ?>

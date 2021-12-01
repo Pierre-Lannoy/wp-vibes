@@ -128,5 +128,24 @@ jQuery( document ).ready(
 				$( "#vibes-chart-button-ttfb" ).addClass( "active" );
 			}
 		);
+
+		$( "#vibes-chart-button-time" ).on(
+			"click",
+			function() {
+				$( "#vibes-chart-time" ).addClass( "active" );
+				$( "#vibes-chart-net" ).removeClass( "active" );
+				$( "#vibes-chart-button-time" ).addClass( "active" );
+				$( "#vibes-chart-button-net" ).removeClass( "active" );
+			}
+		);
+		$( "#vibes-chart-button-net" ).on(
+			"click",
+			function() {
+				$( "#vibes-chart-net" ).addClass( "active" );
+				$( "#vibes-chart-time" ).removeClass( "active" );
+				$( "#vibes-chart-button-net" ).addClass( "active" );
+				$( "#vibes-chart-button-time" ).removeClass( "active" );
+			}
+		);
 	}
 );

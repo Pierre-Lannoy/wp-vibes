@@ -152,6 +152,10 @@
 	width: 47.5%;
 }
 
+.vibes-50-module-small {
+	height: 180px !important;
+}
+
 .vibes-60-module {
 	flex-grow: 3;
 	flex-shrink: 3;
@@ -294,6 +298,34 @@
 
 .vibes-multichart-bars-container .ct-series-c .ct-bar {
 	stroke: var(--webvital-poor);
+}
+
+#vibes-chart-time .ct-series-b .ct-line {
+	stroke: #9B59B6;
+}
+
+#vibes-chart-time .ct-series-b .ct-area {
+	fill: #9B59B6;
+}
+
+#vibes-chart-time .ct-series-c .ct-line {
+	stroke: #b2c326;
+}
+
+#vibes-chart-time .ct-series-c .ct-area {
+	fill: #b2c326;
+}
+
+#vibes-chart-net .ct-series-a .ct-line,
+#vibes-chart-net .ct-series-b .ct-line,
+#vibes-chart-net .ct-series-c .ct-line {
+	stroke: #3398DB;
+}
+
+#vibes-chart-nettime .ct-series-a .ct-area,
+#vibes-chart-net .ct-series-b .ct-area,
+#vibes-chart-net .ct-series-c .ct-area {
+	fill: #3398DB;
 }
 
 .vibes-chart-button.active span{
@@ -1036,10 +1068,8 @@ button.btn {
 	border-radius: 4px;
 }
 
-.vibes-spans-wrap {
-	/*background-size: 25% 75%;
-	background-position: left 10% ;
-	background-image: linear-gradient(to right,transparent 0%, 50%, #F8F8F8 50%);*/
+.vibes-span-widget {
+	padding-top: 8px;
 }
 
 .vibes-span-wrap {
@@ -1055,18 +1085,23 @@ button.btn {
 
 .vibes-span-text {
 	width: 25%;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	display: inline-block;
 	border-right: 1px solid #F0F0F0;
 	padding-top: 5px;
 	font-size: x-small;
+	display: inline-flex;
+	justify-content: space-between;
+}
+
+.vibes-span-text-label {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .vibes-span-text-time {
 	float: right;
-	padding-right: 4px;
+	padding: 0 4px;
+	font-weight: 600;
 }
 
 .vibes-span-timeline {
@@ -1111,7 +1146,8 @@ button.btn {
 	margin-left:24px;
 }
 
-.users .vibes-option {
+.users .vibes-option,
+.countries .vibes-option{
 	margin: 0 !important;
 }
 
