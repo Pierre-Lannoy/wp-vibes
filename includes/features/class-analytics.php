@@ -1414,7 +1414,7 @@ class Analytics {
 						'data' => $series['avg_load']['avg'],
 					],
 					[
-						'name' => esc_html__( 'Wait', 'vibes' ),
+						'name' => esc_html__( 'Waiting', 'vibes' ),
 						'data' => $series['avg_span_wait_duration']['avg'],
 					],
 					[
