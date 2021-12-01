@@ -85,7 +85,7 @@ class Option {
 		self::$defaults['rhistory']          = 7;
 		self::$defaults['quality']           = 2;
 		self::$defaults['qstat']             = 10;
-		self::$network                       = [ 'version', 'use_cdn', 'download_favicons', 'script_in_footer', 'display_nag', 'metrics', 'cut_path', 'sampling', 'resource_sampling', 'capture', 'rcapture', 'livelog', 'smart_filter', 'buffer', 'history', 'rhistory', 'quality', 'qstat' ];
+		self::$network                       = [ 'version', 'use_cdn', 'download_favicons', 'script_in_footer', 'display_nag', 'metrics', 'cut_path', 'rcut_path', 'sampling', 'resource_sampling', 'capture', 'rcapture', 'livelog', 'smart_filter', 'buffer', 'history', 'rhistory', 'quality', 'qstat' ];
 	}
 
 	/**
