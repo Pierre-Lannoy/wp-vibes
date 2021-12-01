@@ -260,10 +260,13 @@ class Vibes_Admin {
 	 * @since 1.0.0
 	 */
 	public function init_settings_sections() {
-		add_settings_section( 'vibes_inbound_options_section', esc_html__( 'Inbound APIs', 'vibes' ), [ $this, 'inbound_options_section_callback' ], 'vibes_inbound_options_section' );
-		add_settings_section( 'vibes_outbound_options_section', esc_html__( 'Outbound APIs', 'vibes' ), [ $this, 'outbound_options_section_callback' ], 'vibes_outbound_options_section' );
+		add_settings_section( 'vibes_navigation_options_section', esc_html__( 'Navigation', 'vibes' ), [ $this, 'navigation_options_section_callback' ], 'vibes_navigation_options_section' );
+		add_settings_section( 'vibes_resource_options_section', esc_html__( 'Resources', 'vibes' ), [ $this, 'resource_options_section_callback' ], 'vibes_resource_options_section' );
 		add_settings_section( 'vibes_plugin_features_section', esc_html__( 'Plugin features', 'vibes' ), [ $this, 'plugin_features_section_callback' ], 'vibes_plugin_features_section' );
 		add_settings_section( 'vibes_plugin_options_section', esc_html__( 'Plugin options', 'vibes' ), [ $this, 'plugin_options_section_callback' ], 'vibes_plugin_options_section' );
+		if ( apply_filters( 'perfopsone_show_advanced', false ) ) {
+			add_settings_section( 'vibes_plugin_advanced_section', esc_html__( 'Plugin advanced options', 'vibes' ), [ $this, 'plugin_advanced_section_callback' ], 'vibes_plugin_advanced_section' );
+		}
 	}
 
 	/**
@@ -420,13 +423,16 @@ class Vibes_Admin {
 				Option::network_set( 'smart_filter', array_key_exists( 'vibes_plugin_features_smart_filter', $_POST ) ? (bool) filter_input( INPUT_POST, 'vibes_plugin_features_smart_filter' ) : false );
 				Option::network_set( 'livelog', array_key_exists( 'vibes_plugin_features_livelog', $_POST ) ? (bool) filter_input( INPUT_POST, 'vibes_plugin_features_livelog' ) : false );
 				Option::network_set( 'metrics', array_key_exists( 'vibes_plugin_features_metrics', $_POST ) ? (bool) filter_input( INPUT_POST, 'vibes_plugin_features_metrics' ) : false );
-				Option::network_set( 'inbound_capture', array_key_exists( 'vibes_inbound_options_capture', $_POST ) ? (bool) filter_input( INPUT_POST, 'vibes_inbound_options_capture' ) : false );
-				Option::network_set( 'outbound_capture', array_key_exists( 'vibes_outbound_options_capture', $_POST ) ? (bool) filter_input( INPUT_POST, 'vibes_outbound_options_capture' ) : false );
-				Option::network_set( 'inbound_cut_path', array_key_exists( 'vibes_inbound_options_cut_path', $_POST ) ? (int) filter_input( INPUT_POST, 'vibes_inbound_options_cut_path' ) : Option::network_get( 'vibes_inbound_options_cut_path' ) );
-				Option::network_set( 'outbound_cut_path', array_key_exists( 'vibes_outbound_options_cut_path', $_POST ) ? (int) filter_input( INPUT_POST, 'vibes_outbound_options_cut_path' ) : Option::network_get( 'vibes_outbound_options_cut_path' ) );
-				Option::network_set( 'inbound_level', array_key_exists( 'vibes_inbound_options_level', $_POST ) ? (string) filter_input( INPUT_POST, 'vibes_inbound_options_level' ) : Option::network_get( 'vibes_inbound_options_level' ) );
-				Option::network_set( 'outbound_level', array_key_exists( 'vibes_outbound_options_level', $_POST ) ? (string) filter_input( INPUT_POST, 'vibes_outbound_options_level' ) : Option::network_get( 'vibes_outbound_options_level' ) );
-				Option::network_set( 'history', array_key_exists( 'vibes_plugin_features_history', $_POST ) ? (string) filter_input( INPUT_POST, 'vibes_plugin_features_history', FILTER_SANITIZE_NUMBER_INT ) : Option::network_get( 'history' ) );
+				Option::network_set( 'quality', array_key_exists( 'vibes_plugin_advanced_quality', $_POST ) ? (int) filter_input( INPUT_POST, 'vibes_plugin_advanced_quality' ) : Option::network_get( 'quality' ) );
+				Option::network_set( 'qstat', array_key_exists( 'vibes_plugin_advanced_qstat', $_POST ) ? (int) filter_input( INPUT_POST, 'vibes_plugin_advanced_qstat' ) : Option::network_get( 'qstat' ) );
+				Option::network_set( 'capture', array_key_exists( 'vibes_navigation_options_capture', $_POST ) ? (bool) filter_input( INPUT_POST, 'vibes_navigation_options_capture' ) : false );
+				Option::network_set( 'sampling', array_key_exists( 'vibes_navigation_options_sampling', $_POST ) ? (int) filter_input( INPUT_POST, 'vibes_navigation_options_sampling' ) : Option::network_get( 'sampling' ) );
+				Option::network_set( 'cut_path', array_key_exists( 'vibes_navigation_options_cut_path', $_POST ) ? (int) filter_input( INPUT_POST, 'vibes_navigation_options_cut_path' ) : Option::network_get( 'cut_path' ) );
+				Option::network_set( 'history', array_key_exists( 'vibes_navigation_options_history', $_POST ) ? (string) filter_input( INPUT_POST, 'vibes_navigation_options_history', FILTER_SANITIZE_NUMBER_INT ) : Option::network_get( 'history' ) );
+				Option::network_set( 'rcapture', array_key_exists( 'vibes_resource_options_capture', $_POST ) ? (bool) filter_input( INPUT_POST, 'vibes_resource_options_capture' ) : false );
+				Option::network_set( 'resource_sampling', array_key_exists( 'vibes_resource_options_sampling', $_POST ) ? (int) filter_input( INPUT_POST, 'vibes_resource_options_sampling' ) : Option::network_get( 'resource_sampling' ) );
+				Option::network_set( 'rcut_path', array_key_exists( 'vibes_resource_options_cut_path', $_POST ) ? (int) filter_input( INPUT_POST, 'vibes_resource_options_cut_path' ) : Option::network_get( 'rcut_path' ) );
+				Option::network_set( 'rhistory', array_key_exists( 'vibes_resource_options_history', $_POST ) ? (string) filter_input( INPUT_POST, 'vibes_resource_options_history', FILTER_SANITIZE_NUMBER_INT ) : Option::network_get( 'rhistory' ) );
 				$message = esc_html__( 'Plugin settings have been saved.', 'vibes' );
 				$code    = 0;
 				add_settings_error( 'vibes_no_error', $code, $message, 'updated' );
@@ -485,6 +491,45 @@ class Vibes_Admin {
 			]
 		);
 		register_setting( 'vibes_plugin_options_section', 'vibes_plugin_options_favicons' );
+		if ( \DecaLog\Engine::isDecalogActivated() ) {
+			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'thumbs-up', 'none', '#00C800' ) . '" />&nbsp;';
+			$help .= sprintf( esc_html__( 'Your site is currently using %s.', 'vibes' ), '<em>' . \DecaLog\Engine::getVersionString() . '</em>' );
+		} else {
+			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'alert-triangle', 'none', '#FF8C00' ) . '" />&nbsp;';
+			$help .= sprintf( esc_html__( 'Your site does not use any logging plugin. To log all events triggered in Vibes, I recommend you to install the excellent (and free) %s. But it is not mandatory.', 'vibes' ), '<a href="https://wordpress.org/plugins/decalog/">DecaLog</a>' );
+		}
+		add_settings_field(
+			'vibes_plugin_options_logger',
+			__( 'Logging', 'vibes' ),
+			[ $form, 'echo_field_simple_text' ],
+			'vibes_plugin_options_section',
+			'vibes_plugin_options_section',
+			[
+				'text' => $help,
+			]
+		);
+		register_setting( 'vibes_plugin_options_section', 'vibes_plugin_options_logger' );
+		if ( class_exists( 'PODeviceDetector\API\Device' ) ) {
+			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'thumbs-up', 'none', '#00C800' ) . '" />&nbsp;';
+			$help .= sprintf( esc_html__( 'Your site is currently using %s.', 'vibes' ), '<em>Device Detector v' . PODD_VERSION . '</em>' );
+		} else {
+			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'alert-triangle', 'none', '#FF8C00' ) . '" />&nbsp;';
+			$help .= sprintf( esc_html__( 'Your site does not use any device detection mechanism. To allow device differentiation in Vibes, I recommend you to install the excellent (and free) %s. But it is not mandatory.', 'vibes' ), '<a href="https://wordpress.org/plugins/device-detector/">Device Detector</a>' );
+			if ( class_exists( 'PerfOpsOne\Installer' ) && ! Environment::is_wordpress_multisite() ) {
+				$help .= '<br/><a href="' . esc_url( admin_url( 'admin.php?page=vibes-settings&tab=misc&action=install-podd' ) ) . '" class="poo-button-install"><img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'download-cloud', 'none', '#FFFFFF', 3 ) . '" />&nbsp;&nbsp;' . esc_html__('Install It Now', 'vibes' ) . '</a>';
+			}
+		}
+		add_settings_field(
+			'vibes_plugin_options_podd',
+			__( 'Device detection', 'vibes' ),
+			[ $form, 'echo_field_simple_text' ],
+			'vibes_plugin_options_section',
+			'vibes_plugin_options_section',
+			[
+				'text' => $help,
+			]
+		);
+		register_setting( 'vibes_plugin_options_section', 'vibes_plugin_options_podd' );
 		$geo_ip = new GeoIP();
 		if ( $geo_ip->is_installed() ) {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'thumbs-up', 'none', '#00C800' ) . '" />&nbsp;';
@@ -504,25 +549,6 @@ class Vibes_Admin {
 			]
 		);
 		register_setting( 'vibes_plugin_options_section', 'vibes_plugin_options_geoip' );
-
-		if ( \DecaLog\Engine::isDecalogActivated() ) {
-			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'thumbs-up', 'none', '#00C800' ) . '" />&nbsp;';
-			$help .= sprintf( esc_html__( 'Your site is currently using %s.', 'vibes' ), '<em>' . \DecaLog\Engine::getVersionString() . '</em>' );
-		} else {
-			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'alert-triangle', 'none', '#FF8C00' ) . '" />&nbsp;';
-			$help .= sprintf( esc_html__( 'Your site does not use any logging plugin. To log all events triggered in Vibes, I recommend you to install the excellent (and free) %s. But it is not mandatory.', 'vibes' ), '<a href="https://wordpress.org/plugins/decalog/">DecaLog</a>' );
-		}
-		add_settings_field(
-			'vibes_plugin_options_logger',
-			__( 'Logging', 'vibes' ),
-			[ $form, 'echo_field_simple_text' ],
-			'vibes_plugin_options_section',
-			'vibes_plugin_options_section',
-			[
-				'text' => $help,
-			]
-		);
-		register_setting( 'vibes_plugin_options_section', 'vibes_plugin_options_logger' );
 		if ( SharedMemory::$available ) {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'thumbs-up', 'none', '#00C800' ) . '" />&nbsp;';
 			$help .= esc_html__( 'Shared memory is available on your server: you can use live console.', 'vibes' );
@@ -583,22 +609,6 @@ class Vibes_Admin {
 	public function plugin_features_section_callback() {
 		$form = new Form();
 		add_settings_field(
-			'vibes_plugin_features_history',
-			esc_html__( 'Historical data', 'vibes' ),
-			[ $form, 'echo_field_select' ],
-			'vibes_plugin_features_section',
-			'vibes_plugin_features_section',
-			[
-				'list'        => $this->get_retentions_array(),
-				'id'          => 'vibes_plugin_features_history',
-				'value'       => Option::network_get( 'history' ),
-				'description' => esc_html__( 'Maximum age of data to keep for statistics.', 'vibes' ),
-				'full_width'  => false,
-				'enabled'     => true,
-			]
-		);
-		register_setting( 'vibes_plugin_features_section', 'vibes_plugin_features_history' );
-		add_settings_field(
 			'vibes_plugin_features_metrics',
 			esc_html__( 'Metrics', 'vibes' ),
 			[ $form, 'echo_field_checkbox' ],
@@ -608,7 +618,7 @@ class Vibes_Admin {
 				'text'        => esc_html__( 'Activated', 'vibes' ),
 				'id'          => 'vibes_plugin_features_metrics',
 				'checked'     => \DecaLog\Engine::isDecalogActivated() ? Option::network_get( 'metrics' ) : false,
-				'description' => esc_html__( 'If checked, Vibes will collate and publish API metrics.', 'vibes' ) . ( \DecaLog\Engine::isDecalogActivated() ? '' : '<br/>' . esc_html__( 'Note: for this to work, you must install DecaLog.', 'vibes' ) ),
+				'description' => esc_html__( 'If checked, Vibes will collate and publish navigation and Web Vitals metrics.', 'vibes' ) . ( \DecaLog\Engine::isDecalogActivated() ? '' : '<br/>' . esc_html__( 'Note: for this to work, you must install DecaLog.', 'vibes' ) ),
 				'full_width'  => false,
 				'enabled'     => \DecaLog\Engine::isDecalogActivated(),
 			]
@@ -642,7 +652,7 @@ class Vibes_Admin {
 				'text'        => esc_html__( 'Activated', 'vibes' ),
 				'id'          => 'vibes_plugin_features_smart_filter',
 				'checked'     => Option::network_get( 'smart_filter' ),
-				'description' => esc_html__( 'If checked, Vibes will not take into account the calls that generate "noise" in monitoring.', 'vibes' ),
+				'description' => esc_html__( 'If checked, Vibes will not take into account the calls that generate "noise" in measurements.', 'vibes' ),
 				'full_width'  => false,
 				'enabled'     => true,
 			]
@@ -658,88 +668,84 @@ class Vibes_Admin {
 	 */
 	protected function get_retentions_array() {
 		$result = [];
+		for ( $i = 1; $i < 4; $i++ ) {
+			// phpcs:ignore
+			$result[] = [ (int) ( 7 * $i ), esc_html( sprintf( _n( '%d week', '%d weeks', $i, 'vibes' ), $i ) ) ];
+		}
 		for ( $i = 1; $i < 7; $i++ ) {
 			// phpcs:ignore
 			$result[] = [ (int) ( 30 * $i ), esc_html( sprintf( _n( '%d month', '%d months', $i, 'vibes' ), $i ) ) ];
 		}
+		return $result;
+	}
+
+	/**
+	 * Get the available rhistory retentions.
+	 *
+	 * @return array An array containing the history modes.
+	 * @since  1.0.0
+	 */
+	protected function get_r_retentions_array() {
+		$result = [];
+		for ( $i = 2; $i < 7; $i++ ) {
+			// phpcs:ignore
+			$result[] = [ (int) ( $i ), esc_html( sprintf( _n( '%d day', '%d days', $i, 'vibes' ), $i ) ) ];
+		}
 		for ( $i = 1; $i < 7; $i++ ) {
 			// phpcs:ignore
-			$result[] = [ (int) ( 365 * $i ), esc_html( sprintf( _n( '%d year', '%d years', $i, 'vibes' ), $i ) ) ];
-		}
-		return $result;
-	}
-	/**
-	 * Get the available levels.
-	 *
-	 * @return array An array containing the levels.
-	 * @since  2.0.0
-	 */
-	protected function get_levels_array() {
-		$result      = [];
-		$log_enabled = defined( 'DECALOG_VERSION' ) && class_exists( '\Decalog\Logger' );
-		foreach ( [ 'debug', 'info', 'notice', 'warning' ] as $level ) {
-			if ( $log_enabled ) {
-				$result[] = [ $level, strtoupper( $level ) ];
-			} else {
-				$result[] = [ $level, 'N/A' ];
-			}
+			$result[] = [ (int) ( 7 * $i ), esc_html( sprintf( _n( '%d week', '%d weeks', $i, 'vibes' ), $i ) ) ];
 		}
 		return $result;
 	}
 
 	/**
-	 * Callback for inbound APIs section.
+	 * Callback for navigation section.
 	 *
 	 * @since 1.0.0
 	 */
-	public function inbound_options_section_callback() {
+	public function navigation_options_section_callback() {
 		$form = new Form();
 		add_settings_field(
-			'vibes_inbound_options_capture',
+			'vibes_navigation_options_capture',
 			__( 'Analytics', 'vibes' ),
 			[ $form, 'echo_field_checkbox' ],
-			'vibes_inbound_options_section',
-			'vibes_inbound_options_section',
+			'vibes_navigation_options_section',
+			'vibes_navigation_options_section',
 			[
 				'text'        => esc_html__( 'Activated', 'vibes' ),
-				'id'          => 'vibes_inbound_options_capture',
-				'checked'     => Option::network_get( 'inbound_capture' ),
-				'description' => esc_html__( 'If checked, Vibes will analyze inbound API calls (the calls made by external sites or apps to your site).', 'vibes' ),
+				'id'          => 'vibes_navigation_options_capture',
+				'checked'     => Option::network_get( 'capture' ),
+				'description' => esc_html__( 'If checked, Vibes will analyze navigation timings in the user\'s browser and compute Web Vitals.', 'vibes' ),
 				'full_width'  => false,
 				'enabled'     => true,
 			]
 		);
-		register_setting( 'vibes_inbound_options_section', 'vibes_inbound_options_capture' );
-		$log_enabled = defined( 'DECALOG_VERSION' ) && class_exists( '\Decalog\Logger' );
-		$sup         = '';
-		if ( ! $log_enabled ) {
-			$sup = '<br/>' . sprintf( esc_html__( 'Note: you need to install %s to use this feature.', 'vibes' ), '<a href="https://wordpress.org/plugins/decalog/">DecaLog</a>' );
-		}
+		register_setting( 'vibes_navigation_options_section', 'vibes_navigation_options_capture' );
 		add_settings_field(
-			'vibes_inbound_options_level',
-			esc_html__( 'Logging', 'vibes' ),
+			'vibes_navigation_options_sampling',
+			esc_html__( 'Sampling', 'vibes' ),
 			[ $form, 'echo_field_select' ],
-			'vibes_inbound_options_section',
-			'vibes_inbound_options_section',
+			'vibes_navigation_options_section',
+			'vibes_navigation_options_section',
 			[
-				'list'        => $this->get_levels_array(),
-				'id'          => 'vibes_inbound_options_level',
-				'value'       => Option::network_get( 'inbound_level' ),
-				'description' => esc_html__( 'The level at which inbound API calls are logged.', 'vibes' ) . $sup,
+				'list'        => [ [ 1000, '100%' ], [ 500, '50%' ], [ 250, '25%' ], [ 100, '10%' ], [ 50, '5%' ], [ 20, '2%' ], [ 10, '1%' ], [ 5, '5‰' ], [ 2, '2‰' ], [ 1, '1‰' ] ],
+				'id'          => 'vibes_navigation_options_sampling',
+				'value'       => Option::network_get( 'sampling' ),
+				'description' => esc_html__( 'The rate of compatible navigations that will be measured.', 'vibes' ),
 				'full_width'  => false,
-				'enabled'     => $log_enabled,
+				'enabled'     => true,
 			]
 		);
-		register_setting( 'vibes_inbound_options_section', 'vibes_inbound_options_level' );
+		register_setting( 'vibes_navigation_options_section', 'vibes_navigation_options_sampling' );
 		add_settings_field(
-			'vibes_inbound_options_cut_path',
+			'vibes_navigation_options_cut_path',
 			__( 'Path cut', 'vibes' ),
 			[ $form, 'echo_field_input_integer' ],
-			'vibes_inbound_options_section',
-			'vibes_inbound_options_section',
+			'vibes_navigation_options_section',
+			'vibes_navigation_options_section',
 			[
-				'id'          => 'vibes_inbound_options_cut_path',
-				'value'       => Option::network_get( 'inbound_cut_path' ),
+				'id'          => 'vibes_navigation_options_cut_path',
+				'value'       => Option::network_get( 'cut_path' ),
 				'min'         => 0,
 				'max'         => 10,
 				'step'        => 1,
@@ -748,62 +754,73 @@ class Vibes_Admin {
 				'enabled'     => true,
 			]
 		);
-		register_setting( 'vibes_inbound_options_section', 'vibes_inbound_options_cut_path' );
-	}
-
-	/**
-	 * Callback for outbound APIs section.
-	 *
-	 * @since 1.0.0
-	 */
-	public function outbound_options_section_callback() {
-		$form = new Form();
+		register_setting( 'vibes_navigation_options_section', 'vibes_navigation_options_cut_path' );
 		add_settings_field(
-			'vibes_outbound_options_capture',
-			__( 'Analytics', 'vibes' ),
-			[ $form, 'echo_field_checkbox' ],
-			'vibes_outbound_options_section',
-			'vibes_outbound_options_section',
+			'vibes_navigation_options_history',
+			esc_html__( 'Historical data', 'vibes' ),
+			[ $form, 'echo_field_select' ],
+			'vibes_navigation_options_section',
+			'vibes_navigation_options_section',
 			[
-				'text'        => esc_html__( 'Activated', 'vibes' ),
-				'id'          => 'vibes_outbound_options_capture',
-				'checked'     => Option::network_get( 'outbound_capture' ),
-				'description' => esc_html__( 'If checked, Vibes will analyze outbound API calls (the calls made by your site to external services).', 'vibes' ),
+				'list'        => $this->get_retentions_array(),
+				'id'          => 'vibes_navigation_options_history',
+				'value'       => Option::network_get( 'history' ),
+				'description' => esc_html__( 'Maximum age of data to keep for statistics.', 'vibes' ),
 				'full_width'  => false,
 				'enabled'     => true,
 			]
 		);
-		register_setting( 'vibes_outbound_options_section', 'vibes_outbound_options_capture' );
-		$log_enabled = defined( 'DECALOG_VERSION' ) && class_exists( '\Decalog\Logger' );
-		$sup         = '';
-		if ( ! $log_enabled ) {
-			$sup = '<br/>' . sprintf( esc_html__( 'Note: you need to install %s to use this feature.', 'vibes' ), '<a href="https://wordpress.org/plugins/decalog/">DecaLog</a>' );
-		}
+		register_setting( 'vibes_navigation_options_section', 'vibes_navigation_options_history' );
+	}
+
+	/**
+	 * Callback for resource section.
+	 *
+	 * @since 1.0.0
+	 */
+	public function resource_options_section_callback() {
+		$form = new Form();
 		add_settings_field(
-			'vibes_outbound_options_level',
-			esc_html__( 'Logging', 'vibes' ),
-			[ $form, 'echo_field_select' ],
-			'vibes_outbound_options_section',
-			'vibes_outbound_options_section',
+			'vibes_resource_options_capture',
+			__( 'Analytics', 'vibes' ),
+			[ $form, 'echo_field_checkbox' ],
+			'vibes_resource_options_section',
+			'vibes_resource_options_section',
 			[
-				'list'        => $this->get_levels_array(),
-				'id'          => 'vibes_outbound_options_level',
-				'value'       => Option::network_get( 'outbound_level' ),
-				'description' => esc_html__( 'The level at which outbound API calls are logged.', 'vibes' ) . $sup,
+				'text'        => esc_html__( 'Activated', 'vibes' ),
+				'id'          => 'vibes_resource_options_capture',
+				'checked'     => Option::network_get( 'rcapture' ),
+				'description' => esc_html__( 'If checked, Vibes will analyze resources needed by your pages right in the user\'s browser.', 'vibes' ),
 				'full_width'  => false,
-				'enabled'     => $log_enabled,
+				'enabled'     => true,
 			]
 		);
-		register_setting( 'vibes_outbound_options_section', 'vibes_outbound_options_level' );
+		register_setting( 'vibes_resource_options_section', 'vibes_resource_options_capture' );
 		add_settings_field(
-			'vibes_outbound_options_cut_path',
+			'vibes_resource_options_sampling',
+			esc_html__( 'Sampling', 'vibes' ),
+			[ $form, 'echo_field_select' ],
+			'vibes_resource_options_section',
+			'vibes_resource_options_section',
+			[
+				'list'        => [ [ 1000, '100%' ], [ 500, '50%' ], [ 250, '25%' ], [ 100, '10%' ], [ 50, '5%' ], [ 20, '2%' ], [ 10, '1%' ], [ 5, '5‰' ], [ 2, '2‰' ], [ 1, '1‰' ] ],
+				'id'          => 'vibes_resource_options_sampling',
+				'value'       => Option::network_get( 'resource_sampling' ),
+				'description' => esc_html__( 'The rate at which resources will be measured inside the compatible navigation set.', 'vibes' ),
+				'full_width'  => false,
+				'enabled'     => true,
+			]
+		);
+		register_setting( 'vibes_resource_options_section', 'vibes_resource_options_sampling' );
+		add_settings_field(
+			'vibes_resource_options_cut_path',
 			__( 'Path cut', 'vibes' ),
 			[ $form, 'echo_field_input_integer' ],
-			'vibes_outbound_options_section',
-			'vibes_outbound_options_section',
+			'vibes_resource_options_section',
+			'vibes_resource_options_section',
 			[
-				'id'          => 'vibes_outbound_options_cut_path',
-				'value'       => Option::network_get( 'outbound_cut_path' ),
+				'id'          => 'vibes_resource_options_cut_path',
+				'value'       => Option::network_get( 'rcut_path' ),
 				'min'         => 0,
 				'max'         => 10,
 				'step'        => 1,
@@ -812,7 +829,68 @@ class Vibes_Admin {
 				'enabled'     => true,
 			]
 		);
-		register_setting( 'vibes_outbound_options_section', 'vibes_outbound_options_cut_path' );
+		register_setting( 'vibes_resource_options_section', 'vibes_resource_options_cut_path' );
+		add_settings_field(
+			'vibes_resource_options_history',
+			esc_html__( 'Historical data', 'vibes' ),
+			[ $form, 'echo_field_select' ],
+			'vibes_resource_options_section',
+			'vibes_resource_options_section',
+			[
+				'list'        => $this->get_r_retentions_array(),
+				'id'          => 'vibes_resource_options_history',
+				'value'       => Option::network_get( 'rhistory' ),
+				'description' => esc_html__( 'Maximum age of data to keep for statistics.', 'vibes' ),
+				'full_width'  => false,
+				'enabled'     => true,
+			]
+		);
+		register_setting( 'vibes_resource_options_section', 'vibes_resource_options_history' );
+	}
+
+	/**
+	 * Callback for plugin advanced section.
+	 *
+	 * @since 1.0.0
+	 */
+	public function plugin_advanced_section_callback() {
+		$form = new Form();
+		add_settings_field(
+			'vibes_plugin_advanced_quality',
+			'Query Quality',
+			[ $form, 'echo_field_input_integer' ],
+			'vibes_plugin_advanced_section',
+			'vibes_plugin_advanced_section',
+			[
+				'id'          => 'vibes_plugin_advanced_quality',
+				'value'       => Option::network_get( 'quality' ),
+				'min'         => 0,
+				'max'         => 50,
+				'step'        => 1,
+				'description' => 'Quality factor for queries.',
+				'full_width'  => false,
+				'enabled'     => true,
+			]
+		);
+		register_setting( 'vibes_plugin_advanced_section', 'vibes_plugin_advanced_quality' );
+		add_settings_field(
+			'vibes_plugin_advanced_qstat',
+			'Confidence Quality',
+			[ $form, 'echo_field_input_integer' ],
+			'vibes_plugin_advanced_section',
+			'vibes_plugin_advanced_section',
+			[
+				'id'          => 'vibes_plugin_advanced_qstat',
+				'value'       => Option::network_get( 'qstat' ),
+				'min'         => 0,
+				'max'         => 100,
+				'step'        => 1,
+				'description' => 'Quality factor for confidence index.',
+				'full_width'  => false,
+				'enabled'     => true,
+			]
+		);
+		register_setting( 'vibes_plugin_advanced_section', 'vibes_plugin_advanced_qstat' );
 	}
 
 }
