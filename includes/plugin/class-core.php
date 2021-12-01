@@ -108,13 +108,11 @@ class Core {
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'normalize_admin_menus', 110 );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'init_settings_sections' );
 		$this->loader->add_action( 'admin_print_scripts', '\Vibes\Plugin\Feature\Capture', 'init' );
-		//DIS:$this->loader->add_filter( 'plugin_action_links_' . plugin_basename( VIBES_PLUGIN_DIR . VIBES_SLUG . '.php' ), $plugin_admin, 'add_actions_links', 10, 4 );
-		//DIS:$this->loader->add_filter( 'plugin_row_meta', $plugin_admin, 'add_row_meta', 10, 2 );
+		$this->loader->add_filter( 'plugin_action_links_' . plugin_basename( VIBES_PLUGIN_DIR . VIBES_SLUG . '.php' ), $plugin_admin, 'add_actions_links', 10, 4 );
+		$this->loader->add_filter( 'plugin_row_meta', $plugin_admin, 'add_row_meta', 10, 2 );
 		$this->loader->add_action( 'admin_notices', $nag, 'display' );
 		$this->loader->add_action( 'wp_ajax_hide_vibes_nag', $nag, 'hide_callback' );
 		$this->loader->add_action( 'wp_ajax_vibes_get_stats', 'Vibes\Plugin\Feature\AnalyticsFactory', 'get_stats_callback' );
-		//DIS:$this->loader->add_filter( 'myblogs_blog_actions', $plugin_admin, 'blog_action', 10, 2 );
-		//DIS:$this->loader->add_filter( 'manage_sites_action_links', $plugin_admin, 'site_action', 10, 3 );
 	}
 
 	/**

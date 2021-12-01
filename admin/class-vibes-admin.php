@@ -223,38 +223,6 @@ class Vibes_Admin {
 	}
 
 	/**
-	 * Get actions links for myblogs_blog_actions hook.
-	 *
-	 * @param string $actions   The HTML site link markup.
-	 * @param object $user_blog An object containing the site data.
-	 * @return string   The action string.
-	 * @since 1.2.0
-	 */
-	public function blog_action( $actions, $user_blog ) {
-		if ( ( Role::SUPER_ADMIN === Role::admin_type() || Role::LOCAL_ADMIN === Role::admin_type() ) && Option::network_get( 'outbound_capture' ) || Option::network_get( 'inbound_capture' ) ) {
-			$actions .= " | <a href='" . esc_url( admin_url( 'admin.php?page=vibes-viewer&site=' . $user_blog->userblog_id ) ) . "'>" . __( 'API vibes', 'vibes' ) . '</a>';
-		}
-		return $actions;
-	}
-
-	/**
-	 * Get actions for manage_sites_action_links hook.
-	 *
-	 * @param string[] $actions  An array of action links to be displayed.
-	 * @param int      $blog_id  The site ID.
-	 * @param string   $blogname Site path, formatted depending on whether it is a sub-domain
-	 *                           or subdirectory multisite installation.
-	 * @return array   The actions.
-	 * @since 1.2.0
-	 */
-	public function site_action( $actions, $blog_id, $blogname ) {
-		if ( ( Role::SUPER_ADMIN === Role::admin_type() || Role::LOCAL_ADMIN === Role::admin_type() ) && Option::network_get( 'outbound_capture' ) || Option::network_get( 'inbound_capture' ) ) {
-			$actions['api_usage'] = "<a href='" . esc_url( admin_url( 'admin.php?page=vibes-viewer&site=' . $blog_id ) ) . "' rel='bookmark'>" . __( 'API vibes', 'vibes' ) . '</a>';
-		}
-		return $actions;
-	}
-
-	/**
 	 * Initializes settings sections.
 	 *
 	 * @since 1.0.0
@@ -283,9 +251,6 @@ class Vibes_Admin {
 	 */
 	public function add_actions_links( $actions, $plugin_file, $plugin_data, $context ) {
 		$actions[] = sprintf( '<a href="%s">%s</a>', esc_url( admin_url( 'admin.php?page=vibes-settings' ) ), esc_html__( 'Settings', 'vibes' ) );
-		if ( Option::network_get( 'outbound_capture' ) || Option::network_get( 'inbound_capture' ) ) {
-			$actions[] = sprintf( '<a href="%s">%s</a>', esc_url( admin_url( 'admin.php?page=vibes-viewer' ) ), esc_html__( 'Statistics', 'vibes' ) );
-		}
 		return $actions;
 	}
 
