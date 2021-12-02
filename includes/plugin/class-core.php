@@ -139,7 +139,7 @@ class Core {
 	private function define_metrics() {
 		$metrics = \DecaLog\Engine::metricsLogger( VIBES_SLUG );
 		foreach ( array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics ) as $metric ) {
-			$metrics->createProdCounter( 'webvitals_' . strtolower( $metric ), preg_replace( '/\(.*\)/iU', '', WebVitals::$metrics_names[ $metric ] ) . ' - [' . ( 'CLS' === $metric ? 'index' : 'second' ) . ']' );
+			$metrics->createProdGauge( 'webvitals_' . strtolower( $metric ), 0, preg_replace( '/\(.*\)/iU', '', WebVitals::$metrics_names[ $metric ] ) . ' - [' . ( 'CLS' === $metric ? 'index' : 'second' ) . ']' );
 		}
 	}
 
