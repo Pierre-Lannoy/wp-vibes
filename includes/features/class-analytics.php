@@ -451,7 +451,7 @@ class Analytics {
 					$width_str = 'width:' . ( 100 - $shift ) . '%;';
 				}
 				if ( 0 < $val ) {
-					$result .= '<div class="vibes-webvital-bar-' . $spec . '" style="' . $width_str . $shift_str . $up_str . '"><span class="vibes-webvital-percent" style="' . $pos . '">' . $val . '%</span></div>';
+					$result .= '<div class="vibes-webvital-bar-' . $spec . '" style="' . $width_str . $shift_str . $up_str . '"><span class="vibes-webvital-percent" style="' . $pos . '">' . ( 2 < $val ? $val . '%' : '&nbsp;' ) . '</span></div>';
 					$prec   += $val;
 					$cpt    += 20;
 				} else {
