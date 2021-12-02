@@ -27,6 +27,7 @@ use Vibes\System\Timezone;
 use Vibes\System\UUID;
 use Vibes\System\Http;
 use Vibes\System\SharedMemory;
+use OpenCloud\Common\Constants\Mime;
 
 /**
  * Manages Vibes and view current and past API activity.

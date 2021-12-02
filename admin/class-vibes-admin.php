@@ -583,7 +583,7 @@ class Vibes_Admin {
 				'text'        => esc_html__( 'Activated', 'vibes' ),
 				'id'          => 'vibes_plugin_features_metrics',
 				'checked'     => \DecaLog\Engine::isDecalogActivated() ? Option::network_get( 'metrics' ) : false,
-				'description' => esc_html__( 'If checked, Vibes will collate and publish navigation and Web Vitals metrics.', 'vibes' ) . ( \DecaLog\Engine::isDecalogActivated() ? '' : '<br/>' . esc_html__( 'Note: for this to work, you must install DecaLog.', 'vibes' ) ),
+				'description' => esc_html__( 'If checked, Vibes will collate and publish Web Vitals metrics.', 'vibes' ) . ( \DecaLog\Engine::isDecalogActivated() ? ( Option::network_get( 'capture' ) ? '' : '<br/>' . esc_html__( 'Note: for this to work, you must activate navigation analytics.', 'vibes' ) ) : '<br/>' . esc_html__( 'Note: for this to work, you must install DecaLog.', 'vibes' ) ),
 				'full_width'  => false,
 				'enabled'     => \DecaLog\Engine::isDecalogActivated(),
 			]
@@ -755,7 +755,7 @@ class Vibes_Admin {
 				'text'        => esc_html__( 'Activated', 'vibes' ),
 				'id'          => 'vibes_resource_options_capture',
 				'checked'     => Option::network_get( 'rcapture' ),
-				'description' => esc_html__( 'If checked, Vibes will analyze resources needed by your pages right in the user\'s browser.', 'vibes' ),
+				'description' => esc_html__( 'If checked, Vibes will analyze resources needed by your pages right in the user\'s browser.', 'vibes' ) . ( Option::network_get( 'capture' ) ? '' : '<br/>' . esc_html__( 'Note: for this to work, you must activate navigation analytics.', 'vibes' ) ),
 				'full_width'  => false,
 				'enabled'     => true,
 			]

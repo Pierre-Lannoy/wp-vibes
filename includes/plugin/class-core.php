@@ -22,7 +22,8 @@ use Vibes\API\LoggerRoute;
 use Vibes\API\BeaconRoute;
 use Vibes\System\Environment;
 use Vibes\System\Option;
-use Vibes\System\Http;
+use Vibes\System\WebVitals;
+
 
 /**
  * The core plugin class.
@@ -59,7 +60,7 @@ class Core {
 		$this->define_global_hooks();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) ) {
+		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) && Option::network_get( 'capture' ) ) {
 			$this->define_metrics();
 		}
 	}
@@ -137,21 +138,9 @@ class Core {
 	 */
 	private function define_metrics() {
 		$metrics = \DecaLog\Engine::metricsLogger( VIBES_SLUG );
-
-
-
-		/*foreach ( array_diff( Http::$contexts, [ 'unknown' ] ) as $known_context ) {
-			foreach ( Http::$http_summary_codes as $http_summary_code ) {
-				$metrics->createProdCounter( $known_context . '_http_' . $http_summary_code . 'xx_total', 'Number of ' . $http_summary_code . 'xx ' . $known_context . ' response per request - [count]' );
-			}
-			foreach ( array_diff( Http::$verbs, [ 'unknown' ] ) as $verb ) {
-				$metrics->createProdCounter( $known_context . '_' . $verb . '_total', 'Number of ' . $known_context . ' ' . $verb . ' calls per request - [count]' );
-			}
-			$metrics->createProdCounter( $known_context . '_latency_avg', 'Average ' . $known_context . ' call time per request - [second]' );
-			$metrics->createProdCounter( $known_context . '_total', 'Number of ' . $known_context . ' calls per request - [count]' );
+		foreach ( array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics ) as $metric ) {
+			$metrics->createProdCounter( 'webvitals_' . strtolower( $metric ), preg_replace( '/\(.*\)/iU', '', WebVitals::$metrics_names[ $metric ] ) . ' - [' . ( 'CLS' === $metric ? 'index' : 'second' ) . ']' );
 		}
-		$metrics->createProdCounter( 'data_in_total', 'Data ingress per request - [byte]' );
-		$metrics->createProdCounter( 'data_out_total', 'Data egress per request - [byte]' );*/
 	}
 
 	/**
