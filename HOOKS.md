@@ -1,7 +1,7 @@
 This plugin has a number of hooks that you can use, as developer or as a user, to customize the user experience or to give access to extended functionalities.
 
 ## Customization of path cutting
-It is possible to customize the default path cutting value (set in the plugin settings) based on the host and the endpoint.
+It is possible to customize the default resources path cutting value (set in the plugin settings) based on the host and the endpoint.
 
 To do so, use the `vibes_path_level` filter.
 
