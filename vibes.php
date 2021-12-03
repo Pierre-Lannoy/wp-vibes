@@ -9,9 +9,9 @@
  * @wordpress-plugin
  * Plugin Name:       Vibes
  * Plugin URI:        https://perfops.one/vibes
- * Description:       Full featured monitoring & analytics for WordPress APIs.
- * Version:           2.4.0
- * Requires at least: 5.2
+ * Description:       Truthful user experience and browsing performances monitoring.
+ * Version:           1.0.0
+ * Requires at least: 5.6
  * Requires PHP:      7.2
  * Author:            PerfOps One / Pierre Lannoy
  * Author URI:        https://perfops.one

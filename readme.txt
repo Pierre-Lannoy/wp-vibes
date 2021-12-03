@@ -1,35 +1,36 @@
 === Vibes ===
 Contributors: PierreLannoy
-Tags: rum, web vitals, telemetry
-Requires at least: 5.2
+Tags: rum, real user monitoring, ux, web performance, web vitals
+Requires at least: 5.6
 Requires PHP: 7.2
 Tested up to: 5.9
 Stable tag: 1.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Full featured monitoring & analytics for WordPress APIs.
+Truthful user experience and browsing performances monitoring.
 
 == Description ==
 
-**Full featured analytics for WordPress APIs.**
+**Truthful user experience and browsing performances monitoring.**
 
-**Vibes** is a full featured analytics reporting tool that analyzes all inbound and outbound API calls made to/from your site.
+**Vibes** is a truthful user experience and browsing performances monitoring solution that analyzes perceived performances from users' viewpoint.
 
-At this time, **Vibes** can report, for inbound and outbound vibes:
+It is fully autonomous - does not rely on external services and does not require any API keys, works on any type of hosting and in any type of environment - including intranets or password protected sites.
 
-* KPIs: number of calls, data volume, server error rate, quotas error rate, effective pass rate and perceived uptime;
-* domains, subdomains and endpoints details;
-* metrics variations;
-* HTTP codes, protocols and methods details;
-* geographical repartition of calls;
+At this time, **Vibes** can report by continuously monitoring user experience:
+
+* navigation performance KPIs per pages - like latency, redirections, browser caching hit rates, etc.;
+* network timelines as if you were in the dev tools of your users' browsers;
+* resources details - like initiators, protocols, mime types, average sizes, etc.;
+* Web Vitals: LCP, FID, CLS, FCP and TTFB.
 
 **Vibes** supports multisite report delegation (see FAQ).
 
 **Vibes** supports WP-CLI commands to:
 
-* display (past or current) API calls in console - see `wp help api tail` for details;
-* toggle on/off main settings - see `wp help api settings` for details.
+* display (past or current) performances signals in console - see `wp help vibes tail` for details;
+* toggle on/off main settings - see `wp help vibes settings` for details.
 
 For a full help on WP-CLI commands in Vibes, please [read this guide](https://perfops.one/vibes-wpcli).
 
@@ -71,7 +72,7 @@ If you like this plugin or find it useful and want to thank me for the work done
 
 = What are the requirements for this plugin to work? =
 
-You need at least **WordPress 5.2** and **PHP 7.2**.
+You need at least **WordPress 5.62** and **PHP 7.2**.
 
 = Can this plugin work on multisite? =
 
@@ -92,11 +93,3 @@ Please, see [full changelog](https://perfops.one/vibes-changelog).
 == Upgrade Notice ==
 
 == Screenshots ==
-
-1. Main Page
-2. Domains List
-3. Countries List
-4. HTTP Codes List
-5. Subdomain Details - Endpoints List
-6. Endpoint Summary
-7. Live Monitoring

@@ -1,20 +1,21 @@
 # Vibes
 [![version](https://badgen.net/github/release/Pierre-Lannoy/wp-vibes/)](https://wordpress.org/plugins/vibes/)
 [![php](https://badgen.net/badge/php/7.2+/green)](https://wordpress.org/plugins/vibes/)
-[![wordpress](https://badgen.net/badge/wordpress/5.2+/green)](https://wordpress.org/plugins/vibes/)
+[![wordpress](https://badgen.net/badge/wordpress/5.6+/green)](https://wordpress.org/plugins/vibes/)
 [![license](https://badgen.net/github/license/Pierre-Lannoy/wp-vibes/)](/license.txt)
 
-__Vibes__ is a full featured analytics reporting tool that analyzes all inbound and outbound API calls made to/from your WordPress site.
+__Vibes__ is a truthful user experience and browsing performances monitoring solution that analyzes perceived performances from users' viewpoint.
 
 See [WordPress directory page](https://wordpress.org/plugins/vibes/) or [official website](https://perfops.one/vibes).
 
-At this time, __Vibes__ can report, for inbound and outbound vibes:
+It is fully autonomous - does not rely on external services and does not require any API keys, works on any type of hosting and in any type of environment - including intranets or password protected sites.
 
-* KPIs: number of calls, data volume, server error rate, quotas error rate, effective pass rate and perceived uptime;
-* domains, subdomains and endpoints details;
-* metrics variations;
-* HTTP codes, protocols and methods details;
-* geographical repartition of calls;
+At this time, __Vibes__ can report by continuously monitoring user experience:
+
+* navigation performance KPIs per pages - like latency, redirections, browser caching hit rates, etc.;
+* network timelines as if you were in the dev tools of your users' browsers;
+* resources details - like initiators, protocols, mime types, average sizes, etc.;
+* Web Vitals: LCP, FID, CLS, FCP and TTFB.
 
 __Vibes__ supports multisite report delegation (see FAQ).
 
