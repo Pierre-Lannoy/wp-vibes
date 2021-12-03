@@ -4,9 +4,9 @@
 [![wordpress](https://badgen.net/badge/wordpress/5.6+/green)](https://wordpress.org/plugins/vibes/)
 [![license](https://badgen.net/github/license/Pierre-Lannoy/wp-vibes/)](/license.txt)
 
-__Vibes__ is a truthful user experience and browsing performances monitoring solution that analyzes perceived performances from users' viewpoint.
+> ⚠️ This plugin is currently under official directory application. Consider it unstable until it has been fully validated.
 
-See [WordPress directory page](https://wordpress.org/plugins/vibes/) or [official website](https://perfops.one/vibes).
+__Vibes__ is a truthful user experience and browsing performances monitoring solution that analyzes perceived performances from users' viewpoint.
 
 It is fully autonomous - does not rely on external services and does not require any API keys, works on any type of hosting and in any type of environment - including intranets or password protected sites.
 
