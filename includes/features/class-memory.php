@@ -21,6 +21,7 @@ use Vibes\System\GeoIP;
 use Vibes\System\Environment;
 use Vibes\System\SharedMemory;
 use malkusch\lock\mutex\FlockMutex;
+use Vibes\System\WebVitals;
 
 /**
  * Define the shared memory functionality.
@@ -72,8 +73,8 @@ class Memory {
 	 */
 	public static function init() {
 		add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'write' ], DECALOG_MAX_SHUTDOWN_PRIORITY, 0 );
-		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) ) {
-			//DIS:add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'collate_metrics' ], DECALOG_MAX_SHUTDOWN_PRIORITY - 1, 0 );
+		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) && Option::network_get( 'capture' ) ) {
+			add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'collate_metrics' ], DECALOG_MAX_SHUTDOWN_PRIORITY - 1, 0 );
 		}
 	}
 
@@ -196,42 +197,53 @@ class Memory {
 	 * @since    2.3.0
 	 */
 	public static function collate_metrics() {
-		$span    = \DecaLog\Engine::tracesLogger( VIBES_SLUG )->startSpan( 'Metrics collation', DECALOG_SPAN_SHUTDOWN );
-		$metrics = \DecaLog\Engine::metricsLogger( VIBES_SLUG );
-		$in      = 0;
-		$out     = 0;
-		$cpt     = [
-			'inbound'  => [
-				'count'   => 0,
-				'latency' => 0,
-			],
-			'outbound' => [
-				'count'   => 0,
-				'latency' => 0,
-			],
-		];
-		foreach ( self::$statistics_buffer as $record ) {
-			$bound = $record['context'];
-			$verb  = $record['verb'];
-			$code  = (int) ( $record['code'] / 100 );
-			if ( ! in_array( $code, Http::$http_summary_codes, true ) ) {
-				continue;
+		$span   = \DecaLog\Engine::tracesLogger( VIBES_SLUG )->startSpan( 'Metrics collation', DECALOG_SPAN_SHUTDOWN );
+		$values = Cache::get( 'webvitals', true );
+		if ( ! is_array( $values ) ) {
+			$values = [];
+		} else {
+			$limit = time() - Option::network_get( 'twindow' );
+			$new   = [];
+			foreach ( $values as $value ) {
+				if ( array_key_exists( 'timestamp', $value ) && $limit < $value['timestamp'] ) {
+					$new[] = $value;
+				}
 			}
-			$cpt[ $bound ]['count']++;
-			$cpt[ $bound ]['latency'] += $record['latency_avg'];
-			$in                       += $record['kb_in'];
-			$out                      += $record['kb_out'];
-			$metrics->incProdCounter( $bound . '_http_' . $code . 'xx_total' );
-			$metrics->incProdCounter( $bound . '_' . $verb . '_total' );
+			$values = $new;
 		}
-		foreach ( array_diff( Http::$contexts, [ 'unknown' ] ) as $known_context ) {
-			if ( 0 < $cpt[ $known_context ]['count'] ) {
-				$metrics->incProdCounter( $known_context . '_latency_avg', $cpt[ $known_context ]['latency'] / ( $cpt[ $known_context ]['count'] * 1000 ) );
-				$metrics->incProdCounter( $known_context . '_total', $cpt[ $known_context ]['count'] );
+		$time = time();
+		foreach ( self::$messages_buffer as $message ) {
+			if ( 'webvital' === $message['type'] ) {
+				foreach ( array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics ) as $metric ) {
+					if ( array_key_exists( $metric . '_sum', $message ) ) {
+						$values[] = [
+							'timestamp' => $time,
+							'metric'    => $metric,
+							'value'     => $message[ $metric . '_sum' ],
+						];
+					}
+				}
 			}
 		}
-		$metrics->incProdCounter( 'data_in_total', $in * 1024 );
-		$metrics->incProdCounter( 'data_out_total', $out * 1024 );
+		Cache::set( 'webvitals', $values, 'infinite', true );
+		$stats = [];
+		foreach ( array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics ) as $metric ) {
+			$stats[ $metric ] = [
+				'counter' => 0,
+				'value'   => 0,
+			];
+		}
+		foreach ( $values as $value ) {
+			if ( array_key_exists( 'metric', $value ) && array_key_exists( 'value', $value ) && array_key_exists( $value['metric'], $stats ) ) {
+				$stats[ $value['metric'] ]['counter'] += 1;
+				$stats[ $value['metric'] ]['value']   += $value['value'];
+			}
+		}
+		foreach ( $stats as $metric => $stat ) {
+			if ( 0 < $stat['counter'] ) {
+				\DecaLog\Engine::metricsLogger( VIBES_SLUG )->setProdGauge( 'webvitals_' . strtolower( $metric ), round( $stat['value'] / ( ( 'CLS' === $metric ? 1000000 : 1000 ) * $stat['counter'] ), ( 'CLS' === $metric ? 2 : 3 ) ) );
+			}
+		}
 		\DecaLog\Engine::tracesLogger( VIBES_SLUG )->endSpan( $span );
 	}
 }

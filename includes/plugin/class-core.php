@@ -23,6 +23,7 @@ use Vibes\API\BeaconRoute;
 use Vibes\System\Environment;
 use Vibes\System\Option;
 use Vibes\System\WebVitals;
+use Vibes\Plugin\Feature\Memory;
 
 
 /**
