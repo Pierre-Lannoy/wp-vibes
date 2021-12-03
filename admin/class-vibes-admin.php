@@ -772,7 +772,7 @@ class Vibes_Admin {
 				'list'        => [ [ 1000, '100%' ], [ 500, '50%' ], [ 250, '25%' ], [ 100, '10%' ], [ 50, '5%' ], [ 20, '2%' ], [ 10, '1%' ], [ 5, '5‰' ], [ 2, '2‰' ], [ 1, '1‰' ] ],
 				'id'          => 'vibes_resource_options_sampling',
 				'value'       => Option::network_get( 'resource_sampling' ),
-				'description' => esc_html__( 'The rate at which resources will be measured inside the compatible navigation set.', 'vibes' ),
+				'description' => esc_html__( 'The rate at which resources will be measured inside the compatible navigation sample.', 'vibes' ),
 				'full_width'  => false,
 				'enabled'     => true,
 			]
