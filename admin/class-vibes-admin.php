@@ -398,6 +398,7 @@ class Vibes_Admin {
 				Option::network_set( 'resource_sampling', array_key_exists( 'vibes_resource_options_sampling', $_POST ) ? (int) filter_input( INPUT_POST, 'vibes_resource_options_sampling' ) : Option::network_get( 'resource_sampling' ) );
 				Option::network_set( 'rcut_path', array_key_exists( 'vibes_resource_options_cut_path', $_POST ) ? (int) filter_input( INPUT_POST, 'vibes_resource_options_cut_path' ) : Option::network_get( 'rcut_path' ) );
 				Option::network_set( 'rhistory', array_key_exists( 'vibes_resource_options_history', $_POST ) ? (string) filter_input( INPUT_POST, 'vibes_resource_options_history', FILTER_SANITIZE_NUMBER_INT ) : Option::network_get( 'rhistory' ) );
+				Option::network_set( 'twindow', array_key_exists( 'vibes_plugin_advanced_twindow', $_POST ) ? (int) filter_input( INPUT_POST, 'vibes_plugin_advanced_twindow' ) : Option::network_get( 'twindow' ) );
 				$message = esc_html__( 'Plugin settings have been saved.', 'vibes' );
 				$code    = 0;
 				add_settings_error( 'vibes_no_error', $code, $message, 'updated' );
@@ -856,6 +857,24 @@ class Vibes_Admin {
 			]
 		);
 		register_setting( 'vibes_plugin_advanced_section', 'vibes_plugin_advanced_qstat' );
+		add_settings_field(
+			'vibes_plugin_advanced_twindow',
+			'Metrics Window',
+			[ $form, 'echo_field_input_integer' ],
+			'vibes_plugin_advanced_section',
+			'vibes_plugin_advanced_section',
+			[
+				'id'          => 'vibes_plugin_advanced_twindow',
+				'value'       => Option::network_get( 'twindow' ),
+				'min'         => 900,
+				'max'         => 14400,
+				'step'        => 300,
+				'description' => 'Duration, in seconds, of metrics sliding time-fram.',
+				'full_width'  => false,
+				'enabled'     => true,
+			]
+		);
+		register_setting( 'vibes_plugin_advanced_section', 'vibes_plugin_advanced_twindow' );
 	}
 
 }
