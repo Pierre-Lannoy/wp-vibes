@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Vibes\n"
-"POT-Creation-Date: 2021-06-24 16:07+0200\n"
+"POT-Creation-Date: 2021-12-03 15:04+0100\n"
 "PO-Revision-Date: 2019-07-08 14:07+0200\n"
 "Last-Translator: Pierre Lannoy <pierre@lannoy.fr>\n"
 "Language-Team: Pierre Lannoy <pierre@lannoy.fr>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Generator: Poedit 3.0\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
-"X-Poedit-WPHeader: traffic.php\n"
+"X-Poedit-WPHeader: vibes.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
 "esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
@@ -21,749 +21,753 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#. translators: as in the sentence "Traffic Settings" or "WordPress Settings"
-#: admin/class-traffic-admin.php:121
-#: admin/partials/traffic-admin-settings-main.php:27
-#: perfopsone/class-adminmenus.php:70
+#. translators: as in the sentence "Vibes Settings" or "WordPress Settings"
+#: admin/class-vibes-admin.php:118
+#: admin/partials/vibes-admin-settings-main.php:27
 #, php-format
 msgid "%s Settings"
 msgstr ""
 
 #. translators: as in the sentence "DecaLog Viewer"
-#: admin/class-traffic-admin.php:135 admin/class-traffic-admin.php:141
-#: admin/class-traffic-admin.php:142
-msgid "API Traffic"
+#: admin/class-vibes-admin.php:131 admin/class-vibes-admin.php:137
+#: admin/class-vibes-admin.php:138 admin/class-vibes-admin.php:232
+#: admin/class-vibes-admin.php:538 includes/features/class-analytics.php:1714
+msgid "Resources"
 msgstr ""
 
-#. translators: as in the sentence "Find out inbound and outbound API calls made to/from your network." or "Find out inbound and outbound API calls made to/from your website."
-#: admin/class-traffic-admin.php:137
+#. translators: as in the sentence "Find out and explore resources needed by the pages of your network." or "Find out and explore resources needed by the pages of your website."
+#: admin/class-vibes-admin.php:133
 #, php-format
-msgid "Find out inbound and outbound API calls made to/from your %s."
+msgid "Find out and explore resources needed by the pages of your %s."
 msgstr ""
 
-#: admin/class-traffic-admin.php:137 admin/class-traffic-admin.php:155
+#: admin/class-vibes-admin.php:133 admin/class-vibes-admin.php:148
+#: admin/class-vibes-admin.php:163 admin/class-vibes-admin.php:180
 msgid "network"
 msgstr ""
 
-#: admin/class-traffic-admin.php:137 admin/class-traffic-admin.php:155
+#: admin/class-vibes-admin.php:133 admin/class-vibes-admin.php:148
+#: admin/class-vibes-admin.php:163 admin/class-vibes-admin.php:180
 msgid "website"
 msgstr ""
 
-#: admin/class-traffic-admin.php:153 admin/class-traffic-admin.php:160
-msgid "Live API Calls"
+#. translators: as in the sentence "DecaLog Viewer"
+#: admin/class-vibes-admin.php:146 admin/class-vibes-admin.php:152
+#: admin/class-vibes-admin.php:153
+#: admin/partials/vibes-admin-view-console.php:43
+#: includes/features/class-analytics.php:1711
+msgid "Web Vitals"
+msgstr ""
+
+#. translators: as in the sentence "View and analyze Web Vitals measured in the field for all visited pages of your network." or "View and analyze Web Vitals measured in the field for all visited pages of your website."
+#: admin/class-vibes-admin.php:148
+#, php-format
+msgid ""
+"View and analyze Web Vitals measured in the field for all the visited "
+"pages of your %s."
+msgstr ""
+
+#. translators: as in the sentence "DecaLog Viewer"
+#: admin/class-vibes-admin.php:161 admin/class-vibes-admin.php:167
+#: admin/class-vibes-admin.php:168 includes/features/class-analytics.php:1717
+msgid "Performances"
+msgstr ""
+
+#. translators: as in the sentence "Find out inbound and outbound API calls made to/from your network." or "Find out inbound and outbound API calls made to/from your website."
+#: admin/class-vibes-admin.php:163
+#, php-format
+msgid "View and analyze your %s's performances from a user point of view."
+msgstr ""
+
+#: admin/class-vibes-admin.php:178 admin/class-vibes-admin.php:185
+msgid "Vibes Signals"
 msgstr ""
 
 #. translators: as in the sentence "Check the events that occurred on your network." or "Check the events that occurred on your website."
-#: admin/class-traffic-admin.php:155
+#: admin/class-vibes-admin.php:180
 #, php-format
-msgid "Displays API traffic as soon as it happens on your %s."
+msgid ""
+"Displays %1$s performance signals as soon as they are received by your "
+"%2$s."
 msgstr ""
 
-#. translators: as in the sentence "Traffic Viewer"
-#: admin/class-traffic-admin.php:159
-#: admin/partials/traffic-admin-view-console.php:34
+#. translators: as in the sentence "Vibes Viewer"
+#: admin/class-vibes-admin.php:184
+#: admin/partials/vibes-admin-view-console.php:34
 #, php-format
-msgid "%s Live API Calls"
+msgid "%s Live Performance Signals"
 msgstr ""
 
-#: admin/class-traffic-admin.php:192 admin/class-traffic-admin.php:209
-msgid "API traffic"
+#: admin/class-vibes-admin.php:231
+#: admin/partials/vibes-admin-view-console.php:45
+msgid "Navigation"
 msgstr ""
 
-#: admin/class-traffic-admin.php:220
-msgid "Inbound APIs"
-msgstr ""
-
-#: admin/class-traffic-admin.php:221
-msgid "Outbound APIs"
-msgstr ""
-
-#: admin/class-traffic-admin.php:222
+#: admin/class-vibes-admin.php:233
 msgid "Plugin features"
 msgstr ""
 
-#: admin/class-traffic-admin.php:223
+#: admin/class-vibes-admin.php:234
 msgid "Plugin options"
 msgstr ""
 
-#: admin/class-traffic-admin.php:239
+#: admin/class-vibes-admin.php:236
+msgid "Plugin advanced options"
+msgstr ""
+
+#: admin/class-vibes-admin.php:253
 msgid "Settings"
 msgstr ""
 
-#: admin/class-traffic-admin.php:241
-msgid "Statistics"
-msgstr ""
-
-#: admin/class-traffic-admin.php:256
+#: admin/class-vibes-admin.php:267
 msgid "Support"
 msgstr ""
 
-#: admin/class-traffic-admin.php:338
+#: admin/class-vibes-admin.php:344 admin/class-vibes-admin.php:354
+#: admin/class-vibes-admin.php:364
+msgid "Plugin successfully installed and activated with default settings."
+msgstr ""
+
+#: admin/class-vibes-admin.php:346 admin/class-vibes-admin.php:356
+#: admin/class-vibes-admin.php:366
+#, php-format
+msgid "Unable to install or activate the plugin. Error message: %s."
+msgstr ""
+
+#: admin/class-vibes-admin.php:402
 msgid "Plugin settings have been saved."
 msgstr ""
 
-#: admin/class-traffic-admin.php:343
+#: admin/class-vibes-admin.php:407
 msgid "Plugin settings have not been saved. Please try again."
 msgstr ""
 
-#: admin/class-traffic-admin.php:360
+#: admin/class-vibes-admin.php:424
 msgid "Plugin settings have been reset to defaults."
 msgstr ""
 
-#: admin/class-traffic-admin.php:365
+#: admin/class-vibes-admin.php:429
 msgid "Plugin settings have not been reset to defaults. Please try again."
 msgstr ""
 
-#: admin/class-traffic-admin.php:382
+#: admin/class-vibes-admin.php:446
 msgid "Favicons"
 msgstr ""
 
-#: admin/class-traffic-admin.php:387
+#: admin/class-vibes-admin.php:451
 msgid "Download and display"
 msgstr ""
 
-#: admin/class-traffic-admin.php:390
+#: admin/class-vibes-admin.php:454
 msgid ""
-"If checked, Traffic will download favicons of websites to display them in "
+"If checked, Vibes will download favicons of websites to display them in "
 "reports."
 msgstr ""
 
-#: admin/class-traffic-admin.php:390
+#: admin/class-vibes-admin.php:454
 msgid "Note: This feature uses the (free) Google Favicon Service."
 msgstr ""
 
-#: admin/class-traffic-admin.php:399 admin/class-traffic-admin.php:418
+#: admin/class-vibes-admin.php:462 admin/class-vibes-admin.php:480
+#: admin/class-vibes-admin.php:502
 #, php-format
 msgid "Your site is currently using %s."
 msgstr ""
 
-#: admin/class-traffic-admin.php:402
-#, php-format
-msgid ""
-"Your site does not use any IP geographic information plugin. To take "
-"advantage of the geographical distribution of calls in Traffic, I "
-"recommend you to install the excellent (and free) %s. But it is not "
-"mandatory."
-msgstr ""
-
-#: admin/class-traffic-admin.php:406
-msgid "IP information"
-msgstr ""
-
-#: admin/class-traffic-admin.php:421
+#: admin/class-vibes-admin.php:465
 #, php-format
 msgid ""
 "Your site does not use any logging plugin. To log all events triggered in "
-"Traffic, I recommend you to install the excellent (and free) %s. But it is "
+"Vibes, I recommend you to install the excellent (and free) %s. But it is "
 "not mandatory."
 msgstr ""
 
-#: admin/class-traffic-admin.php:425 admin/class-traffic-admin.php:629
-#: admin/class-traffic-admin.php:693
+#: admin/class-vibes-admin.php:469
 msgid "Logging"
 msgstr ""
 
-#: admin/class-traffic-admin.php:436
+#: admin/class-vibes-admin.php:483
+#, php-format
+msgid ""
+"Your site does not use any device detection mechanism. To allow device "
+"differentiation in Vibes, I recommend you to install the excellent (and "
+"free) %s. But it is not mandatory."
+msgstr ""
+
+#: admin/class-vibes-admin.php:485
+msgid "Install It Now"
+msgstr ""
+
+#: admin/class-vibes-admin.php:490
+msgid "Device detection"
+msgstr ""
+
+#: admin/class-vibes-admin.php:505
+#, php-format
+msgid ""
+"Your site does not use any IP geographic information plugin. To take "
+"advantage of the geographical distribution of calls in Vibes, I recommend "
+"you to install the excellent (and free) %s. But it is not mandatory."
+msgstr ""
+
+#: admin/class-vibes-admin.php:509
+msgid "IP information"
+msgstr ""
+
+#: admin/class-vibes-admin.php:520
 msgid "Shared memory is available on your server: you can use live console."
 msgstr ""
 
-#: admin/class-traffic-admin.php:439
+#: admin/class-vibes-admin.php:523
 #, php-format
 msgid ""
 "Shared memory is not available on your server. To use live console you "
 "must activate %s PHP module."
 msgstr ""
 
-#: admin/class-traffic-admin.php:443
+#: admin/class-vibes-admin.php:527
 msgid "Shared memory"
 msgstr ""
 
-#: admin/class-traffic-admin.php:454
-msgid "Resources"
-msgstr ""
-
-#: admin/class-traffic-admin.php:459
+#: admin/class-vibes-admin.php:543
 msgid "Use public CDN"
 msgstr ""
 
-#: admin/class-traffic-admin.php:462
+#: admin/class-vibes-admin.php:546
 msgid ""
-"If checked, Traffic will use a public CDN (jsDelivr) to serve scripts and "
+"If checked, Vibes will use a public CDN (jsDelivr) to serve scripts and "
 "stylesheets."
 msgstr ""
 
-#: admin/class-traffic-admin.php:470
+#: admin/class-vibes-admin.php:554
 msgid "Admin notices"
 msgstr ""
 
-#: admin/class-traffic-admin.php:475
+#: admin/class-vibes-admin.php:559
 msgid "Display"
 msgstr ""
 
-#: admin/class-traffic-admin.php:478
-msgid ""
-"Allows Traffic to display admin notices throughout the admin dashboard."
+#: admin/class-vibes-admin.php:562
+msgid "Allows Vibes to display admin notices throughout the admin dashboard."
 msgstr ""
 
-#: admin/class-traffic-admin.php:478
-msgid "Note: Traffic respects DISABLE_NAG_NOTICES flag."
+#: admin/class-vibes-admin.php:562
+msgid "Note: Vibes respects DISABLE_NAG_NOTICES flag."
 msgstr ""
 
-#: admin/class-traffic-admin.php:495
-msgid "Historical data"
-msgstr ""
-
-#: admin/class-traffic-admin.php:503
-msgid "Maximum age of data to keep for statistics."
-msgstr ""
-
-#: admin/class-traffic-admin.php:511
+#: admin/class-vibes-admin.php:579
 msgid "Metrics"
 msgstr ""
 
-#: admin/class-traffic-admin.php:516 admin/class-traffic-admin.php:550
-#: admin/class-traffic-admin.php:613 admin/class-traffic-admin.php:677
+#: admin/class-vibes-admin.php:584 admin/class-vibes-admin.php:618
+#: admin/class-vibes-admin.php:681 admin/class-vibes-admin.php:756
 msgid "Activated"
 msgstr ""
 
-#: admin/class-traffic-admin.php:519
-msgid "If checked, Traffic will collate and publish API metrics."
+#: admin/class-vibes-admin.php:587
+msgid "If checked, Vibes will collate and publish Web Vitals metrics."
 msgstr ""
 
-#: admin/class-traffic-admin.php:519
+#: admin/class-vibes-admin.php:587 admin/class-vibes-admin.php:759
+msgid "Note: for this to work, you must activate navigation analytics."
+msgstr ""
+
+#: admin/class-vibes-admin.php:587
 msgid "Note: for this to work, you must install DecaLog."
 msgstr ""
 
-#: admin/class-traffic-admin.php:528
+#: admin/class-vibes-admin.php:596
 msgid "Live console"
 msgstr ""
 
-#: admin/class-traffic-admin.php:533
+#: admin/class-vibes-admin.php:601
 msgid "Activate monitoring"
 msgstr ""
 
-#: admin/class-traffic-admin.php:536
+#: admin/class-vibes-admin.php:604
 msgid ""
-"If checked, Traffic will silently start the features needed by live "
-"console."
+"If checked, Vibes will silently start the features needed by live console."
 msgstr ""
 
-#: admin/class-traffic-admin.php:545
+#: admin/class-vibes-admin.php:613
 msgid "Smart filter"
 msgstr ""
 
-#: admin/class-traffic-admin.php:553
+#: admin/class-vibes-admin.php:621
 msgid ""
-"If checked, Traffic will not take into account the calls that generate "
-"\"noise\" in monitoring."
+"If checked, Vibes will not take into account the calls that generate "
+"\"noise\" in measurements."
 msgstr ""
 
-#: admin/class-traffic-admin.php:571
+#: admin/class-vibes-admin.php:639 admin/class-vibes-admin.php:662
+#, php-format
+msgid "%d week"
+msgid_plural "%d weeks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/class-vibes-admin.php:643
 #, php-format
 msgid "%d month"
 msgid_plural "%d months"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/class-traffic-admin.php:575
+#: admin/class-vibes-admin.php:658
 #, php-format
-msgid "%d year"
-msgid_plural "%d years"
+msgid "%d day"
+msgid_plural "%d days"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/class-traffic-admin.php:608 admin/class-traffic-admin.php:672
+#: admin/class-vibes-admin.php:676 admin/class-vibes-admin.php:751
+#: perfopsone/class-menus.php:155
 msgid "Analytics"
 msgstr ""
 
-#: admin/class-traffic-admin.php:616
+#: admin/class-vibes-admin.php:684
 msgid ""
-"If checked, Traffic will analyze inbound API calls (the calls made by "
-"external sites or apps to your site)."
+"If checked, Vibes will analyze navigation timings in the user's browser "
+"and compute Web Vitals."
 msgstr ""
 
-#: admin/class-traffic-admin.php:625 admin/class-traffic-admin.php:689
-#, php-format
-msgid "Note: you need to install %s to use this feature."
+#: admin/class-vibes-admin.php:692 admin/class-vibes-admin.php:767
+msgid "Sampling"
 msgstr ""
 
-#: admin/class-traffic-admin.php:637
-msgid "The level at which inbound API calls are logged."
+#: admin/class-vibes-admin.php:700
+msgid "The rate of compatible navigations that will be measured."
 msgstr ""
 
-#: admin/class-traffic-admin.php:645 admin/class-traffic-admin.php:709
+#: admin/class-vibes-admin.php:708 admin/class-vibes-admin.php:783
 msgid "Path cut"
 msgstr ""
 
-#: admin/class-traffic-admin.php:655 admin/class-traffic-admin.php:719
+#: admin/class-vibes-admin.php:718 admin/class-vibes-admin.php:793
 msgid ""
 "Allows to keep only the first most significative elements of the endpoint "
 "path."
 msgstr ""
 
-#: admin/class-traffic-admin.php:680
+#: admin/class-vibes-admin.php:726 admin/class-vibes-admin.php:801
+msgid "Historical data"
+msgstr ""
+
+#: admin/class-vibes-admin.php:734 admin/class-vibes-admin.php:809
+msgid "Maximum age of data to keep for statistics."
+msgstr ""
+
+#: admin/class-vibes-admin.php:759
 msgid ""
-"If checked, Traffic will analyze outbound API calls (the calls made by "
-"your site to external services)."
+"If checked, Vibes will analyze resources needed by your pages right in the "
+"user's browser."
 msgstr ""
 
-#: admin/class-traffic-admin.php:701
-msgid "The level at which outbound API calls are logged."
+#: admin/class-vibes-admin.php:775
+msgid ""
+"The rate at which resources will be measured inside the compatible "
+"navigation sample."
 msgstr ""
 
-#: admin/partials/traffic-admin-settings-about.php:20
+#: admin/partials/vibes-admin-settings-about.php:20
 #, php-format
 msgid ""
 "This version of %s is not production-ready. It is a development preview. "
 "Use it at your own risk!"
 msgstr ""
 
-#: admin/partials/traffic-admin-settings-about.php:24
+#: admin/partials/vibes-admin-settings-about.php:24
 #, php-format
 msgid ""
 "This version of %s is a release candidate. Although ready for production, "
 "this version is not officially supported in production environments."
 msgstr ""
 
-#: admin/partials/traffic-admin-settings-about.php:26
+#: admin/partials/vibes-admin-settings-about.php:26
 #, php-format
 msgid ""
 "%1$s is a free and open source plugin for WordPress. It integrates other "
 "free and open source works (as-is or modified) like: %2$s."
 msgstr ""
 
-#: admin/partials/traffic-admin-settings-about.php:27
+#: admin/partials/vibes-admin-settings-about.php:27
 msgid ""
 "All brands, icons and graphic illustrations are registered trademarks of "
 "their respective owners."
 msgstr ""
 
-#: admin/partials/traffic-admin-settings-about.php:35
+#: admin/partials/vibes-admin-settings-about.php:35
 msgid "Disclaimer"
 msgstr ""
 
-#: admin/partials/traffic-admin-settings-about.php:38
+#: admin/partials/vibes-admin-settings-about.php:38
 msgid "Changelog"
 msgstr ""
 
-#: admin/partials/traffic-admin-settings-main.php:43
+#: admin/partials/vibes-admin-settings-main.php:43
 msgid "Options"
 msgstr ""
 
-#: admin/partials/traffic-admin-settings-main.php:56
+#: admin/partials/vibes-admin-settings-main.php:56
 msgid "About"
 msgstr ""
 
-#: admin/partials/traffic-admin-settings-options.php:33
+#: admin/partials/vibes-admin-settings-options.php:34
 msgid "Reset to Defaults"
 msgstr ""
 
-#: admin/partials/traffic-admin-view-console.php:42
-msgid "Both"
+#: admin/partials/vibes-admin-view-console.php:42
+#: includes/features/class-analytics.php:1512
+#: includes/features/class-analytics.php:1524
+#: includes/features/class-analytics.php:1547
+#: includes/features/class-analytics.php:1565
+msgid "All"
 msgstr ""
 
-#: admin/partials/traffic-admin-view-console.php:43
-msgid "Inbounds"
+#: admin/partials/vibes-admin-view-console.php:44
+msgid "Sources"
 msgstr ""
 
-#: admin/partials/traffic-admin-view-console.php:44
-msgid "Outbounds"
+#: includes/features/class-analytics.php:423
+#: includes/features/class-analytics.php:871
+msgid "Not Enough Data"
 msgstr ""
 
-#: includes/features/class-analytics.php:428
-#: includes/features/class-analytics.php:430
-#: includes/features/class-analytics.php:532
-#: includes/features/class-analytics.php:687
+#: includes/features/class-analytics.php:533
+msgid "Confidence Index"
+msgstr ""
+
+#: includes/features/class-analytics.php:619
+#: includes/features/class-analytics.php:621
+#: includes/features/class-analytics.php:732
+#: includes/system/class-device.php:98 includes/system/class-device.php:204
 msgid "Other"
 msgstr ""
 
-#: includes/features/class-analytics.php:585
+#: includes/features/class-analytics.php:653
+msgid "No Data"
+msgstr ""
+
+#: includes/features/class-analytics.php:750
+#: includes/features/class-analytics.php:1431
+msgid "Redirections"
+msgstr ""
+
+#: includes/features/class-analytics.php:752
+#: includes/features/class-analytics.php:1435
+msgid "DNS Lookup"
+msgstr ""
+
+#: includes/features/class-analytics.php:754
+msgid "TCP Connection"
+msgstr ""
+
+#: includes/features/class-analytics.php:756
+msgid "SSL Handshake"
+msgstr ""
+
+#: includes/features/class-analytics.php:758
+#: includes/features/class-analytics.php:1417
+msgid "Waiting"
+msgstr ""
+
+#: includes/features/class-analytics.php:760
+#: includes/features/class-analytics.php:1421
+msgid "Download"
+msgstr ""
+
+#: includes/features/class-analytics.php:925
 msgid "Details"
 msgstr ""
 
-#: includes/features/class-analytics.php:586
-msgid "Calls"
+#: includes/features/class-analytics.php:926
+#: includes/features/class-analytics.php:1129
+msgid "Hits"
 msgstr ""
 
-#: includes/features/class-analytics.php:587
-msgid "Data Volume"
+#: includes/features/class-analytics.php:927
+#: includes/features/class-analytics.php:1131
+msgid "Size"
 msgstr ""
 
-#: includes/features/class-analytics.php:588
+#: includes/features/class-analytics.php:928
+#: includes/features/class-analytics.php:1132
+#: includes/features/class-analytics.php:1413
 msgid "Latency"
 msgstr ""
 
-#: includes/features/class-analytics.php:613
+#: includes/features/class-analytics.php:929
+#: includes/features/class-analytics.php:1133
+#: includes/features/class-analytics.php:2390
+msgid "Browser Cache"
+msgstr ""
+
+#: includes/features/class-analytics.php:961
 #, php-format
 msgid "%d subdomain"
 msgid_plural "%d subdomains"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/features/class-analytics.php:614
+#: includes/features/class-analytics.php:962
+#: includes/features/class-analytics.php:967
 #, php-format
 msgid "%d endpoint"
 msgid_plural "%d endpoints"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/features/class-analytics.php:703
-#: includes/features/class-analytics.php:709
-msgctxt "Unit symbol - Stands for \"second\"."
-msgid "s"
-msgstr ""
+#: includes/features/class-analytics.php:975
+#, php-format
+msgid "%d mime type"
+msgid_plural "%d different mime types"
+msgstr[0] ""
+msgstr[1] ""
 
-#: includes/features/class-analytics.php:705
-#: includes/features/class-analytics.php:711
-#: includes/features/class-analytics.php:713
-#: includes/features/class-analytics.php:715
+#: includes/features/class-analytics.php:1010
+#: includes/features/class-analytics.php:1180
 msgctxt "Unit symbol - Stands for \"millisecond\"."
 msgid "ms"
 msgstr ""
 
-#: includes/features/class-analytics.php:777
-msgid "calls"
+#: includes/features/class-analytics.php:1130
+msgid "Redirects"
 msgstr ""
 
-#: includes/features/class-analytics.php:936
-msgid "Success"
+#: includes/features/class-analytics.php:1268
+msgid "Good"
 msgstr ""
 
-#: includes/features/class-analytics.php:940
-msgid "Error"
-msgstr ""
-
-#: includes/features/class-analytics.php:944
-msgid "Quota Error"
-msgstr ""
-
-#: includes/features/class-analytics.php:973
-msgid "Incoming Data"
-msgstr ""
-
-#: includes/features/class-analytics.php:977
-msgid "Outcoming Data"
-msgstr ""
-
-#: includes/features/class-analytics.php:993
-msgid "Perceived Uptime"
-msgstr ""
-
-#: includes/features/class-analytics.php:1107
-#, php-format
-msgid "avg latency: %s ms."
-msgstr ""
-
-#: includes/features/class-analytics.php:1213
-#, php-format
-msgid "%s calls in error"
-msgstr ""
-
-#: includes/features/class-analytics.php:1216
-#, php-format
-msgid "%s blocked calls"
-msgstr ""
-
-#: includes/features/class-analytics.php:1219
-#, php-format
-msgid "%s successful calls"
-msgstr ""
-
-#: includes/features/class-analytics.php:1225
-msgid "no downtime"
-msgstr ""
-
-#: includes/features/class-analytics.php:1227
-#, php-format
-msgid "down %s"
-msgstr ""
-
-#: includes/features/class-analytics.php:1248
-#: includes/features/class-analytics.php:1269
-#: includes/features/class-analytics.php:1314
-msgid "HTTP Codes Details"
-msgstr ""
-
-#: includes/features/class-analytics.php:1251
 #: includes/features/class-analytics.php:1272
-#: includes/features/class-analytics.php:1317
-msgid "Protocols Details"
+msgid "Needs Improvement"
 msgstr ""
 
-#: includes/features/class-analytics.php:1254
-#: includes/features/class-analytics.php:1275
-#: includes/features/class-analytics.php:1320
-msgid "Methods Details"
+#: includes/features/class-analytics.php:1276
+msgid "Poor"
 msgstr ""
 
-#: includes/features/class-analytics.php:1257
-#: includes/features/class-analytics.php:1278
-#: includes/features/class-analytics.php:1323
-msgid "Countries Details"
+#: includes/features/class-analytics.php:1439
+msgid "Connection"
 msgstr ""
 
-#: includes/features/class-analytics.php:1260
+#: includes/features/class-analytics.php:1516
+#: includes/features/class-analytics.php:1526
+msgid "Anonymous"
+msgstr ""
+
+#: includes/features/class-analytics.php:1520
+#: includes/features/class-analytics.php:1528
+msgid "Authenticated"
+msgstr ""
+
+#: includes/features/class-analytics.php:1588
 msgid "Domains Details"
 msgstr ""
 
-#: includes/features/class-analytics.php:1264
-#: includes/features/class-analytics.php:1284
-#: includes/features/class-analytics.php:1299
-#: includes/features/class-analytics.php:1341
-#: includes/features/class-analytics.php:1368
+#: includes/features/class-analytics.php:1591
+#: includes/features/class-analytics.php:1596
+#: includes/features/class-analytics.php:1611
+#: includes/features/class-analytics.php:1638
+#: includes/features/class-analytics.php:1683
 msgid "Domain Summary"
 msgstr ""
 
-#: includes/features/class-analytics.php:1281
+#: includes/features/class-analytics.php:1594
 msgid "Domain Details"
 msgstr ""
 
-#: includes/features/class-analytics.php:1285
-#: includes/features/class-analytics.php:1300
-#: includes/features/class-analytics.php:1330
-#: includes/features/class-analytics.php:1342
-#: includes/features/class-analytics.php:1357
-#: includes/features/class-analytics.php:1369
+#: includes/features/class-analytics.php:1597
+#: includes/features/class-analytics.php:1612
+#: includes/features/class-analytics.php:1627
+#: includes/features/class-analytics.php:1639
+#: includes/features/class-analytics.php:1656
+#: includes/features/class-analytics.php:1672
+#: includes/features/class-analytics.php:1684
 #, php-format
 msgid "Return to %s"
 msgstr ""
 
-#: includes/features/class-analytics.php:1297
-#: includes/features/class-analytics.php:1329
-#: includes/features/class-analytics.php:1356
+#: includes/features/class-analytics.php:1609
+#: includes/features/class-analytics.php:1626
+#: includes/features/class-analytics.php:1671
 msgid "Subdomain Summary"
 msgstr ""
 
-#: includes/features/class-analytics.php:1326
+#: includes/features/class-analytics.php:1624
 msgid "Subdomain Details"
 msgstr ""
 
-#: includes/features/class-analytics.php:1354
+#: includes/features/class-analytics.php:1653
+#: includes/features/class-analytics.php:1703
+#: includes/features/class-analytics.php:2223
+msgid "Mobiles Breakdown"
+msgstr ""
+
+#: includes/features/class-analytics.php:1655
+#: includes/features/class-analytics.php:1667
 msgid "Endpoint Summary"
 msgstr ""
 
-#: includes/features/class-analytics.php:1381
+#: includes/features/class-analytics.php:1697
 msgid "Country"
 msgstr ""
 
-#: includes/features/class-analytics.php:1387
-#: includes/features/class-analytics.php:1434
+#: includes/features/class-analytics.php:1706
+#: includes/features/class-analytics.php:1723
+#: includes/features/class-analytics.php:1771
 msgid "Main Summary"
 msgstr ""
 
-#: includes/features/class-analytics.php:1388
-msgid "Return to Traffic main page."
+#: includes/features/class-analytics.php:1724
+#, php-format
+msgid "Return to %s main page."
 msgstr ""
 
-#: includes/features/class-analytics.php:1412
+#: includes/features/class-analytics.php:1748
 msgid "All Sites"
 msgstr ""
 
-#: includes/features/class-analytics.php:1416
-#: includes/features/class-analytics.php:1418
+#: includes/features/class-analytics.php:1752
+#: includes/features/class-analytics.php:1754
 #, php-format
 msgid "Site ID %s"
 msgstr ""
 
-#: includes/features/class-analytics.php:1484
-msgid "Responses types distribution."
+#: includes/features/class-analytics.php:1818
+msgid "Web Vitals Variations"
 msgstr ""
 
-#: includes/features/class-analytics.php:1485
-msgid "Data volume distribution."
+#: includes/features/class-analytics.php:1844
+msgid "Timings distribution."
 msgstr ""
 
-#: includes/features/class-analytics.php:1486
-msgid "Uptime variation."
+#: includes/features/class-analytics.php:1845
+msgid "Network stages."
 msgstr ""
 
-#: includes/features/class-analytics.php:1492
+#: includes/features/class-analytics.php:1850
 msgid "Metrics Variations"
 msgstr ""
 
-#: includes/features/class-analytics.php:1516
+#: includes/features/class-analytics.php:1897
+#: includes/features/class-analytics.php:1944
+msgid "View the mobiles breakdown."
+msgstr ""
+
+#: includes/features/class-analytics.php:2014
+msgid "Mime Types Breakdown"
+msgstr ""
+
+#: includes/features/class-analytics.php:2034
+msgid "Sources Breakdown"
+msgstr ""
+
+#: includes/features/class-analytics.php:2054
 msgid "Sites Breakdown"
 msgstr ""
 
-#: includes/features/class-analytics.php:1536
+#: includes/features/class-analytics.php:2074
+#: includes/features/class-analytics.php:2096
+msgid "Sites Overview"
+msgstr ""
+
+#: includes/features/class-analytics.php:2118
+#: includes/features/class-analytics.php:2140
+msgid "Endpoints Overview"
+msgstr ""
+
+#: includes/features/class-analytics.php:2162
 msgid "All Domains"
 msgstr ""
 
-#: includes/features/class-analytics.php:1556
+#: includes/features/class-analytics.php:2182
 msgid "All Subdomains"
 msgstr ""
 
-#: includes/features/class-analytics.php:1576
-#: includes/features/class-analytics.php:1609
+#: includes/features/class-analytics.php:2202
+#: includes/features/class-analytics.php:2226
 msgid "All Endpoints"
 msgstr ""
 
-#: includes/features/class-analytics.php:1597
-msgid "All HTTP Codes"
-msgstr ""
-
-#: includes/features/class-analytics.php:1600
-msgid "All Protocols"
-msgstr ""
-
-#: includes/features/class-analytics.php:1603
-msgid "All Methods"
-msgstr ""
-
-#: includes/features/class-analytics.php:1606
-msgid "All Countries"
-msgstr ""
-
-#: includes/features/class-analytics.php:1633
+#: includes/features/class-analytics.php:2250
 msgid "View the details of all domains."
 msgstr ""
 
-#: includes/features/class-analytics.php:1635
+#: includes/features/class-analytics.php:2252
 msgid "Top Domains"
 msgstr ""
 
-#: includes/features/class-analytics.php:1662
+#: includes/features/class-analytics.php:2279
 msgid "View the details of all subdomains."
 msgstr ""
 
-#: includes/features/class-analytics.php:1664
+#: includes/features/class-analytics.php:2281
 msgid "Top Subdomains"
 msgstr ""
 
-#: includes/features/class-analytics.php:1691
+#: includes/features/class-analytics.php:2308
 msgid "View the details of all endpoints."
 msgstr ""
 
-#: includes/features/class-analytics.php:1693
+#: includes/features/class-analytics.php:2310
 msgid "Top Endpoints"
 msgstr ""
 
-#: includes/features/class-analytics.php:1743
-msgid "View the details of all countries."
+#: includes/features/class-analytics.php:2330
+msgid "Content"
 msgstr ""
 
-#: includes/features/class-analytics.php:1745
-msgid "Countries"
+#: includes/features/class-analytics.php:2350
+msgid "Initiators"
 msgstr ""
 
-#: includes/features/class-analytics.php:1795
-msgid "View the details of all codes."
-msgstr ""
-
-#: includes/features/class-analytics.php:1797
-msgid "HTTP codes"
-msgstr ""
-
-#: includes/features/class-analytics.php:1847
-msgid "View the details of protocols breakdown."
-msgstr ""
-
-#: includes/features/class-analytics.php:1849
+#: includes/features/class-analytics.php:2370
 msgid "Protocols"
 msgstr ""
 
-#: includes/features/class-analytics.php:1899
-msgid "View the details of all methods."
-msgstr ""
-
-#: includes/features/class-analytics.php:1901
-msgid "Methods"
-msgstr ""
-
-#: includes/features/class-analytics.php:1924
-msgctxt "Noun - Number API calls."
-msgid "Number of Calls"
-msgstr ""
-
-#: includes/features/class-analytics.php:1925
-msgid "Number of API calls."
-msgstr ""
-
-#: includes/features/class-analytics.php:1929
-msgctxt "Noun - Volume of transferred data."
-msgid "Data Volume"
-msgstr ""
-
-#: includes/features/class-analytics.php:1930
-msgid "Volume of transferred data."
-msgstr ""
-
-#: includes/features/class-analytics.php:1934
-msgctxt ""
-"Noun - Ratio of the number of HTTP errors to the total number of calls."
-msgid "Server Error Rate"
-msgstr ""
-
-#: includes/features/class-analytics.php:1935
-msgid "Ratio of the number of HTTP errors to the total number of calls."
-msgstr ""
-
-#: includes/features/class-analytics.php:1939
-msgctxt ""
-"Noun - Ratio of the quota enforcement number to the total number of calls."
-msgid "Quotas Error Rate"
-msgstr ""
-
-#: includes/features/class-analytics.php:1940
-msgid "Ratio of the quota enforcement number to the total number of calls."
-msgstr ""
-
-#: includes/features/class-analytics.php:1944
-msgctxt ""
-"Noun - Ratio of the number of HTTP success to the total number of calls."
-msgid "Effective Pass Rate"
-msgstr ""
-
-#: includes/features/class-analytics.php:1945
-msgid "Ratio of the number of HTTP success to the total number of calls."
-msgstr ""
-
-#: includes/features/class-analytics.php:1949
-msgctxt "Noun - Perceived uptime, from the viewpoint of the site."
-msgid "Perceived Uptime"
-msgstr ""
-
-#: includes/features/class-analytics.php:1950
-msgid "Perceived uptime, from the viewpoint of the site."
-msgstr ""
-
-#: includes/features/class-analytics.php:2164
+#: includes/features/class-analytics.php:2530
 msgid "Custom Range"
 msgstr ""
 
-#: includes/features/class-analytics.php:2164
+#: includes/features/class-analytics.php:2530
 msgid "Cancel"
 msgstr ""
 
-#: includes/features/class-analytics.php:2164
+#: includes/features/class-analytics.php:2530
 msgid "Apply"
 msgstr ""
 
-#: includes/features/class-analytics.php:2166
+#: includes/features/class-analytics.php:2532
 msgid "Today"
 msgstr ""
 
-#: includes/features/class-analytics.php:2167
+#: includes/features/class-analytics.php:2533
 msgid "Yesterday"
 msgstr ""
 
-#: includes/features/class-analytics.php:2168
+#: includes/features/class-analytics.php:2534
 msgid "This Month"
 msgstr ""
 
-#: includes/features/class-analytics.php:2169
+#: includes/features/class-analytics.php:2535
 msgid "Last Month"
 msgstr ""
+
+#: includes/features/class-capture.php:244
+#, php-format
+msgid "%d signal received and correctly pre-processed."
+msgid_plural "%d signals received and correctly pre-processed."
+msgstr[0] ""
+msgstr[1] ""
 
 #: includes/libraries/class-libraries.php:67
 #: includes/libraries/class-libraries.php:78
 #: includes/libraries/class-libraries.php:89
 #: includes/libraries/class-libraries.php:223
 #: includes/libraries/class-libraries.php:231
-#: includes/libraries/class-libraries.php:239
-#: includes/libraries/class-libraries.php:246
-#: includes/libraries/class-libraries.php:253
-#: includes/libraries/class-libraries.php:260
+#: includes/libraries/class-libraries.php:238
+#: includes/libraries/class-libraries.php:245
+#: includes/libraries/class-libraries.php:252
 #, php-format
 msgid "%s & contributors"
 msgstr ""
@@ -789,22 +793,22 @@ msgid "unknown license"
 msgstr ""
 
 #. translators: as in the sentence "Product W version X by author Y (license Z)"
-#: includes/libraries/class-libraries.php:270
+#: includes/libraries/class-libraries.php:262
 #, php-format
 msgid "<a href=\"%1$s\">%2$s %3$s</a>%4$s by %5$s (%6$s)"
 msgstr ""
 
-#: includes/plugin/class-updater.php:44
+#: includes/plugin/class-updater.php:45
 #, php-format
 msgid "%1$s has been correctly installed."
 msgstr ""
 
-#: includes/plugin/class-updater.php:48
+#: includes/plugin/class-updater.php:49
 #, php-format
 msgid "%1$s has been correctly updated from version %2$s to version %3$s."
 msgstr ""
 
-#: includes/plugin/class-updater.php:51
+#: includes/plugin/class-updater.php:52
 #, php-format
 msgid "See <a href=\"%s\">what's new</a>."
 msgstr ""
@@ -921,24 +925,197 @@ msgid_plural "hours"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/system/class-environment.php:217
+#: includes/system/class-device.php:92
+msgid "Bot"
+msgstr ""
+
+#: includes/system/class-device.php:94
+msgid "Desktop"
+msgstr ""
+
+#: includes/system/class-device.php:96
+msgid "Mobile"
+msgstr ""
+
+#: includes/system/class-device.php:178
+msgid "Smartphone"
+msgstr ""
+
+#: includes/system/class-device.php:180
+msgid "Feature Phone"
+msgstr ""
+
+#: includes/system/class-device.php:182
+msgid "Tablet"
+msgstr ""
+
+#: includes/system/class-device.php:184
+msgid "Phablet"
+msgstr ""
+
+#: includes/system/class-device.php:186
+msgid "Game Console"
+msgstr ""
+
+#: includes/system/class-device.php:188
+msgid "Portable Media Player"
+msgstr ""
+
+#: includes/system/class-device.php:190
+msgid "Car Browser"
+msgstr ""
+
+#: includes/system/class-device.php:192
+msgid "TV"
+msgstr ""
+
+#: includes/system/class-device.php:194
+msgid "Smart Display"
+msgstr ""
+
+#: includes/system/class-device.php:196
+msgid "Smart Speaker"
+msgstr ""
+
+#: includes/system/class-device.php:198
+msgid "Wearable"
+msgstr ""
+
+#: includes/system/class-device.php:200
+msgid "Peripheral"
+msgstr ""
+
+#: includes/system/class-device.php:202
+msgid "Camera"
+msgstr ""
+
+#: includes/system/class-environment.php:219
 msgid "log"
 msgstr ""
 
-#: includes/system/class-environment.php:222
+#: includes/system/class-environment.php:224
 msgid "display"
 msgstr ""
 
-#: includes/system/class-environment.php:228
+#: includes/system/class-environment.php:230
 msgid "Debug enabled"
 msgstr ""
 
-#: includes/system/class-environment.php:228
+#: includes/system/class-environment.php:230
 msgid "Debug disabled"
 msgstr ""
 
 #: includes/system/class-markdown.php:46
 msgid "Sorry, unable to find or read the specified file."
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:161
+msgid "Application specific"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:164
+msgid "Image"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:167
+msgid "Model"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:170
+msgid "Text"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:173
+msgid "Video"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:176
+msgid "Audio"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:179
+msgid "Chemical"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:182
+msgid "Font"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:185
+msgid "Message"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:188
+msgid "Conference"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:191
+msgid "Binary"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:194
+msgid "Style sheet"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:197
+msgid "Certificate"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:200
+msgid "Fast Infoset"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:203
+msgid "HTML"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:206
+msgid "Script"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:209
+msgid "JSON"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:213
+msgid "VRML"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:216
+msgid "XML"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:219
+msgid "YAML"
+msgstr ""
+
+#. translators: represents the content for the corresponding file type
+#: includes/system/class-mime.php:222
+msgid "Compressed"
+msgstr ""
+
+#: includes/system/class-mime.php:224
+msgid "unknown"
 msgstr ""
 
 #: includes/system/class-sitehealth.php:123
@@ -1075,119 +1252,73 @@ msgid ""
 "localization features on your site."
 msgstr ""
 
-#: perfopsone/class-adminmenus.php:54 perfopsone/class-adminmenus.php:55
-msgid "Dashboard"
-msgstr ""
-
-#: perfopsone/class-adminmenus.php:54
-#, php-format
-msgid "%s Analytics"
-msgstr ""
-
-#: perfopsone/class-adminmenus.php:58 perfopsone/class-adminmenus.php:59
-msgid "Available Tools"
-msgstr ""
-
-#: perfopsone/class-adminmenus.php:58
-#, php-format
-msgid "%s Tools"
-msgstr ""
-
-#: perfopsone/class-adminmenus.php:62 perfopsone/class-adminmenus.php:63
-msgid "Available Reports"
-msgstr ""
-
-#: perfopsone/class-adminmenus.php:62
-#, php-format
-msgid "%s Insights"
-msgstr ""
-
-#: perfopsone/class-adminmenus.php:66 perfopsone/class-adminmenus.php:67
-msgid "Available Catalogues"
-msgstr ""
-
-#: perfopsone/class-adminmenus.php:66
-#, php-format
-msgid "%s Records"
-msgstr ""
-
-#: perfopsone/class-adminmenus.php:70 perfopsone/class-adminmenus.php:71
+#: perfopsone/class-menus.php:140
 msgid "Control Center"
 msgstr ""
 
-#: perfopsone/class-adminmenus.php:74 perfopsone/class-adminmenus.php:75
-msgid "Available Consoles"
+#: perfopsone/class-menus.php:158
+msgid "Tools"
 msgstr ""
 
-#: perfopsone/class-adminmenus.php:74
-#, php-format
-msgid "%s Consoles"
+#: perfopsone/class-menus.php:161
+msgid "Reports"
 msgstr ""
 
-#: perfopsone/class-adminmenus.php:112
+#: perfopsone/class-menus.php:164
+msgid "Catalogs"
+msgstr ""
+
+#: perfopsone/class-menus.php:167
+msgid "Consoles"
+msgstr ""
+
+#: perfopsone/class-menus.php:227
 msgid ""
 "This analytics feature is currently disabled. Click here to activate it."
 msgstr ""
 
-#: perfopsone/class-adminmenus.php:230
-#, php-format
-msgid "Need to be updated to %s."
+#: perfopsone/class-menus.php:410 perfopsone/class-menus.php:416
+msgid "Up to date"
 msgstr ""
 
-#: perfopsone/class-adminmenus.php:236 perfopsone/class-adminmenus.php:243
-msgid "OK"
+#: perfopsone/class-menus.php:413
+msgid "Need update"
 msgstr ""
 
-#: perfopsone/class-adminmenus.php:238 perfopsone/class-adminmenus.php:245
-msgid "need update"
+#: perfopsone/class-menus.php:421
+msgid "auto-update"
 msgstr ""
 
-#: perfopsone/class-adminmenus.php:255
-#, php-format
-msgid "%s+ installs."
+#: perfopsone/class-menus.php:425
+msgid "Get support"
 msgstr ""
 
-#: perfopsone/class-adminmenus.php:260
-#, php-format
-msgid "%s downloads."
+#: perfopsone/class-menus.php:426
+msgid "Contribute"
 msgstr ""
 
-#: perfopsone/class-adminmenus.php:265
-#, php-format
-msgid "%s reviews."
+#: perfopsone/class-menus.php:427
+msgid "Make a review"
 msgstr ""
 
-#: perfopsone/class-adminmenus.php:268
-msgid "No review yet."
-msgstr ""
-
-#: perfopsone/class-adminmenus.php:394
+#: perfopsone/class-menus.php:428
 msgid "settings"
 msgstr ""
 
-#: perfopsone/class-adminmenus.php:395
+#: perfopsone/class-menus.php:429
 msgid "about"
 msgstr ""
 
-#: perfopsone/class-adminmenus.php:396
-msgid "support"
-msgstr ""
-
-#: perfopsone/class-adminmenus.php:397
-msgid "contribution"
-msgstr ""
-
-#: perfopsone/class-adminmenus.php:406
-#, php-format
-msgid "Requires at least PHP %1$s%2$s and WordPress %3$s%4$s."
+#: perfopsone/class-menus.php:448
+msgid "all plugins"
 msgstr ""
 
 #. Plugin Name of the plugin/theme
-msgid "Traffic"
+msgid "Vibes"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
-msgid "https://github.com/Pierre-Lannoy/wp-traffic"
+msgid "https://perfops.one/vibes"
 msgstr ""
 
 #. Description of the plugin/theme
@@ -1195,9 +1326,9 @@ msgid "Full featured monitoring & analytics for WordPress APIs."
 msgstr ""
 
 #. Author of the plugin/theme
-msgid "Pierre Lannoy"
+msgid "PerfOps One / Pierre Lannoy"
 msgstr ""
 
 #. Author URI of the plugin/theme
-msgid "https://pierre.lannoy.fr"
+msgid "https://perfops.one"
 msgstr ""
