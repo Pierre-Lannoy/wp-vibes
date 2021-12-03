@@ -6,7 +6,7 @@
  *
  * @package Features
  * @author  Pierre Lannoy <https://pierre.lannoy.fr/>.
- * @since   2.0.0
+ * @since   1.0.0
  */
 
 namespace Vibes\Plugin\Feature;
@@ -27,21 +27,21 @@ use Vibes\System\Timezone;
 use Vibes\System\UUID;
 use Vibes\System\Http;
 use Vibes\System\SharedMemory;
-use OpenCloud\Common\Constants\Mime;
+use Vibes\System\Mime;
 
 /**
- * Manages Vibes and view current and past API activity.
+ * Manages Vibes and view current and past performance signals.
  *
  * @package Features
  * @author  Pierre Lannoy <https://pierre.lannoy.fr/>.
- * @since   2.0.0
+ * @since   1.0.0
  */
 class Wpcli {
 
 	/**
 	 * List of color format per bound.
 	 *
-	 * @since    2.0.0
+	 * @since    1.0.0
 	 * @var array $level_color Level colors.
 	 */
 	private $level_color = [
@@ -62,7 +62,7 @@ class Wpcli {
 	/**
 	 * List of exit codes.
 	 *
-	 * @since    2.0.0
+	 * @since    1.0.0
 	 * @var array $exit_codes Exit codes.
 	 */
 	private $exit_codes = [
@@ -75,7 +75,7 @@ class Wpcli {
 	/**
 	 * Flush output without warnings.
 	 *
-	 * @since    2.0.2
+	 * @since    1.0.0
 	 */
 	private function flush() {
 		// phpcs:ignore
@@ -91,7 +91,7 @@ class Wpcli {
 	 *
 	 * @param   array   $ids   The ids.
 	 * @param   string  $field  Optional. The field to output.
-	 * @since   2.0.0
+	 * @since   1.0.0
 	 */
 	private function write_ids( $ids, $field = '' ) {
 		$result = '';
@@ -115,7 +115,7 @@ class Wpcli {
 	 *
 	 * @param   integer  $code      Optional. The error code.
 	 * @param   boolean  $stdout    Optional. Clean stdout output.
-	 * @since   2.0.0
+	 * @since   1.0.0
 	 */
 	private function error( $code = 255, $stdout = false ) {
 		if ( \WP_CLI\Utils\isPiped() ) {
@@ -139,7 +139,7 @@ class Wpcli {
 	 * @param   string   $msg       The message.
 	 * @param   string   $result    Optional. The result.
 	 * @param   boolean  $stdout    Optional. Clean stdout output.
-	 * @since   2.0.0
+	 * @since   1.0.0
 	 */
 	private function warning( $msg, $result = '', $stdout = false ) {
 		if ( \WP_CLI\Utils\isPiped() || $stdout ) {
@@ -156,7 +156,7 @@ class Wpcli {
 	 * @param   string   $msg       The message.
 	 * @param   string   $result    Optional. The result.
 	 * @param   boolean  $stdout    Optional. Clean stdout output.
-	 * @since   2.0.0
+	 * @since   1.0.0
 	 */
 	private function success( $msg, $result = '', $stdout = false ) {
 		if ( \WP_CLI\Utils\isPiped() || $stdout ) {
@@ -173,7 +173,7 @@ class Wpcli {
 	 * @param   string   $msg       The message.
 	 * @param   string   $result    Optional. The result.
 	 * @param   boolean  $stdout    Optional. Clean stdout output.
-	 * @since   2.0.0
+	 * @since   1.0.0
 	 */
 	private function line( $msg, $result = '', $stdout = false ) {
 		if ( \WP_CLI\Utils\isPiped() || $stdout ) {
@@ -189,7 +189,7 @@ class Wpcli {
 	 *
 	 * @param   string   $msg       The message.
 	 * @param   boolean  $stdout    Optional. Clean stdout output.
-	 * @since   2.0.0
+	 * @since   1.0.0
 	 */
 	private function log( $msg, $stdout = false ) {
 		if ( ! \WP_CLI\Utils\isPiped() && ! $stdout ) {
@@ -202,7 +202,7 @@ class Wpcli {
 	 *
 	 * @param   array   $args   The command line parameters.
 	 * @return  array The true parameters.
-	 * @since   2.0.0
+	 * @since   1.0.0
 	 */
 	private function get_params( $args ) {
 		$result = '';
@@ -223,7 +223,7 @@ class Wpcli {
 	 * @param string $index Optional. The starting index.
 	 *
 	 * @return  array   The filtered records.
-	 * @since   2.0.0
+	 * @since   1.0.0
 	 */
 	public static function records_filter( $records, $filters = [], $index = '' ) {
 		$result = [];
@@ -255,7 +255,7 @@ class Wpcli {
 	 * @param integer $pad Optional. Line padding.
 	 *
 	 * @return  array   The ready to print records.
-	 * @since   2.0.0
+	 * @since   1.0.0
 	 */
 	public static function records_format( $records, $pad = 160 ) {
 		$result = [];
@@ -294,7 +294,7 @@ class Wpcli {
 	 * @param   array   $records    The records to display.
 	 * @param   string  $theme      Optional. Colors scheme.
 	 * @param   integer $pad        Optional. Line padding.
-	 * @since   2.0.0
+	 * @since   1.0.0
 	 */
 	private function records_display( $records, $theme = 'standard', $pad = 160 ) {
 		if ( ! array_key_exists( $theme, $this->level_color ) ) {
@@ -310,7 +310,7 @@ class Wpcli {
 	 *
 	 * ## EXAMPLES
 	 *
-	 * wp api status
+	 * wp vibes status
 	 *
 	 *
 	 *   === For other examples and recipes, visit https://github.com/Pierre-Lannoy/wp-vibes/blob/master/WP-CLI.md ===
@@ -318,18 +318,16 @@ class Wpcli {
 	 */
 	public function status( $args, $assoc_args ) {
 		\WP_CLI::line( sprintf( '%s is running.', Environment::plugin_version_text() ) );
-		if ( Option::network_get( 'inbound_capture' ) ) {
-			\WP_CLI::line( 'Inbound analytics: enabled.' );
+		if ( Option::network_get( 'capture' ) ) {
+			\WP_CLI::line( 'Navigation analytics: enabled.' );
 		} else {
-			\WP_CLI::line( 'Inbound analytics: disabled.' );
+			\WP_CLI::line( 'Navigation analytics: disabled.' );
 		}
-		\WP_CLI::line( 'Inbound logging: ' . Option::network_get( 'inbound_level' ) . '.' );
-		if ( Option::network_get( 'outbound_capture' ) ) {
-			\WP_CLI::line( 'Outbound analytics: enabled.' );
+		if ( Option::network_get( 'rcapture' ) ) {
+			\WP_CLI::line( 'Resources analytics: enabled.' );
 		} else {
-			\WP_CLI::line( 'Outbound analytics: disabled.' );
+			\WP_CLI::line( 'Resources analytics: disabled.' );
 		}
-		\WP_CLI::line( 'Outbound logging: ' . Option::network_get( 'outbound_level' ) . '.' );
 		if ( Option::network_get( 'livelog' ) ) {
 			\WP_CLI::line( 'Auto-Monitoring: enabled.' );
 		} else {
@@ -351,11 +349,17 @@ class Wpcli {
 		} else {
 			\WP_CLI::line( 'IP information support: no.' );
 		}
+		if ( defined( 'PODD_VERSION' ) ) {
+			\WP_CLI::line( 'Device detection support: yes (Device Detector v' . PODD_VERSION . ').');
+		} else {
+			\WP_CLI::line( 'Device detection support: no.' );
+		}
 		if ( SharedMemory::$available ) {
 			\WP_CLI::line( 'Shared memory support: yes (shmop v' . phpversion( 'shmop' ) . ').' );
 		} else {
 			\WP_CLI::line( 'Shared memory support: no.' );
 		}
+		\WP_CLI::line( 'MIME types support: yes (pooMT v' . VIBES_MIME_VERSION . ').' );
 	}
 
 	/**
@@ -366,7 +370,7 @@ class Wpcli {
 	 * <enable|disable>
 	 * : The action to take.
 	 *
-	 * <inbound-analytics|outbound-analytics|auto-monitoring|smart-filter|metrics>
+	 * <navigation-analytics|resource-analytics|auto-monitoring|smart-filter|metrics>
 	 * : The setting to change.
 	 *
 	 * [--yes]
@@ -377,8 +381,8 @@ class Wpcli {
 	 *
 	 * ## EXAMPLES
 	 *
-	 * wp api settings enable auto-monitoring
-	 * wp api settings disable early-monitoring --yes
+	 * wp vibes settings enable auto-monitoring
+	 * wp vibes settings disable early-monitoring --yes
 	 *
 	 *
 	 *   === For other examples and recipes, visit https://github.com/Pierre-Lannoy/wp-vibes/blob/master/WP-CLI.md ===
@@ -391,13 +395,13 @@ class Wpcli {
 		switch ( $action ) {
 			case 'enable':
 				switch ( $setting ) {
-					case 'inbound-analytics':
-						Option::network_set( 'inbound_capture', true );
-						$this->success( 'inbound analytics are now activated.', '', $stdout );
+					case 'navigation-analytics':
+						Option::network_set( 'capture', true );
+						$this->success( 'navigation analytics are now activated.', '', $stdout );
 						break;
-					case 'outbound-analytics':
-						Option::network_set( 'outbound_capture', true );
-						$this->success( 'outbound analytics are now activated.', '', $stdout );
+					case 'resource-analytics':
+						Option::network_set( 'rcapture', true );
+						$this->success( 'resources analytics are now activated.', '', $stdout );
 						break;
 					case 'auto-monitoring':
 						Option::network_set( 'livelog', true );
@@ -417,15 +421,15 @@ class Wpcli {
 				break;
 			case 'disable':
 				switch ( $setting ) {
-					case 'inbound-analytics':
-						\WP_CLI::confirm( 'Are you sure you want to deactivate inbound analytic?', $assoc_args );
-						Option::network_set( 'inbound_capture', false );
-						$this->success( 'inbound analytics are now deactivated.', '', $stdout );
+					case 'navigation-analytics':
+						\WP_CLI::confirm( 'Are you sure you want to deactivate navigation analytic?', $assoc_args );
+						Option::network_set( 'capture', false );
+						$this->success( 'navigation analytics are now deactivated.', '', $stdout );
 						break;
-					case 'outbound-analytics':
-						\WP_CLI::confirm( 'Are you sure you want to deactivate outbound analytic?', $assoc_args );
-						Option::network_set( 'outbound_capture', false );
-						$this->success( 'outbound analytics are now deactivated.', '', $stdout );
+					case 'resource-analytics':
+						\WP_CLI::confirm( 'Are you sure you want to deactivate resources analytic?', $assoc_args );
+						Option::network_set( 'rcapture', false );
+						$this->success( 'resources analytics are now deactivated.', '', $stdout );
 						break;
 					case 'auto-monitoring':
 						\WP_CLI::confirm( 'Are you sure you want to deactivate auto-monitoring?', $assoc_args );
@@ -479,8 +483,8 @@ class Wpcli {
 	 * ## EXAMPLES
 	 *
 	 * Lists available exit codes:
-	 * + wp api exitcode list
-	 * + wp api exitcode list --format=json
+	 * + wp vibes exitcode list
+	 * + wp vibes exitcode list --format=json
 	 *
 	 *
 	 *   === For other examples and recipes, visit https://github.com/Pierre-Lannoy/wp-vibes/blob/master/WP-CLI.md ===
@@ -509,87 +513,31 @@ class Wpcli {
 	}
 
 	/**
-	 * Get information on http status.
-	 *
-	 * ## OPTIONS
-	 *
-	 * <list>
-	 * : The action to take.
-	 * ---
-	 * options:
-	 *  - list
-	 * ---
-	 *
-	 * [--format=<format>]
-	 * : Allows overriding the output of the command when listing types.
-	 * ---
-	 * default: table
-	 * options:
-	 *  - table
-	 *  - json
-	 *  - csv
-	 *  - yaml
-	 *  - ids
-	 *  - count
-	 * ---
-	 *
-	 * ## EXAMPLES
-	 *
-	 * Lists available exit codes:
-	 * + wp api httpstatus list
-	 * + wp api httpstatus list --format=json
-	 *
-	 *
-	 *   === For other examples and recipes, visit https://github.com/Pierre-Lannoy/wp-vibes/blob/master/WP-CLI.md ===
-	 *
-	 */
-	public function httpstatus( $args, $assoc_args ) {
-		$stdout = \WP_CLI\Utils\get_flag_value( $assoc_args, 'stdout', false );
-		$format = \WP_CLI\Utils\get_flag_value( $assoc_args, 'format', 'table' );
-		$action = isset( $args[0] ) ? $args[0] : 'list';
-		$codes  = [];
-		foreach ( Http::$http_status_codes as $key => $msg ) {
-			$codes[ $key ] = [
-				'code'    => $key,
-				'meaning' => ucfirst( $msg ),
-			];
-		}
-		switch ( $action ) {
-			case 'list':
-				if ( 'ids' === $format ) {
-					$this->write_ids( $codes );
-				} else {
-					\WP_CLI\Utils\format_items( $format, $codes, [ 'code', 'meaning' ] );
-				}
-				break;
-		}
-	}
-
-	/**
-	 * Display past or current calls.
+	 * Display past or current performance signals.
 	 *
 	 * ## OPTIONS
 	 *
 	 * [<count>]
-	 * : An integer value [1-60] indicating how many most recent calls to display. If 0 or nothing is supplied as value, a live session is launched, displaying calls as soon as they occur.
+	 * : An integer value [1-60] indicating how many most recent signals to display. If 0 or nothing is supplied as value, a live session is launched, displaying signals as soon as they occur.
 	 *
-	 * [--direction=<direction>]
-	 * : The directions to display.
+	 * [--signal=<signal_type>]
+	 * : The signal type to display.
 	 * ---
-	 * default: both
+	 * default: all
 	 * options:
-	 *  - both
-	 *  - inbound
-	 *  - outbound
+	 *  - all
+	 *  - navigation
+	 *  - webvital
+	 *  - resource
 	 * ---
 	 *
 	 *[--filter=<filter>]
-	 * : The misc. filters to apply. Show only calls matching the specified pattern.
+	 * : The misc. filters to apply. Show only signals matching the specified pattern.
 	 * MUST be a json string containing pairs "field":"regexp".
 	 * ---
 	 * default: '{}'
-	 * available fields: 'authority', 'scheme', 'endpoint', 'verb', 'code', 'message', 'size', 'latency', 'site_id'
-	 * example: '{"authority":"/wordpress\.org/", "verb":"/GET/"}'
+	 * available fields: 'site' and 'endpoint'
+	 * example: '{"endpoint":"/\/blog\/(.*)/"}'
 	 * ---
 	 *
 	 * [--col=<columns>]
@@ -616,10 +564,10 @@ class Wpcli {
 	 *
 	 * ## EXAMPLES
 	 *
-	 * wp api tail
-	 * wp api tail 20
-	 * wp api tail 20 --direction=outbound
-	 * wp api tail --filter='{"authority":"/wordpress\.org/", "verb":"/GET/"}'
+	 * wp vibes tail
+	 * wp vibes tail 20
+	 * wp vibes tail 20 --signal=navigation
+	 * wp vibes tail --filter='{"endpoint":"/\/blog\/(.*)/"}'
 	 *
 	 *
 	 *   === For other examples and recipes, visit https://github.com/Pierre-Lannoy/wp-vibes/blob/master/WP-CLI.md ===
@@ -648,7 +596,7 @@ class Wpcli {
 		}
 		$filter = \json_decode( isset( $assoc_args['filter'] ) ? (string) $assoc_args['filter'] : '{}', true );
 		if ( is_array( $filter ) ) {
-			foreach ( [ 'authority', 'scheme', 'endpoint', 'verb', 'code', 'message', 'size', 'latency', 'site_id' ] as $field ) {
+			foreach ( [ 'site', 'endpoint' ] as $field ) {
 				if ( array_key_exists( $field, $filter ) ) {
 					$value = (string) $filter[ $field ];
 					if ( '' === $value ) {
@@ -658,15 +606,16 @@ class Wpcli {
 				}
 			}
 		}
-		$direction = isset( $assoc_args['direction'] ) ? (string) $assoc_args['direction'] : 'both';
-		switch ( $direction ) {
-			case 'inbound':
-			case 'outbound':
-				$filters['bound'] = $direction;
+		$signal = isset( $assoc_args['signal'] ) ? (string) $assoc_args['signal'] : 'all';
+		switch ( $signal ) {
+			case 'navigation':
+			case 'webvital':
+			case 'resource':
+				$filters['type'] = '/' . $signal . '/';
 				break;
 			default:
-				if ( isset( $filters['bound'] ) ) {
-					unset( $filters['bound'] );
+				if ( isset( $filters['type'] ) ) {
+					unset( $filters['type'] );
 				}
 		}
 		$records = Memory::read();
@@ -699,5 +648,6 @@ class Wpcli {
 add_shortcode( 'vibes-wpcli', [ 'Vibes\Plugin\Feature\Wpcli', 'sc_get_helpfile' ] );
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once VIBES_ASSETS_DIR . 'mime-types.php';
 	\WP_CLI::add_command( 'vibes', 'Vibes\Plugin\Feature\Wpcli' );
 }
