@@ -95,3 +95,8 @@ Please, see [full changelog](https://perfops.one/vibes-changelog).
 == Upgrade Notice ==
 
 == Screenshots ==
+
+1. Web Vitals
+2. Navigation Analytics
+3. Resources Analytics
+4. Live Monitoring
