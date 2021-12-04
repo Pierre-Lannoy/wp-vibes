@@ -14,16 +14,18 @@ Truthful user experience and browsing performances monitoring.
 
 **Truthful user experience and browsing performances monitoring.**
 
-**Vibes** is a truthful user experience and browsing performances monitoring solution that analyzes perceived performances from users' viewpoint.
+**Vibes** is a robust user experience and browsing performances monitoring solution that analyzes perceived performances from users' viewpoint.
 
 It is fully autonomous - does not rely on external services and does not require any API keys, works on any type of hosting and in any type of environment - including intranets or password protected sites.
 
-At this time, **Vibes** can report by continuously monitoring user experience:
+By continuously monitoring user experience, **Vibes** can report:
 
 * navigation performance KPIs per pages - like latency, redirections, browser caching hit rates, etc.;
 * network timelines as if you were in the dev tools of your users' browsers;
 * resources details - like initiators, protocols, mime types, average sizes, etc.;
 * Web Vitals: LCP, FID, CLS, FCP and TTFB.
+
+It can segment all this data per country (requires the free [IP Locator](https://wordpress.org/plugins/ip-locator/) plugin) or per device classes and types (requires the free [Device Detector](https://wordpress.org/plugins/device-detector/) plugin).
 
 **Vibes** supports multisite report delegation (see FAQ).
 
