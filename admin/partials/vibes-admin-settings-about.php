@@ -29,9 +29,9 @@ $icon       = '<img class="vibes-about-logo" style="opacity:0;" src="' . Vibes\P
 
 ?>
 <h2><?php echo esc_html( VIBES_PRODUCT_NAME . ' ' . VIBES_VERSION ); ?> / <a href="https://perfops.one">PerfOps One</a></h2>
-<?php echo $icon; ?>
-<?php echo $warning; ?>
-<p><?php echo $intro; ?></p>
+<?php echo wp_kses( $icon, PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
+<?php echo wp_kses( $warning, PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
+<p><?php echo wp_kses( $intro, PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?></p>
 <h4><?php esc_html_e( 'Disclaimer', 'vibes' ); ?></h4>
 <p><em><?php echo esc_html( $trademarks ); ?></em></p>
 <hr/>

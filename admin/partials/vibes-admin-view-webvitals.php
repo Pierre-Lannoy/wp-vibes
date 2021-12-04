@@ -29,28 +29,28 @@ wp_enqueue_style( 'vibes-chartist-tooltip' );
 <div class="wrap">
 	<div class="vibes-dashboard">
 		<div class="vibes-row">
-			<?php echo $analytics->get_title_bar(); ?>
+			<?php echo wp_kses( $analytics->get_title_bar(), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
 		</div>
 		<?php if ( ( 'summary' === $analytics->type || 'endpoint' === $analytics->type )  && '' === $analytics->extra ) { ?>
 			<div class="vibes-row">
 				<div class="vibes-box vibes-box-50-50-line">
-					<?php echo $analytics->get_webvital_class( 'mobile', 'left' ); ?>
-					<?php echo $analytics->get_webvital_class( 'desktop', 'right' ); ?>
+					<?php echo wp_kses( $analytics->get_webvital_class( 'mobile', 'left' ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
+					<?php echo wp_kses( $analytics->get_webvital_class( 'desktop', 'right' ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
 				</div>
 			</div>
 			<div class="vibes-row first-full-row">
-				<?php echo $analytics->get_webvital_chart() ?>
+				<?php echo wp_kses( $analytics->get_webvital_chart(), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
 			</div>
 		<?php } ?>
 		<?php if ( 'summary' === $analytics->type  && '' === $analytics->extra ) { ?>
 			<?php $network = ( Role::SUPER_ADMIN === Role::admin_type() && 'all' === $analytics->site ); ?>
 			<?php if ( $network ) { ?>
 				<div class="vibes-row last-full-row">
-					<?php echo $analytics->get_webvital_sites_list(); ?>
+					<?php echo wp_kses( $analytics->get_webvital_sites_list(), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
 				</div>
 			<?php } else { ?>
 				<div class="vibes-row last-full-row">
-					<?php echo $analytics->get_webvital_endpoints_list(); ?>
+					<?php echo wp_kses( $analytics->get_webvital_endpoints_list(), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
 				</div>
 			<?php } ?>
 		<?php } ?>
@@ -59,9 +59,9 @@ wp_enqueue_style( 'vibes-chartist-tooltip' );
 				<?php if ( ! ( $key & 1 ) ) { ?>
                     <div class="vibes-row">
                         <div class="vibes-box vibes-box-50-50-line">
-                        <?php echo $analytics->get_webvital_device( $device, 'left' ); ?>
+                        <?php echo wp_kses( $analytics->get_webvital_device( $device, 'left' ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
 				<?php } else { ?>
-                        <?php echo $analytics->get_webvital_device( $device, 'right' ); ?>
+                        <?php echo wp_kses( $analytics->get_webvital_device( $device, 'right' ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
                         </div>
                     </div>
 				<?php } ?>

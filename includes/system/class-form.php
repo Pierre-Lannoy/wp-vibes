@@ -68,7 +68,7 @@ class Form {
 	 * @since   1.0.0
 	 */
 	public function echo_field_input_integer( $args ) {
-		echo $this->field_input_integer( $args['id'], $args['value'], $args['min'], $args['max'], $args['step'], $args['description'], $args['full_width'], $args['enabled'] );
+		echo wp_kses( $this->field_input_integer( $args['id'], $args['value'], $args['min'], $args['max'], $args['step'], $args['description'], $args['full_width'], $args['enabled'] ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD );
 	}
 
 	/**
@@ -103,7 +103,7 @@ class Form {
 	 * @since   1.0.0
 	 */
 	public function echo_field_input_text( $args ) {
-		echo $this->field_input_text( $args['id'], $args['value'], $args['description'], $args['full_width'], $args['enabled'], $args['placeholder'] );
+		echo wp_kses( $this->field_input_text( $args['id'], $args['value'], $args['description'], $args['full_width'], $args['enabled'], $args['placeholder'] ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD );
 	}
 
 	/**
@@ -133,7 +133,7 @@ class Form {
 	 * @since   1.0.0
 	 */
 	public function echo_field_input_textarea( $args ) {
-		echo $this->field_input_textarea( $args['id'], $args['value'], $args['description'], $args['columns'], $args['lines'], $args['enabled'] );
+		echo wp_kses( $this->field_input_textarea( $args['id'], $args['value'], $args['description'], $args['columns'], $args['lines'], $args['enabled'] ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD );
 	}
 
 	/**
@@ -167,7 +167,7 @@ class Form {
 	 * @since   1.0.0
 	 */
 	public function echo_field_input_password( $args ) {
-		echo $this->field_input_password( $args['id'], $args['value'], $args['description'], $args['full_width'], $args['enabled'] );
+		echo wp_kses( $this->field_input_password( $args['id'], $args['value'], $args['description'], $args['full_width'], $args['enabled'] ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD );
 	}
 
 	/**
@@ -206,7 +206,7 @@ class Form {
 	 * @since   1.0.0
 	 */
 	public function echo_field_select( $args ) {
-		echo $this->field_select( $args['list'], $args['id'], $args['value'], $args['description'], $args['full_width'], $args['enabled'] );
+		echo wp_kses( $this->field_select( $args['list'], $args['id'], $args['value'], $args['description'], $args['full_width'], $args['enabled'] ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD );
 	}
 
 	/**
@@ -248,7 +248,7 @@ class Form {
 	 * @since   1.0.0
 	 */
 	public function echo_field_radio( $args ) {
-		echo $this->field_radio( $args['list'], $args['id'], $args['value'], $args['description'], $args['full_width'], $args['enabled'] );
+		echo wp_kses( $this->field_radio( $args['list'], $args['id'], $args['value'], $args['description'], $args['full_width'], $args['enabled'] ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD );
 	}
 
 	/**
@@ -291,7 +291,7 @@ class Form {
 	 * @since   1.0.0
 	 */
 	public function echo_field_checkbox( $args ) {
-		echo $this->field_checkbox( $args['text'], $args['id'], $args['checked'], $args['description'], array_key_exists( 'more', $args ) ? $args['more'] : null, $args['full_width'], $args['enabled'] );
+		echo wp_kses( $this->field_checkbox( $args['text'], $args['id'], $args['checked'], $args['description'], array_key_exists( 'more', $args ) ? $args['more'] : null, $args['full_width'], $args['enabled'] ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD );
 	}
 
 	/**
@@ -313,7 +313,7 @@ class Form {
 	 * @since   1.0.0
 	 */
 	public function echo_field_simple_text( $args ) {
-		echo $this->field_simple_text( $args['text'] );
+		echo wp_kses( $this->field_simple_text( $args['text'] ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD );
 	}
 
 }
