@@ -1198,8 +1198,11 @@ class Analytics {
 	 * @since    1.0.0
 	 */
 	private function query_webvital_chart() {
+		$data = Schema::get_time_series( 'webvital', $this->filter, ! $this->is_today );
+		if ( 0 === count( $data ) ) {
+			return [ 'vibes-webvital-chart' => '<div class="vibes-multichart-handler"><div class="vibes-multichart-nodata-handler"><span style="position: relative; top: 37px;">-&nbsp;' . esc_html__( 'Not Enough Data', 'vibes' ) . '&nbsp;-</span></div></div>' ];
+		}
 		$uuid    = UUID::generate_unique_id( 5 );
-		$data    = Schema::get_time_series( 'webvital', $this->filter, ! $this->is_today );
 		$series  = [];
 		$metrics = array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics );
 		$start   = '';
@@ -1363,8 +1366,11 @@ class Analytics {
 	 * @since    1.0.0
 	 */
 	private function query_navigation_chart() {
+		$data = Schema::get_time_series( 'navigation', $this->filter, ! $this->is_today );
+		if ( 0 === count( $data ) ) {
+			return [ 'vibes-navigation-chart' => '<div class="vibes-multichart-handler"><div class="vibes-multichart-nodata-handler"><span style="position: relative; top: 37px;">-&nbsp;' . esc_html__( 'Not Enough Data', 'vibes' ) . '&nbsp;-</span></div></div>' ];
+		}
 		$uuid      = UUID::generate_unique_id( 5 );
-		$data      = Schema::get_time_series( 'navigation', $this->filter, ! $this->is_today );
 		$series    = [];
 		$metrics   = [];
 		$metrics[] = [ 'avg_load', 'avg_span_wait_duration', 'avg_span_download_duration' ];
@@ -2538,7 +2544,7 @@ class Analytics {
 		$result .= ' changeDate(start, end);';
 		$result .= ' $(".vibes-datepicker").on("apply.daterangepicker", function(ev, picker) {';
 		$result .= '  var url = "' . $this->get_url( [ 'start', 'end' ], [ 'domain' => $this->domain ] ) . '" + "&start=" + picker.startDate.format("YYYY-MM-DD") + "&end=" + picker.endDate.format("YYYY-MM-DD");';
-		$result .= '  $(location).attr("href", url);';
+		$result .= '  $(location).attr("href", url.replaceAll("&amp;", String.fromCharCode(38)));';
 		$result .= ' });';
 		$result .= '});';
 		$result .= '</script>';
