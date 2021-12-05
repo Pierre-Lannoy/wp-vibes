@@ -25,7 +25,7 @@ By continuously monitoring user experience, **Vibes** can report:
 * resources details - like initiators, protocols, mime types, average sizes, etc.;
 * Web Vitals: LCP, FID, CLS, FCP and TTFB.
 
-It can segment all this data per country (requires the free [IP Locator](https://wordpress.org/plugins/ip-locator/) plugin) or per device classes and types (requires the free [Device Detector](https://wordpress.org/plugins/device-detector/) plugin).
+It can segment all this data per country (requires the free [IP Locator](https://wordpress.org/plugins/ip-locator/) plugin) and per device classes and types (requires the free [Device Detector](https://wordpress.org/plugins/device-detector/) plugin).
 
 **Vibes** supports multisite report delegation (see FAQ).
 
@@ -74,7 +74,7 @@ If you like this plugin or find it useful and want to thank me for the work done
 
 = What are the requirements for this plugin to work? =
 
-You need at least **WordPress 5.62** and **PHP 7.2**.
+You need at least **WordPress 5.6** and **PHP 7.2**.
 
 = Can this plugin work on multisite? =
 
