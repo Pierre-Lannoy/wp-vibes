@@ -200,5 +200,5 @@ try {
 	}
 
 } catch (error) {
-	console.error( 'Vibes analytics error: ' . error );
+	console.error( 'Vibes analytics error: ' + error );
 }
