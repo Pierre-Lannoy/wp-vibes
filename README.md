@@ -8,7 +8,7 @@
 
 __Vibes__ is a robust user experience and browsing performances monitoring solution that analyzes perceived performances from users' viewpoint.
 
-It is fully autonomous - does not rely on external services and does not require any API keys, works on any type of hosting and in any type of environment - including intranets or password protected sites.
+It is fully autonomous - does not rely on external services and does not require any API keys, works on any type of hosting and in any type of environment - including staging, intranets or password protected sites.
 
 By continuously monitoring user experience, __Vibes__ can report:
 
