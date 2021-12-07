@@ -12,7 +12,7 @@ define( 'VIBES_PRODUCT_URL', 'https://github.com/Pierre-Lannoy/wp-vibes' );
 define( 'VIBES_PRODUCT_SHORTNAME', 'Vibes' );
 define( 'VIBES_PRODUCT_ABBREVIATION', 'vibes' );
 define( 'VIBES_SLUG', 'vibes' );
-define( 'VIBES_VERSION', '1.0.1' );
+define( 'VIBES_VERSION', '1.0.2-dev0' );
 define( 'VIBES_API_VERSION', '1' );
 define( 'VIBES_CODENAME', '"-"' );
 
