@@ -3,6 +3,11 @@ All notable changes to **Vibes** are documented in this *changelog*.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and **Vibes** adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - Not Yet Released
+
+### Changed
+- Updated DecaLog SDK from version 2.0.0 to version 2.0.1.
+
 ## [1.0.2] - 2021-12-09
 
 ### Fixed
