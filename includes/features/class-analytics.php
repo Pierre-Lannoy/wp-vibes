@@ -1322,7 +1322,7 @@ class Analytics {
 		$result = '<div class="vibes-multichart-handler">';
 		foreach ( $metrics as $metric ) {
 			$metric  = strtolower( $metric );
-			$result .= '<div class="vibes-multichart-item' . ( 'cls' === $metric ? ' active' : '' ) . '" id="vibes-chart-' . $metric . '">';
+			$result .= '<div class="vibes-multichart-item' . ( 'lcp' === $metric ? ' active' : '' ) . '" id="vibes-chart-' . $metric . '">';
 			$result .= '<div class="vibes-multichart-line-container" id="vibes-line-' . $metric . '"></div>';
 			$result .= '<div class="vibes-multichart-bars-container" id="vibes-bars-' . $metric . '"></div>';
 			$result .= '</div>';
