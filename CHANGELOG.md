@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.3] - Not Yet Released
 
 ### Changed
+- Improved Web Vitals layouts.
 - Updated DecaLog SDK from version 2.0.0 to version 2.0.1.
 
 ## [1.0.2] - 2021-12-09

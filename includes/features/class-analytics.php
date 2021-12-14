@@ -435,11 +435,12 @@ class Analytics {
 				}
 				if ( 0 === $remaining ) {
 					$val = 100 - $shift;
-					$pos = 'width:100%;';
+					$pos = 'width:101%;';
 				} else {
 					$val = (int) round( 100 * $row[ 'pct_' . $field . '_' . $spec ] );
-					$pos = 'width:' . ( $val + 1 + ( 2 * $key ) ) . '%;';
+					$pos = 'width:' . ( 1 + 100 * $val / ( 100 - $shift ) ) . '%;';
 				}
+
 				$shift_str = ( 0 === $shift ? '' : 'right:-' . $shift . '%;' );
 				$up_str    = 'top:-' . $cpt . 'px;';
 				if ( 0 === $prec && 0 !== $val ) {
