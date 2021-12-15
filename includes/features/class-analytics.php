@@ -100,6 +100,14 @@ class Analytics {
 	public $site = 'all';
 
 	/**
+	 * The queried mode.
+	 *
+	 * @since  1.0.0
+	 * @var    string    $mode    The queried mode.
+	 */
+	public $mode = 'none';
+
+	/**
 	 * The queried country.
 	 *
 	 * @since  1.0.0
@@ -251,6 +259,11 @@ class Analytics {
 		$this->start = $start;
 		$this->end   = $end;
 		$this->type  = $type;
+		if ( 'resource' === $this->source && false !== strpos( $this->type, '~' ) ) {
+			$ttype      = substr( $this->type, 0, strpos( $this->type, '~' ) );
+			$this->mode = substr( $this->type, strpos( $this->type, '~' ) + 1 );
+			$this->type = $ttype;
+		}
 		if ( '' !== $id ) {
 			switch ( $type ) {
 				case 'domain':
@@ -350,6 +363,33 @@ class Analytics {
 			$query  = $tquery;
 		} else {
 			$sub = '';
+		}
+		if ( 0 < strpos( $query, '~' ) ) {
+			$tquery     = substr( $query, 0, strpos( $query, '~' ) );
+			$this->mode = substr( $query, strpos( $query, '~' ) + 1 );
+			$query      = $tquery;
+			if ( '' !== $this->id ) {
+				switch ( $this->mode ) {
+					case 'domain':
+					case 'authorities':
+						$this->filter[]   = "id='" . $this->id . "'";
+						$this->previous[] = "id='" . $this->id . "'";
+						break;
+					case 'authority':
+					case 'endpoints':
+						$this->filter[]   = "authority='" . $this->id . "'";
+						$this->previous[] = "authority='" . $this->id . "'";
+						$this->subdomain  = Schema::get_authority( $this->source, $this->filter );
+						break;
+					case 'endpoint':
+						$this->filter[]   = "endpoint='" . $this->id . "'";
+						$this->previous[] = "endpoint='" . $this->id . "'";
+						if ( 'resource' === $this->source ) {
+							$this->subdomain = Schema::get_authority( $this->source, $this->filter );
+						}
+						break;
+				}
+			}
 		}
 		switch ( $query ) {
 			case 'top-domains':
@@ -926,6 +966,10 @@ class Analytics {
 				break;
 		}
 		$data         = Schema::get_grouped_list( $this->source, $group, $count, $this->filter, ! $this->is_today, '', [], false, 'ORDER BY sum_hit DESC' );
+
+		//\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( print_r($this->filter,true) );
+
+
 		$factor       = $this->sampling_factor();
 		$detail_name  = esc_html__( 'Details', 'vibes' );
 		$calls_name   = esc_html__( 'Hits', 'vibes' );
@@ -2048,7 +2092,7 @@ class Analytics {
 		$result .= '</div>';
 		$result .= $this->get_refresh_script(
 			[
-				'query'   => 'resource.categories',
+				'query'   => 'resource.categories' . ( 'none' !== $this->mode ? '~' . $this->mode : '' ),
 				'queried' => 0,
 				'domain' => $this->domain,
 			]
@@ -2489,7 +2533,7 @@ class Analytics {
 	 */
 	private function get_url( $exclude = [], $replace = [] ) {
 		$params           = [];
-		$params['type']   = $this->source . '.' . $this->type;
+		$params['type']   = $this->source . '.' . $this->type . ( 'none' !== $this->mode ? '~' . $this->mode : '' );
 		$params['site']   = $this->site;
 		$params['domain'] = $this->domain;
 		if ( 'resource' !== $this->source ) {
