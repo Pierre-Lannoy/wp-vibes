@@ -11,6 +11,8 @@
 
 namespace Vibes\Plugin\Feature;
 
+use DecaLog\Engine;
+use Traffic\Plugin\Feature\DecaLog;
 use Vibes\System\Blog;
 use Vibes\System\Option;
 use Vibes\System\Database;

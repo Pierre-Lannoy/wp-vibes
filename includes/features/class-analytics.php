@@ -2025,6 +2025,7 @@ class Analytics {
 			[
 				'query'   => 'resource.mimes',
 				'queried' => 0,
+				'domain' => $this->domain,
 			]
 		);
 		return $result;
@@ -2045,6 +2046,7 @@ class Analytics {
 			[
 				'query'   => 'resource.categories',
 				'queried' => 0,
+				'domain' => $this->domain,
 			]
 		);
 		return $result;
@@ -2263,6 +2265,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.top-domains',
 				'queried' => 5,
+				'domain' => $this->domain,
 			]
 		);
 		return $result;
@@ -2292,6 +2295,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.top-authorities',
 				'queried' => 5,
+				'domain' => $this->domain,
 			]
 		);
 		return $result;
@@ -2321,6 +2325,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.top-endpoints',
 				'queried' => 5,
+				'domain' => $this->domain,
 			]
 		);
 		return $result;
@@ -2341,6 +2346,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.category',
 				'queried' => 7,
+				'domain' => $this->domain,
 			]
 		);
 		return $result;
@@ -2361,6 +2367,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.initiator',
 				'queried' => 4,
+				'domain' => $this->domain,
 			]
 		);
 		return $result;
@@ -2381,6 +2388,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.security',
 				'queried' => 4,
+				'domain' => $this->domain,
 			]
 		);
 		return $result;
@@ -2401,6 +2409,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.cache',
 				'queried' => 4,
+				'domain' => $this->domain,
 			]
 		);
 		return $result;
