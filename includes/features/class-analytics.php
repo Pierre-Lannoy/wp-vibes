@@ -712,9 +712,13 @@ class Analytics {
 			if ( 0.5 > $percent ) {
 				$percent = 0.5;
 			}
+			$text    = $data[ $cpt ][ $group ];
+			if ( 60 < strlen( $text ) ) {
+				$text = substr( $text, 0, 60 ) . '…';
+			}
 			$result .= '<div class="vibes-top-line">';
 			$result .= '<div class="vibes-top-line-title">';
-			$result .= '<img style="width:16px;vertical-align:bottom;" src="' . Favicon::get_base64( $data[ $cpt ]['id'] ) . '" />&nbsp;&nbsp;<span class="vibes-top-line-title-text"><a href="' . esc_url( $url ) . '">' . $data[ $cpt ][ $group ] . '</a></span>';
+			$result .= '<img style="width:16px;vertical-align:bottom;" src="' . Favicon::get_base64( $data[ $cpt ]['id'] ) . '" />&nbsp;&nbsp;<span class="vibes-top-line-title-text"><a href="' . esc_url( $url ) . '">' . $text . '</a></span>';
 			$result .= '</div>';
 			$result .= '<div class="vibes-top-line-content">';
 			$result .= '<div class="vibes-bar-graph"><div class="vibes-bar-graph-value" style="width:' . $percent . '%"></div></div>';
