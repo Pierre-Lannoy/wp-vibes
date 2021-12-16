@@ -259,10 +259,15 @@ class Analytics {
 		$this->start = $start;
 		$this->end   = $end;
 		$this->type  = $type;
-		if ( 'resource' === $this->source && false !== strpos( $this->type, '~' ) ) {
-			$ttype      = substr( $this->type, 0, strpos( $this->type, '~' ) );
-			$this->mode = substr( $this->type, strpos( $this->type, '~' ) + 1 );
-			$this->type = $ttype;
+		if ( 'resource' === $this->source ) {
+			if ( false !== strpos( $this->type, '~' ) ) {
+				$ttype      = substr( $this->type, 0, strpos( $this->type, '~' ) );
+				$this->mode = substr( $this->type, strpos( $this->type, '~' ) + 1 );
+				$this->type = $ttype;
+			}
+			if ( 'summary' !== $type ) {
+				$this->mode = $type;
+			}
 		}
 		if ( '' !== $id ) {
 			switch ( $type ) {
@@ -1820,6 +1825,9 @@ class Analytics {
 	 */
 	public function get_title_bar() {
 		$subtitle = $this->id;
+		if ( 60 < strlen( $subtitle ) ) {
+			$subtitle = substr( $subtitle, 0, 60 ) . '…';
+		}
 		switch ( $this->type ) {
 			case 'summary':
 				if ( '' === $this->extra ) {
@@ -2071,7 +2079,7 @@ class Analytics {
 		$result .= '</div>';
 		$result .= $this->get_refresh_script(
 			[
-				'query'   => 'resource.mimes',
+				'query'   => 'resource.mimes' . ( 'none' !== $this->mode ? '~' . $this->mode : '' ),
 				'queried' => 0,
 				'domain' => $this->domain,
 			]
@@ -2392,7 +2400,7 @@ class Analytics {
 		$result .= '</div>';
 		$result .= $this->get_refresh_script(
 			[
-				'query'   => $this->source . '.category',
+				'query'   => $this->source . '.category' . ( 'none' !== $this->mode ? '~' . $this->mode : '' ),
 				'queried' => 7,
 				'domain' => $this->domain,
 			]
@@ -2413,7 +2421,7 @@ class Analytics {
 		$result .= '</div>';
 		$result .= $this->get_refresh_script(
 			[
-				'query'   => $this->source . '.initiator',
+				'query'   => $this->source . '.initiator' . ( 'none' !== $this->mode ? '~' . $this->mode : '' ),
 				'queried' => 4,
 				'domain' => $this->domain,
 			]
@@ -2434,7 +2442,7 @@ class Analytics {
 		$result .= '</div>';
 		$result .= $this->get_refresh_script(
 			[
-				'query'   => $this->source . '.security',
+				'query'   => $this->source . '.security' . ( 'none' !== $this->mode ? '~' . $this->mode : '' ),
 				'queried' => 4,
 				'domain' => $this->domain,
 			]
@@ -2455,7 +2463,7 @@ class Analytics {
 		$result .= '</div>';
 		$result .= $this->get_refresh_script(
 			[
-				'query'   => $this->source . '.cache',
+				'query'   => $this->source . '.cache' . ( 'none' !== $this->mode ? '~' . $this->mode : '' ),
 				'queried' => 4,
 				'domain' => $this->domain,
 			]
