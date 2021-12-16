@@ -971,10 +971,6 @@ class Analytics {
 				break;
 		}
 		$data         = Schema::get_grouped_list( $this->source, $group, $count, $this->filter, ! $this->is_today, '', [], false, 'ORDER BY sum_hit DESC' );
-
-		//\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( print_r($this->filter,true) );
-
-
 		$factor       = $this->sampling_factor();
 		$detail_name  = esc_html__( 'Details', 'vibes' );
 		$calls_name   = esc_html__( 'Hits', 'vibes' );
