@@ -112,6 +112,13 @@ class AnalyticsFactory {
 		if ( '' === $country ) {
 			$country = 'all';
 		}
+		$channel = filter_input( INPUT_GET, 'channel' );
+		if ( ! isset( $channel ) ) {
+			$channel = filter_input( INPUT_POST, 'channel' );
+		}
+		if ( ! isset( $channel ) ) {
+			$channel = 'all';
+		}
 		if ( ! ( $start = filter_input( INPUT_GET, 'start' ) ) ) {
 			$start = filter_input( INPUT_POST, 'start' );
 		}
@@ -134,7 +141,7 @@ class AnalyticsFactory {
 			$start = $edatetime->format( 'Y-m-d' );
 			$end   = $sdatetime->format( 'Y-m-d' );
 		}
-		return new Analytics( $source, $domain, $type, $site, $start, $end, $id, $reload, $extra, $authent, $country );
+		return new Analytics( $source, $domain, $type, $site, $start, $end, $id, $reload, $extra, $authent, $country, $channel );
 	}
 
 }

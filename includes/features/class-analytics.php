@@ -30,6 +30,7 @@ use Feather;
 use Vibes\System\GeoIP;
 use Vibes\System\BrowserPerformance;
 use Vibes\System\WebVitals;
+use Vibes\Plugin\Feature\Capture;
 
 
 /**
@@ -122,6 +123,14 @@ class Analytics {
 	 * @var    string    $authent    The queried authent.
 	 */
 	public $authent = 'all';
+
+	/**
+	 * The queried channel.
+	 *
+	 * @since  1.1.0
+	 * @var    string    $channel    The queried channel.
+	 */
+	public $channel = 'all';
 
 	/**
 	 * The start date.
@@ -232,9 +241,10 @@ class Analytics {
 	 * @param   string  $extra   The extra view to render.
 	 * @param   string  $authent The authent mode.
 	 * @param   string  $country The country.
+	 * @param   string  $channel The channel.
 	 * @since    1.0.0
 	 */
-	public function __construct( $source, $domain, $type, $site, $start, $end, $id, $reload, $extra, $authent, $country ) {
+	public function __construct( $source, $domain, $type, $site, $start, $end, $id, $reload, $extra, $authent, $country, $channel ) {
 		$this->source = $source;
 		$this->id     = $id;
 		$this->extra  = $extra;
@@ -333,6 +343,19 @@ class Analytics {
 				$this->filter[] = "country='" . strtoupper( $country ) . "'";
 			}
 			$this->country = strtoupper( $country );
+			if ( 'all' !== strtolower( $channel ) ) {
+				$url_parts       = wp_parse_url( admin_url( '', '' ) );
+				$cleaned_enpoint = Capture::clean_endpoint( '(self)', $url_parts['path'], 50, false );
+				switch ( strtolower( $channel ) ) {
+					case 'wfront':
+						$this->filter[] = "endpoint not like '" . $cleaned_enpoint . "%'";
+						break;
+					case 'wback':
+						$this->filter[] = "endpoint like'" . $cleaned_enpoint . "%'";
+						break;
+				}
+			}
+			$this->channel = strtolower( $channel );
 		}
 	}
 
@@ -1558,6 +1581,41 @@ class Analytics {
 	}
 
 	/**
+	 * Get the channel selector.
+	 *
+	 * @return string  The selector ready to print.
+	 * @since    1.1.0
+	 */
+	public function get_channel_selector() {
+		$breadcrumbs[] = [
+			'title' => ' - ' . esc_html__( 'All', 'vibes' ) . ' - ',
+			'url'   => $this->get_url( [ 'channel' ] ),
+		];
+		$breadcrumbs[] = [
+			'title' => esc_html__( 'Frontend', 'vibes' ),
+			'url'   => $this->get_url( [], [ 'channel' => 'wfront' ] ),
+		];
+		$breadcrumbs[] = [
+			'title' => esc_html__( 'Backend', 'vibes' ),
+			'url'   => $this->get_url( [], [ 'channel' => 'wback' ] ),
+		];
+		if ( 'all' === $this->channel ) {
+			$title = esc_html__( 'All', 'vibes' );
+		} elseif ( 'wfront' === $this->channel ) {
+			$title = esc_html__( 'Frontend', 'vibes' );
+		} elseif ( 'wback' === $this->channel ) {
+			$title = esc_html__( 'Backend', 'vibes' );
+		}
+		$result = '<select name="channel" id="channel" data="' . Feather\Icons::get_base64( 'activity', 'none', '#5A738E' ) . '" class="vibes-select channel" placeholder="' . $title . '" style="display:none;">';
+		foreach ( $breadcrumbs as $breadcrumb ) {
+			$result .= '<option value="' . $breadcrumb['url'] . '">' . $breadcrumb['title'] . '</option>';
+		}
+		$result .= '</select>';
+		$result .= '';
+		return $result;
+	}
+
+	/**
 	 * Get the user selector.
 	 *
 	 * @return string  The selector ready to print.
@@ -1847,7 +1905,7 @@ class Analytics {
 		$result .= '<span class="vibes-title">' . $title . '</span>';
 		$result .= '<span class="vibes-subtitle">' . $subtitle . '</span>';
 		if ( 'resource' !== $this->source ) {
-			$pickers = $this->get_country_selector() . $this->get_user_selector() . $this->get_date_box();
+			$pickers = $this->get_country_selector() . $this->get_channel_selector() . $this->get_user_selector() . $this->get_date_box();
 		} else {
 			$pickers = $this->get_date_box();
 		}
@@ -1883,6 +1941,7 @@ class Analytics {
 					'query'   => 'main-webvital-chart',
 					'country' => $this->country,
 					'authent' => $this->authent,
+					'channel' => $this->channel,
 					'queried' => 0,
 				]
 			);
@@ -1915,6 +1974,7 @@ class Analytics {
 					'query'   => 'main-navigation-chart',
 					'country' => $this->country,
 					'authent' => $this->authent,
+					'channel' => $this->channel,
 					'queried' => 0,
 				]
 			);
@@ -1965,6 +2025,7 @@ class Analytics {
 				'query'   => $this->source . '.class_' . $class,
 				'country' => $this->country,
 				'authent' => $this->authent,
+				'channel' => $this->channel,
 				'queried' => 0,
 			]
 		);
@@ -2012,6 +2073,7 @@ class Analytics {
 				'query'   => $this->source . '.class_' . $class,
 				'country' => $this->country,
 				'authent' => $this->authent,
+				'channel' => $this->channel,
 				'queried' => 0,
 			]
 		);
@@ -2034,6 +2096,7 @@ class Analytics {
 				'query'   => $this->source . '.device_' . $device,
 				'country' => $this->country,
 				'authent' => $this->authent,
+				'channel' => $this->channel,
 				'queried' => 0,
 			]
 		);
@@ -2056,6 +2119,7 @@ class Analytics {
 				'query'   => $this->source . '.device_' . $device,
 				'country' => $this->country,
 				'authent' => $this->authent,
+				'channel' => $this->channel,
 				'queried' => 0,
 			]
 		);
@@ -2140,6 +2204,7 @@ class Analytics {
 				'query'   => 'webvital.sites',
 				'country' => $this->country,
 				'authent' => $this->authent,
+				'channel' => $this->channel,
 				'queried' => 0,
 			]
 		);
@@ -2162,6 +2227,7 @@ class Analytics {
 				'query'   => 'navigation.sites',
 				'country' => $this->country,
 				'authent' => $this->authent,
+				'channel' => $this->channel,
 				'queried' => 0,
 			]
 		);
@@ -2184,6 +2250,7 @@ class Analytics {
 				'query'   => 'webvital.endpoints',
 				'country' => $this->country,
 				'authent' => $this->authent,
+				'channel' => $this->channel,
 				'queried' => 0,
 			]
 		);
@@ -2206,6 +2273,7 @@ class Analytics {
 				'query'   => 'navigation.endpoints',
 				'country' => $this->country,
 				'authent' => $this->authent,
+				'channel' => $this->channel,
 				'queried' => 0,
 			]
 		);
@@ -2543,6 +2611,7 @@ class Analytics {
 		if ( 'resource' !== $this->source ) {
 			$params['authent'] = $this->authent;
 			$params['country'] = $this->country;
+			$params['channel'] = $this->channel;
 		}
 		if ( '' !== $this->id ) {
 			$params['id'] = $this->id;

@@ -170,7 +170,7 @@ class Capture {
 	 * @return string   The cleaned endpoint.
 	 * @since    1.0.0
 	 */
-	private static function clean_endpoint( $host, $endpoint, $cut = 3, $filter = true ) {
+	public static function clean_endpoint( $host, $endpoint, $cut = 3, $filter = true ) {
 
 		if ( $filter ) {
 			/**

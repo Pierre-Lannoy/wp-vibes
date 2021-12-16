@@ -1155,6 +1155,7 @@ button.btn {
 }
 
 .users .vibes-option,
+.channel .vibes-option,
 .countries .vibes-option{
 	margin: 0 !important;
 }

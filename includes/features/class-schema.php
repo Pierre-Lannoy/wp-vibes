@@ -688,6 +688,11 @@ class Schema {
 		global $wpdb;
 		$sql  = 'SELECT ' . implode( ', ', $sel ) . ' FROM ';
 		$sql .= $wpdb->base_prefix . ( 'resource' === $source ? self::$resources : self::$statistics ) . ' WHERE (' . implode( ' AND ', $filter ) . ') ' . $where_extra . ' GROUP BY ' . $group . ' ' . $order . ( $limit > 0 ? 'LIMIT ' . $limit : '' ) . ';';
+
+
+		\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( $sql );
+
+
 		// phpcs:ignore
 		$result = $wpdb->get_results( $sql, ARRAY_A );
 		if ( is_array( $result ) && 0 < count( $result ) ) {
