@@ -115,6 +115,8 @@ class Core {
 		$this->loader->add_action( 'admin_notices', $nag, 'display' );
 		$this->loader->add_action( 'wp_ajax_hide_vibes_nag', $nag, 'hide_callback' );
 		$this->loader->add_action( 'wp_ajax_vibes_get_stats', 'Vibes\Plugin\Feature\AnalyticsFactory', 'get_stats_callback' );
+		$this->loader->add_action( 'wp_dashboard_setup', '\Vibes\Plugin\Feature\Dashboard', 'add_webvitals' );
+		$this->loader->add_action( 'wp_network_dashboard_setup', '\Vibes\Plugin\Feature\Dashboard', 'add_webvitals' );
 	}
 
 	/**

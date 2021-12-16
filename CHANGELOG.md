@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - New selector in performances and Web Vitals analytics to differentiate frontend and backend pages.
 
+### Changed
+
+### Fixed
+- Vibes logo is wrongly displayed in about box.
+
 ## [1.0.3] - 2021-12-16
 
 ### Changed
