@@ -133,8 +133,7 @@ class Vibes_Admin {
 				'description'   => sprintf( esc_html__( 'Find out and explore resources needed by the pages of your %s.', 'vibes' ), Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
 				'icon_callback' => [ \Vibes\Plugin\Core::class, 'get_base64_logo' ],
 				'slug'          => 'vibes-resource-viewer',
-				/* translators: as in the sentence "DecaLog Viewer" */
-				'page_title'    => sprintf( esc_html__( 'Resources', 'vibes' ), VIBES_PRODUCT_NAME ),
+				'page_title'    => esc_html__( 'Resources', 'vibes' ),
 				'menu_title'    => esc_html__( 'Resources', 'vibes' ),
 				'capability'    => 'manage_options',
 				'callback'      => [ $this, 'get_resources_viewer_page' ],
@@ -148,8 +147,7 @@ class Vibes_Admin {
 				'description'   => sprintf( esc_html__( 'View and analyze Web Vitals measured in the field for all the visited pages of your %s.', 'vibes' ), Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
 				'icon_callback' => [ \Vibes\Plugin\Core::class, 'get_base64_logo' ],
 				'slug'          => 'vibes-webvital-viewer',
-				/* translators: as in the sentence "DecaLog Viewer" */
-				'page_title'    => sprintf( esc_html__( 'Web Vitals', 'vibes' ), VIBES_PRODUCT_NAME ),
+				'page_title'    => esc_html__( 'Web Vitals', 'vibes' ),
 				'menu_title'    => esc_html__( 'Web Vitals', 'vibes' ),
 				'capability'    => 'manage_options',
 				'callback'      => [ $this, 'get_webvitals_viewer_page' ],
@@ -159,12 +157,11 @@ class Vibes_Admin {
 			];
 			$perfops['analytics'][] = [
 				'name'          => esc_html__( 'Performances', 'vibes' ),
-				/* translators: as in the sentence "Find out inbound and outbound API calls made to/from your network." or "Find out inbound and outbound API calls made to/from your website." */
+				/* translators: as in the sentence "View and analyze your network's performances from a user point of view." or "View and analyze your website's performances from a user point of view." */
 				'description'   => sprintf( esc_html__( 'View and analyze your %s\'s performances from a user point of view.', 'vibes' ), Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
 				'icon_callback' => [ \Vibes\Plugin\Core::class, 'get_base64_logo' ],
 				'slug'          => 'vibes-navigation-viewer',
-				/* translators: as in the sentence "DecaLog Viewer" */
-				'page_title'    => sprintf( esc_html__( 'Performances', 'vibes' ), VIBES_PRODUCT_NAME ),
+				'page_title'    => esc_html__( 'Performances', 'vibes' ),
 				'menu_title'    => esc_html__( 'Performances', 'vibes' ),
 				'capability'    => 'manage_options',
 				'callback'      => [ $this, 'get_viewer_page' ],
@@ -176,11 +173,11 @@ class Vibes_Admin {
 		if ( Role::SUPER_ADMIN === Role::admin_type() || Role::SINGLE_ADMIN === Role::admin_type() ) {
 			$perfops['consoles'][] = [
 				'name'          => esc_html__( 'Vibes Signals', 'vibes' ),
-				/* translators: as in the sentence "Check the events that occurred on your network." or "Check the events that occurred on your website." */
+				/* translators: as in the sentence "Displays Vibes performance signals as soon as they are received by your network." or "Displays Vibes performance signals as soon as they are received by your website." */
 				'description'   => sprintf( esc_html__( 'Displays %1$s performance signals as soon as they are received by your %2$s.', 'vibes' ), VIBES_PRODUCT_NAME, Environment::is_wordpress_multisite() ? esc_html__( 'network', 'vibes' ) : esc_html__( 'website', 'vibes' ) ),
 				'icon_callback' => [ \Vibes\Plugin\Core::class, 'get_base64_logo' ],
 				'slug'          => 'vibes-console',
-				/* translators: as in the sentence "Vibes Viewer" */
+				/* translators: as in the sentence "Vibes Live Performance Signals" */
 				'page_title'    => sprintf( esc_html__( '%s Live Performance Signals', 'vibes' ), VIBES_PRODUCT_NAME ),
 				'menu_title'    => esc_html__( 'Vibes Signals', 'vibes' ),
 				'capability'    => 'manage_options',
