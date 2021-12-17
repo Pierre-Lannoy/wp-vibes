@@ -875,7 +875,7 @@ class Vibes_Admin {
 				'min'         => 900,
 				'max'         => 14400,
 				'step'        => 300,
-				'description' => 'Duration, in seconds, of metrics sliding time-fram.',
+				'description' => 'Duration, in seconds, of metrics sliding time-frame.',
 				'full_width'  => false,
 				'enabled'     => true,
 			]
