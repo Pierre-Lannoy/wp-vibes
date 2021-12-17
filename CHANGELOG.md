@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.1.0] - Not Yet Released
 
 ### Added
+- New dashboard widget to display Web Vitals.
 - New selector in performances and Web Vitals analytics to differentiate frontend and backend pages.
 
 ### Changed

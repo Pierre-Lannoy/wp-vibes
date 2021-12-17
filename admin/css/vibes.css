@@ -625,6 +625,24 @@
 	margin: 8px 2px;
 }
 
+.vibes-webvital-widget-container {
+	display: inline-flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+	align-content: center;
+	align-items: center;
+}
+
+.vibes-webvital-widget-text{
+	margin: 6px;
+	background-color: #F6F7F7;
+	padding: 8px;
+	flex: 1 1 0;
+	min-width: fit-content;
+	border-radius: 3px;
+}
+
 .vibes-webvital-definition {
 	font-size: var(--subtitle-font-size);
 	font-weight: var(--subtitle-font-weight);
@@ -632,10 +650,18 @@
 	padding-left: 6px;
 }
 
+.vibes-webvital-widget-definition {
+	padding-left: 6px;
+}
+
 .vibes-webvital-definition a{
 	font-size: var(--subtitle-font-size);
 	font-weight: var(--font-strong);
 	color: var(--main-font-color);
+	text-decoration: none;
+}
+
+.vibes-webvital-widget-definition a{
 	text-decoration: none;
 }
 
@@ -663,11 +689,22 @@
 	color: var(--webvital-none);
 }
 
+.vibes-webvital-definition-hit:before {
+	content: '\00A0';
+	color: var(--webvital-none);
+}
+
 .vibes-webvital-index {
 	float: right;
 	margin-right: 20px;
 	font-size: 18px;
 	font-weight: 700;
+}
+
+.vibes-webvital-widget-index {
+	font-size: large;
+	font-weight: 600;
+	padding-left: 26px;
 }
 
 .vibes-webvital-index-good {
