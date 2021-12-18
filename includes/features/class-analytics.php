@@ -1280,23 +1280,40 @@ class Analytics {
 		$metrics = array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics );
 		$start   = '';
 		$max     = [];
+		$init    = strtotime( $this->start ) - 86400;
+		for ( $i = 0; $i < $this->duration + 2; $i++ ) {
+			$ts = 'new Date(' . (string) ( ( $i * 86400 ) + $init ) . '000)';
+			foreach ( $metrics as $metric ) {
+				$series[ strtolower( $metric ) ]['avg'][] = [
+					'x' => $ts,
+					'y' => 'null',
+				];
+				foreach ( [ 'good', 'impr', 'poor' ] as $field ) {
+					$series[ strtolower( $metric ) ][ $field ][] = [
+						'x' => $ts,
+						'y' => 'null',
+					];
+				}
+			}
+		}
 		foreach ( $data as $timestamp => $row ) {
 			if ( '' === $start ) {
 				$start = $timestamp;
 			}
-			$ts = 'new Date(' . (string) strtotime( $timestamp ) . '000)';
+			$ts  = 'new Date(' . (string) strtotime( $timestamp ) . '000)';
+			$idx = (int) ( ( strtotime( $timestamp ) - $init ) / 86400 );
 			foreach ( $metrics as $metric ) {
 				$val = WebVitals::get_graphable_value( $metric, $row[ 'avg_' . $metric ] );
 				if ( ( array_key_exists( strtolower( $metric ), $max ) && $max[ strtolower( $metric ) ] < $val ) || ! array_key_exists( strtolower( $metric ), $max ) ) {
 					$max[ strtolower( $metric ) ] = $val;
 				}
-				$series[ strtolower( $metric ) ]['avg'][] = [
+				$series[ strtolower( $metric ) ]['avg'][$idx] = [
 					'x' => $ts,
 					'y' => $val,
 				];
 				foreach ( [ 'good', 'impr', 'poor' ] as $field ) {
 					if ( array_key_exists( 'pct_' . $metric . '_' . $field, $row ) ) {
-						$series[ strtolower( $metric ) ][ $field ][] = [
+						$series[ strtolower( $metric ) ][ $field ][$idx] = [
 							'x' => $ts,
 							'y' => round( 100 * $row[ 'pct_' . $metric . '_' . $field ], 1 ),
 						];
@@ -1304,19 +1321,9 @@ class Analytics {
 				}
 			}
 		}
-		$before = [
-			'x' => 'new Date(' . (string) ( strtotime( $start ) - 86400 ) . '000)',
-			'y' => 'null',
-		];
-		$after  = [
-			'x' => 'new Date(' . (string) ( strtotime( $timestamp ) + 86400 ) . '000)',
-			'y' => 'null',
-		];
 		$scale  = [];
 		foreach ( $metrics as $metric ) {
 			$metric = strtolower( $metric );
-			array_unshift( $series[ $metric ]['avg'], $before );
-			$series[ $metric ]['avg'][] = $after;
 			$series[ $metric ]['avg']   = wp_json_encode(
 				[
 					'series' => [
@@ -1330,12 +1337,6 @@ class Analytics {
 			$series[ $metric ]['avg']   = str_replace( '"x":"new', '"x":new', $series[ $metric ]['avg'] );
 			$series[ $metric ]['avg']   = str_replace( ')","y"', '),"y"', $series[ $metric ]['avg'] );
 			$series[ $metric ]['avg']   = str_replace( '"null"', 'null', $series[ $metric ]['avg'] );
-			foreach ( [ 'good', 'impr', 'poor' ] as $field ) {
-				if ( 'ttfb' !== $metric ) {
-					array_unshift( $series[ $metric ][ $field ], $before );
-					$series[ $metric ][ $field ][] = $after;
-				}
-			}
 			if ( 'ttfb' !== $metric ) {
 				$series[ $metric ]['pct'] = wp_json_encode(
 					[
@@ -1444,39 +1445,37 @@ class Analytics {
 		$max       = [];
 		$max[0]    = [];
 		$max[1]    = [];
+		$init    = strtotime( $this->start ) - 86400;
+		for ( $i = 0; $i < $this->duration + 2; $i++ ) {
+			$ts = 'new Date(' . (string) ( ( $i * 86400 ) + $init ) . '000)';
+			foreach ( $metrics as $stack ) {
+				foreach ( $stack as $metric ) {
+					$series[ $metric ]['avg'][] = [
+						'x' => $ts,
+						'y' => 'null',
+					];
+				}
+			}
+		}
 		foreach ( $data as $timestamp => $row ) {
 			if ( '' === $start ) {
 				$start = $timestamp;
 			}
-			$ts = 'new Date(' . (string) strtotime( $timestamp ) . '000)';
+			$ts  = 'new Date(' . (string) strtotime( $timestamp ) . '000)';
+			$idx = (int) ( ( strtotime( $timestamp ) - $init ) / 86400 );
 			foreach ( $metrics as $key => $stack ) {
 				foreach ( $stack as $metric ) {
 					$val = $row[ $metric ];
 					if ( ( array_key_exists( $metric, $max[ $key ] ) && $max[ $key ][ $metric ] < $val ) || ! array_key_exists( $metric, $max[ $key ] ) ) {
 						$max[ $key ][ $metric ] = $val;
 					}
-					$series[ $metric ]['avg'][] = [
+					$series[ $metric ]['avg'][$idx] = [
 						'x' => $ts,
 						'y' => $val,
 					];
 				}
 			}
 		}
-		$before = [
-			'x' => 'new Date(' . (string) ( strtotime( $start ) - 86400 ) . '000)',
-			'y' => 'null',
-		];
-		$after  = [
-			'x' => 'new Date(' . (string) ( strtotime( $timestamp ) + 86400 ) . '000)',
-			'y' => 'null',
-		];
-		foreach ( $metrics as $stack ) {
-			foreach ( $stack as $metric ) {
-				array_unshift( $series[ $metric ]['avg'], $before );
-				$series[ $metric ]['avg'][] = $after;
-			}
-		}
-
 		$series['stack0']['avg'] = wp_json_encode(
 			[
 				'series' => [

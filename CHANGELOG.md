@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - Improved timescale computation and date display for all charts.
+- Data, graph points and KPIs are hidden when data quality does not reach an optimal level.
 
 ### Fixed
 - Vibes logo is wrongly displayed in about box.
