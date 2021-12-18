@@ -1383,15 +1383,7 @@ class Analytics {
 		}
 
 		// Rendering.
-		$divisor = $this->duration + 1;
-		while ( 11 < $divisor ) {
-			foreach ( [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397 ] as $divider ) {
-				if ( 0 === $divisor % $divider ) {
-					$divisor = $divisor / $divider;
-					break;
-				}
-			}
-		}
+		$ticks = (int) ( 1 + ( $this->duration / 15 ) );
 		$result = '<div class="vibes-multichart-handler">';
 		foreach ( $metrics as $metric ) {
 			$metric  = strtolower( $metric );
@@ -1412,7 +1404,7 @@ class Analytics {
 			$result .= '  showLine: true,';
 			$result .= '  showPoint: false,';
 			$result .= '  plugins: [' . $metric . '_line_tooltip' . $uuid . '],';
-			$result .= '  axisX: {scaleMinSpace: 100, type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
+			$result .= '  axisX: {scaleMinSpace: 10, type: Chartist.FixedScaleAxis, divisor:' . ( $this->duration + 1 ) . ', labelInterpolationFnc: function skipLabels(value, index, labels) {return 0 === index % ' . $ticks . ' ? moment(value).format("DD") : null;}},';
 			$result .= '  axisY: {type: Chartist.FixedScaleAxis, ' . $scale[ $metric ] . $max[ $metric ] . 'low: 0, labelInterpolationFnc: function (value) {return value.toString()' . ( 'cls' === $metric ? '' : ' + " ms"' ) . ';}},';
 			$result .= ' };';
 			$result .= ' var ' . $metric . '_bars_option' . $uuid . ' = {';
@@ -1421,7 +1413,7 @@ class Analytics {
 			$result .= '  stackMode: "accumulate",';
 			$result .= '  seriesBarDistance: 0,high: 100, low: 0,';
 			$result .= '  plugins: [' . $metric . '_bars_tooltip' . $uuid . '],';
-			$result .= '  axisX: {scaleMinSpace: 100, type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
+			$result .= '  axisX: {scaleMinSpace: 10, type: Chartist.FixedScaleAxis, divisor:' . ( $this->duration + 1 ) . '},';
 			$result .= ' };';
 			$result .= ' new Chartist.Line("#vibes-line-' . $metric . '", ' . $metric . '_line_data' . $uuid . ', ' . $metric . '_line_option' . $uuid . ');';
 			$result .= ' new Chartist.Bar("#vibes-bars-' . $metric . '", ' . $metric . '_bars_data' . $uuid . ', ' . $metric . '_bars_option' . $uuid . ');';
@@ -1528,15 +1520,7 @@ class Analytics {
 		}
 
 		// Rendering.
-		$divisor = $this->duration + 1;
-		while ( 11 < $divisor ) {
-			foreach ( [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397 ] as $divider ) {
-				if ( 0 === $divisor % $divider ) {
-					$divisor = $divisor / $divider;
-					break;
-				}
-			}
-		}
+		$ticks = (int) ( 1 + ( $this->duration / 15 ) );
 		$result  = '<div class="vibes-multichart-handler">';
 		$result .= '<div class="vibes-multichart-item active" id="vibes-chart-time">';
 		$result .= '</div>';
@@ -1551,7 +1535,8 @@ class Analytics {
 		$result .= '  showLine: true,';
 		$result .= '  showPoint: false,';
 		$result .= '  plugins: [time_tooltip' . $uuid . '],';
-		$result .= '  axisX: {scaleMinSpace: 100, type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
+		//$result .= '  axisX: {scaleMinSpace: 100, type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
+		$result .= '  axisX: {scaleMinSpace: 10, type: Chartist.FixedScaleAxis, divisor:' . ( $this->duration + 1 ) . ', labelInterpolationFnc: function skipLabels(value, index, labels) {return 0 === index % ' . $ticks . ' ? moment(value).format("DD") : null;}},';
 		$result .= '  axisY: {type: Chartist.FixedScaleAxis, ticks: [1000, 2000, 3000],low: 0, labelInterpolationFnc: function (value) {return value.toString() + " ms";}},';
 		$result .= ' };';
 		$result .= ' new Chartist.Line("#vibes-chart-time", time_data' . $uuid . ', time_option' . $uuid . ');';
@@ -1570,7 +1555,8 @@ class Analytics {
 		$result .= '  showLine: true,';
 		$result .= '  showPoint: false,';
 		$result .= '  plugins: [net_tooltip' . $uuid . '],';
-		$result .= '  axisX: {type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
+		//$result .= '  axisX: {type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
+		$result .= '  axisX: {scaleMinSpace: 10, type: Chartist.FixedScaleAxis, divisor:' . ( $this->duration + 1 ) . ', labelInterpolationFnc: function skipLabels(value, index, labels) {return 0 === index % ' . $ticks . ' ? moment(value).format("DD") : null;}},';
 		$result .= '  axisY: {type: Chartist.AutoScaleAxis, labelInterpolationFnc: function (value) {return value.toString() + " ms";}},';
 		$result .= ' };';
 		$result .= ' new Chartist.Line("#vibes-chart-net", net_net' . $uuid . ', net_option' . $uuid . ');';

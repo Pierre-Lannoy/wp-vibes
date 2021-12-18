@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - New selector in performances and Web Vitals analytics to differentiate frontend and backend pages.
 
 ### Changed
+- Improved timescale computation and date display for all charts.
 
 ### Fixed
 - Vibes logo is wrongly displayed in about box.
