@@ -1383,7 +1383,7 @@ class Analytics {
 		}
 
 		// Rendering.
-		$ticks = (int) ( 1 + ( $this->duration / 15 ) );
+		$ticks  = (int) ( 1 + ( $this->duration / 15 ) );
 		$result = '<div class="vibes-multichart-handler">';
 		foreach ( $metrics as $metric ) {
 			$metric  = strtolower( $metric );
@@ -1520,7 +1520,7 @@ class Analytics {
 		}
 
 		// Rendering.
-		$ticks = (int) ( 1 + ( $this->duration / 15 ) );
+		$ticks   = (int) ( 1 + ( $this->duration / 15 ) );
 		$result  = '<div class="vibes-multichart-handler">';
 		$result .= '<div class="vibes-multichart-item active" id="vibes-chart-time">';
 		$result .= '</div>';
