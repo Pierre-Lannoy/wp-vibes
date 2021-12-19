@@ -4,7 +4,7 @@ Tags: rum, real user monitoring, ux, web performance, web vitals
 Requires at least: 5.6
 Requires PHP: 7.2
 Tested up to: 5.9
-Stable tag: 1.0.3
+Stable tag: 1.1.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -25,7 +25,12 @@ By continuously monitoring user experience, **Vibes** can report:
 * resources details - like initiators, protocols, mime types, average sizes, etc.;
 * Web Vitals: LCP, FID, CLS, FCP and TTFB.
 
-It can segment all this data per country (requires the free [IP Locator](https://wordpress.org/plugins/ip-locator/) plugin) and per device classes and types (requires the free [Device Detector](https://wordpress.org/plugins/device-detector/) plugin).
+It can segment all this data per:
+
+* user type (anonymous vs. authenticated);
+* channel (frontend vs. backend);
+* country (requires the free [IP Locator](https://wordpress.org/plugins/ip-locator/) plugin);
+* device classes and types (requires the free [Device Detector](https://wordpress.org/plugins/device-detector/) plugin).
 
 **Vibes** supports multisite report delegation (see FAQ).
 

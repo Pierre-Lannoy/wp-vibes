@@ -3,7 +3,7 @@ All notable changes to **Vibes** are documented in this *changelog*.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and **Vibes** adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - Not Yet Released
+## [1.1.0] - 2021-12-19
 
 ### Added
 - New dashboard widget to display Web Vitals.
@@ -11,10 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - Improved timescale computation and date display for all charts.
-- Data, graph points and KPIs are hidden when data quality does not reach an optimal level.
+- Data, graph points and KPIs are now hidden when data quality does not reach an optimal level.
+- Improved plugin activation sequence.
+- Default sampling rates are higher than previously.
 
 ### Fixed
 - Vibes logo is wrongly displayed in about box.
+- An innocuous Mysql error may be triggered at plugin installation.
 
 ## [1.0.3] - 2021-12-16
 

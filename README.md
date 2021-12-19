@@ -17,7 +17,12 @@ By continuously monitoring user experience, __Vibes__ can report:
 * resources details - like initiators, protocols, mime types, average sizes, etc.;
 * Web Vitals: LCP, FID, CLS, FCP and TTFB.
 
-It can segment all this data per country (requires the free [IP Locator](https://wordpress.org/plugins/ip-locator/) plugin) and per device classes and types (requires the free [Device Detector](https://wordpress.org/plugins/device-detector/) plugin).
+It can segment all this data per:
+
+* user type (anonymous vs. authenticated);
+* channel (frontend vs. backend);
+* country (requires the free [IP Locator](https://wordpress.org/plugins/ip-locator/) plugin);
+* device classes and types (requires the free [Device Detector](https://wordpress.org/plugins/device-detector/) plugin).
 
 __Vibes__ supports multisite report delegation (see FAQ).
 
