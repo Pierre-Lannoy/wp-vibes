@@ -74,8 +74,8 @@ class Option {
 		self::$defaults['version']           = '0.0.0';
 		self::$defaults['cut_path']          = 4;
 		self::$defaults['rcut_path']         = 6;
-		self::$defaults['sampling']          = 500;
-		self::$defaults['resource_sampling'] = 100;
+		self::$defaults['sampling']          = 1000;
+		self::$defaults['resource_sampling'] = 500;
 		self::$defaults['capture']           = true;
 		self::$defaults['rcapture']          = true;
 		self::$defaults['livelog']           = true;
