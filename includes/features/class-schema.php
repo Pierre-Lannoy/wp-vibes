@@ -206,6 +206,8 @@ class Schema {
 		global $wpdb;
 		try {
 			$this->create_tables( 'created' );
+			Option::network_set( 'capture', true );
+			Option::network_set( 'rcapture', true );
 		} catch ( \Throwable $e ) {
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->alert( sprintf( 'Unable to create a table: %s', $e->getMessage() ), [ 'code' => $e->getCode() ] );
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->alert( 'Schema not installed.', [ 'code' => $e->getCode() ] );

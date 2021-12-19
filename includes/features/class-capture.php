@@ -65,7 +65,7 @@ class Capture {
 	 */
 	public static function init() {
 		// phpcs:ignore
-		if ( ( Option::network_get( 'capture' ) || Option::network_get( 'rcapture' ) ) && ( (int) Option::network_get( 'sampling' ) >= mt_rand( 1, 1000 ) ) ) {
+		if ( ( Option::network_get( 'capture', false ) || Option::network_get( 'rcapture', false ) ) && ( (int) Option::network_get( 'sampling' ) >= mt_rand( 1, 1000 ) ) ) {
 			add_filter(
 				'script_loader_tag',
 				function ( $tag, $handle, $src ) {
@@ -215,7 +215,7 @@ class Capture {
 	 * @since    1.0.0
 	 */
 	public static function record( $record ) {
-		if ( ( 'resource' === $record['type'] && Option::network_get( 'rcapture' ) ) || ( 'resource' !== $record['type'] && Option::network_get( 'capture' ) ) ) {
+		if ( ( 'resource' === $record['type'] && Option::network_get( 'rcapture', false ) ) || ( 'resource' !== $record['type'] && Option::network_get( 'capture', false ) ) ) {
 			Schema::store_statistics( $record );
 		}
 		Memory::store_statistics( $record );
