@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - Widget is now updated even if metrics publication is disabled.
+- Updated PerfOps One library from 2.2.1 to 2.2.2.
 
 ### Fixed
 - A PHP warning may be triggered if there's no data to display in dashboard widget.
