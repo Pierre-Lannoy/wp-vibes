@@ -71,6 +71,9 @@ class Dashboard {
 				'value'   => 0,
 			];
 		}
+		if ( ! is_array( $values ) ) {
+			$values = [];
+		}
 		foreach ( $values as $value ) {
 			if ( array_key_exists( 'metric', $value ) && array_key_exists( 'value', $value ) && array_key_exists( $value['metric'], $stats ) ) {
 				$stats[ $value['metric'] ]['counter'] += 1;

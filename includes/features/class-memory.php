@@ -73,9 +73,7 @@ class Memory {
 	 */
 	public static function init() {
 		add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'write' ], DECALOG_MAX_SHUTDOWN_PRIORITY, 0 );
-		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) && Option::network_get( 'capture' ) ) {
-			add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'collate_metrics' ], DECALOG_MAX_SHUTDOWN_PRIORITY - 1, 0 );
-		}
+		add_action( 'shutdown', [ 'Vibes\Plugin\Feature\Memory', 'collate_metrics' ], DECALOG_MAX_SHUTDOWN_PRIORITY - 1, 0 );
 	}
 
 	/**
@@ -239,10 +237,14 @@ class Memory {
 				$stats[ $value['metric'] ]['value']   += $value['value'];
 			}
 		}
-		foreach ( $stats as $metric => $stat ) {
-			if ( 0 < $stat['counter'] ) {
-				\DecaLog\Engine::metricsLogger( VIBES_SLUG )->setProdGauge( 'webvitals_' . strtolower( $metric ), round( $stat['value'] / ( ( 'CLS' === $metric ? 1000000 : 1000 ) * $stat['counter'] ), ( 'CLS' === $metric ? 2 : 3 ) ) );
+		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) && Option::network_get( 'capture' ) ) {
+			$span2 = \DecaLog\Engine::tracesLogger( VIBES_SLUG )->startSpan( 'Metrics publication', $span );
+			foreach ( $stats as $metric => $stat ) {
+				if ( 0 < $stat['counter'] ) {
+					\DecaLog\Engine::metricsLogger( VIBES_SLUG )->setProdGauge( 'webvitals_' . strtolower( $metric ), round( $stat['value'] / ( ( 'CLS' === $metric ? 1000000 : 1000 ) * $stat['counter'] ), ( 'CLS' === $metric ? 2 : 3 ) ) );
+				}
 			}
+			\DecaLog\Engine::tracesLogger( VIBES_SLUG )->endSpan( $span2 );
 		}
 		\DecaLog\Engine::tracesLogger( VIBES_SLUG )->endSpan( $span );
 	}
