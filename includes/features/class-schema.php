@@ -172,7 +172,7 @@ class Schema {
 			$value_insert[] = "'" . (int) $record['hit'] . "'";
 			$value_update[] = '`hit`=hit+' . (int) $record['hit'];
 		}
-		if ( count( $field_insert ) > 0 ) {
+		if ( count( $field_insert ) === count( $value_insert ) && 0 < count( $value_update ) ) {
 			global $wpdb;
 			if ( 'resource' === $type ) {
 				$sql = 'INSERT INTO `' . $wpdb->base_prefix . self::$resources . '` ';

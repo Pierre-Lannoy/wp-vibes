@@ -8,9 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - Widget is now updated even if metrics publication is disabled.
 - Updated PerfOps One library from 2.2.1 to 2.2.2.
+- Improved bubbles display when width is less than 500px (thanks to [Pat Ol](https://profiles.wordpress.org/pasglop/)).
+- The tables headers have now a better contrast (thanks to [Paul Bonaldi](https://profiles.wordpress.org/bonaldi/)).
 
 ### Fixed
 - A PHP warning may be triggered if there's no data to display in dashboard widget.
+- An innocuous Mysql error may be triggered at plugin activation.
+- The Control Center layout may be ugly in some languages (thanks to [Paul Bonaldi](https://profiles.wordpress.org/bonaldi/) and [Laurent Naudier](https://github.com/fr-laurentn)).
 
 ## [1.1.0] - 2021-12-19
 
