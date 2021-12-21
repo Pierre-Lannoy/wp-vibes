@@ -3,6 +3,11 @@ All notable changes to **Vibes** are documented in this *changelog*.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and **Vibes** adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - Not Yet Released
+
+### Added
+- Compatibility with PHP 8.1.
+
 ## [1.1.1] - 2021-12-21
 
 ### Changed
