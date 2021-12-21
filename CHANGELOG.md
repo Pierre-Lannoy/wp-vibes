@@ -3,7 +3,7 @@ All notable changes to **Vibes** are documented in this *changelog*.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and **Vibes** adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.1] - Not Yet Released
+## [1.1.1] - 2021-12-21
 
 ### Changed
 - Widget is now updated even if metrics publication is disabled.
@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - A PHP warning may be triggered if there's no data to display in dashboard widget.
 - An innocuous Mysql error may be triggered at plugin activation.
-- The Control Center layout may be ugly in some languages (thanks to [Paul Bonaldi](https://profiles.wordpress.org/bonaldi/) and [Laurent Naudier](https://github.com/fr-laurentn)).
+- The Control Center layout may be ugly in some languages (thanks to [Paul Bonaldi](https://profiles.wordpress.org/bonaldi/), [Laurent Naudier](https://github.com/fr-laurentn) and [Grégory Thépault](https://profiles.wordpress.org/locomint85/)).
 
 ## [1.1.0] - 2021-12-19
 

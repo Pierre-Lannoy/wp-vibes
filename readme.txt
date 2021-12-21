@@ -4,7 +4,7 @@ Tags: rum, real user monitoring, ux, web performance, web vitals
 Requires at least: 5.6
 Requires PHP: 7.2
 Tested up to: 5.9
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
