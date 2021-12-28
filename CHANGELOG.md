@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Compatibility with PHP 8.1.
 
+### Changed
+
+### Fixed
+- Object caching method may be wrongly detected in Site Health status (thanks to [freshuk](https://profiles.wordpress.org/freshuk/)).
+
 ## [1.1.1] - 2021-12-21
 
 ### Changed
