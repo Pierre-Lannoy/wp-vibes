@@ -65,6 +65,7 @@ class Option {
 	 * @since 1.0.0
 	 */
 	public static function init() {
+		self::$defaults['use_apcu']         = true;
 		self::$defaults['use_cdn']           = false;
 		self::$defaults['download_favicons'] = false;
 		self::$defaults['script_in_footer']  = false;
@@ -86,7 +87,7 @@ class Option {
 		self::$defaults['quality']           = 2;
 		self::$defaults['qstat']             = 10;
 		self::$defaults['twindow']           = 3600;
-		self::$network                       = [ 'version', 'use_cdn', 'download_favicons', 'script_in_footer', 'display_nag', 'metrics', 'cut_path', 'rcut_path', 'sampling', 'resource_sampling', 'capture', 'rcapture', 'livelog', 'smart_filter', 'buffer', 'history', 'rhistory', 'quality', 'qstat', 'twindow' ];
+		self::$network                       = [ 'version', 'use_cdn', 'use_apcu',  'download_favicons', 'script_in_footer', 'display_nag', 'metrics', 'cut_path', 'rcut_path', 'sampling', 'resource_sampling', 'capture', 'rcapture', 'livelog', 'smart_filter', 'buffer', 'history', 'rhistory', 'quality', 'qstat', 'twindow' ];
 	}
 
 	/**
