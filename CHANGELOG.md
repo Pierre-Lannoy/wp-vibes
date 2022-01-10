@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - Refactored cache mechanisms to fully support Redis and Memcached.
+- The window (in minutes) used for metrics and widget is now clearly stated.
 
 ### Fixed
 - Object caching method may be wrongly detected in Site Health status (thanks to [freshuk](https://profiles.wordpress.org/freshuk/)).
