@@ -61,7 +61,7 @@ class Core {
 		$this->define_global_hooks();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) && Option::network_get( 'capture' ) ) {
+		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) && Option::network_get( 'capture' ) && ! in_array( Environment::exec_mode(), [ 1, 3, 4 ], true ) ) {
 			$this->define_metrics();
 		}
 	}

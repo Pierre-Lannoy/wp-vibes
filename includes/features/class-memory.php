@@ -237,7 +237,7 @@ class Memory {
 				$stats[ $value['metric'] ]['value']   += $value['value'];
 			}
 		}
-		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) && Option::network_get( 'capture' ) ) {
+		if ( \DecaLog\Engine::isDecalogActivated() && Option::network_get( 'metrics' ) && Option::network_get( 'capture' ) && ! in_array( Environment::exec_mode(), [ 1, 3, 4 ], true ) ) {
 			$span2 = \DecaLog\Engine::tracesLogger( VIBES_SLUG )->startSpan( 'Metrics publication', $span );
 			foreach ( $stats as $metric => $stat ) {
 				if ( 0 < $stat['counter'] ) {

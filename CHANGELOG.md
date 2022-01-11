@@ -16,6 +16,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Object caching method may be wrongly detected in Site Health status (thanks to [freshuk](https://profiles.wordpress.org/freshuk/)).
 - There may be name collisions with internal APCu cache.
 
+### Removed
+- Metrics are now hidden from command line as they were irrelevant.
+
 ## [1.1.1] - 2021-12-21
 
 ### Changed
