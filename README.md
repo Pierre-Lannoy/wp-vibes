@@ -8,6 +8,8 @@ __Vibes__ is a robust user experience and browsing performances monitoring solut
 
 See [WordPress directory page](https://wordpress.org/plugins/vibes/) or [official website](https://perfops.one/vibes).
 
+> 🎁 Give this plugin a drive test on a free dummy site: [One-Click Test!](https://tastewp.com/new/?pre-installed-plugin-slug=vibes)
+
 It is fully autonomous - does not rely on external services and does not require any API keys, works on any type of hosting and in any type of environment - including staging, intranets or password protected sites.
 
 By continuously monitoring user experience, __Vibes__ can report:

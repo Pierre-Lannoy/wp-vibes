@@ -4,7 +4,7 @@ Tags: rum, real user monitoring, ux, web performance, web vitals
 Requires at least: 5.6
 Requires PHP: 7.2
 Tested up to: 5.9
-Stable tag: 1.1.1
+Stable tag: 1.2.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -15,6 +15,8 @@ Truthful user experience and browsing performances monitoring.
 **Truthful user experience and browsing performances monitoring.**
 
 **Vibes** is a robust user experience and browsing performances monitoring solution that analyzes perceived performances from users' viewpoint.
+
+> 🎁 Give this plugin a drive test on a free dummy site: [One-Click Test!](https://tastewp.com/new/?pre-installed-plugin-slug=vibes)
 
 It is fully autonomous - does not rely on external services and does not require any API keys, works on any type of hosting and in any type of environment - including staging, intranets or password protected sites.
 
