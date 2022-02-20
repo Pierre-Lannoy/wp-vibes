@@ -55,7 +55,7 @@ class Vibes_Public {
 	 */
 	public function enqueue_scripts() {
 		$this->assets->register_script( VIBES_ASSETS_ID, VIBES_PUBLIC_URL, 'js/vibes.min.js', [ 'jquery' ] );
-		$this->assets->register_script( VIBES_ANALYTICS_ID, VIBES_PUBLIC_URL, 'js/vibes-analytics.min.js', [ 'jquery' ] );
+		$this->assets->register_script( VIBES_ANALYTICS_ID, VIBES_PUBLIC_URL, 'js/vibes-engine.min.js', [ 'jquery' ] );
 	}
 
 }

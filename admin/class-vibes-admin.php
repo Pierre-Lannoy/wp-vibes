@@ -75,7 +75,7 @@ class Vibes_Admin {
 	 */
 	public function enqueue_scripts() {
 		$this->assets->register_script( VIBES_ASSETS_ID, VIBES_ADMIN_URL, 'js/vibes.min.js', [ 'jquery' ] );
-		$this->assets->register_script( VIBES_ANALYTICS_ID, VIBES_PUBLIC_URL, 'js/vibes-analytics.min.js', [ 'jquery' ] );
+		$this->assets->register_script( VIBES_ANALYTICS_ID, VIBES_PUBLIC_URL, 'js/vibes-engine.min.js', [ 'jquery' ] );
 		$this->assets->register_script( VIBES_LIVELOG_ID, VIBES_ADMIN_URL, 'js/livelog.min.js', [ 'jquery' ] );
 		$this->assets->register_script( 'vibes-moment-with-locale', VIBES_ADMIN_URL, 'js/moment-with-locales.min.js', [ 'jquery' ] );
 		$this->assets->register_script( 'vibes-daterangepicker', VIBES_ADMIN_URL, 'js/daterangepicker.min.js', [ 'jquery' ] );

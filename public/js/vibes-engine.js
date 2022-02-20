@@ -1,4 +1,4 @@
-import {getCLS, getFID, getLCP, getTTFB, getFCP} from './web-vitals/web-vitals.js'
+import {getCLS, getFID, getLCP, getTTFB, getFCP} from './we-vi/we-vi.js'
 
 let excluded = [];
 let buffer   = [];
