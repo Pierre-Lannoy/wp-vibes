@@ -3,6 +3,14 @@ All notable changes to **Vibes** are documented in this *changelog*.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and **Vibes** adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - Not Yet Released
+
+### Added
+- Compatibility with WordPress 6.0.
+
+### Fixed
+- [SEC001] Moment.js library updated to 2.29.2 / [CVE-2022-24785](https://github.com/advisories/GHSA-8hfj-j24r-96c4).
+
 ## [1.2.2] - 2022-02-21
 
 ### Changed
