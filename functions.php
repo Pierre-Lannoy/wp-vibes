@@ -49,6 +49,19 @@ function vibes_mb_str_pad( $input, $length, $padding = ' ', $padType = STR_PAD_R
 }
 
 /**
+ * Close a shmop resource.
+ *
+ * @since 1.4.0
+ *
+ * @param mixed $shmop  The shmop resource to close.
+ */
+function vibes_shmop_close( $shmop ){
+	if ( defined( 'PHP_VERSION' ) && version_compare( PHP_VERSION, '8.0.0', '<' ) ) {
+		shmop_close( $shmop );
+	}
+}
+
+/**
  * Verify if a resource is a shmop resource.
  *
  * @since 1.4.0
