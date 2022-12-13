@@ -45,7 +45,7 @@ class Vibes_Public {
 	 * @since 1.0.0
 	 */
 	public function enqueue_styles() {
-		$this->assets->register_style( VIBES_ASSETS_ID, VIBES_PUBLIC_URL, 'css/vibes.min.css' );
+		//$this->assets->register_style( VIBES_ASSETS_ID, VIBES_PUBLIC_URL, 'css/vibes.min.css' );
 	}
 
 	/**
@@ -54,8 +54,8 @@ class Vibes_Public {
 	 * @since 1.0.0
 	 */
 	public function enqueue_scripts() {
-		$this->assets->register_script( VIBES_ASSETS_ID, VIBES_PUBLIC_URL, 'js/vibes.min.js', [ 'jquery' ] );
-		$this->assets->register_script( VIBES_ANALYTICS_ID, VIBES_PUBLIC_URL, 'js/vibes-engine.min.js', [ 'jquery' ] );
+		//$this->assets->register_script( VIBES_ASSETS_ID, VIBES_PUBLIC_URL, 'js/vibes.min.js', [ 'jquery' ] );
+		$this->assets->register_script( VIBES_ANALYTICS_ID, VIBES_PUBLIC_URL, 'js/vibes-engine.min.js' );
 	}
 
 }
