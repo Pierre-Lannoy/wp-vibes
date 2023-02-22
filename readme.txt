@@ -1,5 +1,5 @@
 === Vibes ===
-Contributors: PierreLannoy
+Contributors: PierreLannoy, hosterra
 Tags: rum, real user monitoring, ux, web performance, web vitals
 Requires at least: 5.6
 Requires PHP: 7.2
