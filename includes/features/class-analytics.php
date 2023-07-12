@@ -852,27 +852,39 @@ class Analytics {
 		$result .= '<span class="vibes-span-text-time">' . $time . '</span>';
 		$result .= '</div>';
 		// Span timeline
-		$bblank = round( 100 * ( $span['start'] - $start ) / $duration, 3 );
-		$lblank = round( 100 * ( $span['duration'] ) / $duration, 3 );
+		$bblank = round( 100 * ( $span['start'] - $start ) / $duration, 2 );
+		$lblank = round( 100 * ( $span['duration'] ) / $duration, 2 );
 		if ( 0.1 > $lblank ) {
 			$lblank = 0.1;
 		}
 		$eblank = 100.0 - $bblank - $lblank;
-		if ( 0 > $eblank ) {
-			$lblank += $eblank;
-			$eblank  = 0;
-		}
 		$tick    = round( 200 * $this->traces_tick / $duration, 3 );
 		$color   = $this->span_colors[ $span['name'] ];
-		$result .= '<div class="vibes-span-timeline" style="background-size: ' . $tick . '% 100%;">';
-		$result .= '<div class="vibes-span-timeline-blank" style="width:' . $bblank . '%">';
-		$result .= '</div>';
-		$result .= '<div class="vibes-span-timeline-line" style="background-color:' . $color . ';width:' . $lblank . '%">';
-		$result .= '</div>';
-		$result .= '<div class="vibes-span-timeline-blank" style="width:' . $eblank . '%;">';
-		$result .= '</div>';
-		$result .= '</div>';
-		$result .= '</div>';
+		if ( 0 > $eblank ) {
+			$eblank = 0.0;
+			$bblank = 100.0 - $lblank;
+		}
+		if ( 90 > $bblank ) {
+			$result .= '<div class="vibes-span-timeline" style="background-size: ' . $tick . '% 100%;">';
+			$result .= '<div class="vibes-span-timeline-blank" style="width:' . $bblank . '%">';
+			$result .= '</div>';
+			$result .= '<div class="vibes-span-timeline-line" style="background-color:' . $color . ';width:' . $lblank . '%">';
+			$result .= '</div>';
+			$result .= '<div class="vibes-span-timeline-blank" style="width:' . $eblank . '%;">';
+			$result .= '</div>';
+			$result .= '</div>';
+			$result .= '</div>';
+		} else {
+			$result .= '<div class="vibes-span-timeline" style="background-size: ' . $tick . '% 100%;">';
+			$result .= '<div class="vibes-span-timeline-blank" style="width:' . $bblank . '%;vertical-align: middle;">';
+			$result .= '</div>';
+			$result .= '<div class="vibes-span-timeline-line" style="background-color:' . $color . ';width:' . $lblank . '%">';
+			$result .= '</div>';
+			$result .= '<div class="vibes-span-timeline-blank" style="width:' . $eblank . '%;">';
+			$result .= '</div>';
+			$result .= '</div>';
+			$result .= '</div>';
+		}
 		return $result;
 	}
 
@@ -884,8 +896,9 @@ class Analytics {
 	 * @since    1.0.0
 	 */
 	private function get_spans( $row ) {
-		$result = '<div class="vibes-spans-wrap" style="width:100%">';
-		$spans  = [];
+		$result   = '<div class="vibes-spans-wrap" style="width:100%">';
+		$spans    = [];
+		$duration = 0;
 		foreach ( BrowserPerformance::$spans as $span ) {
 			if ( array_key_exists( 'avg_span_' . $span . '_start', $row ) && array_key_exists( 'avg_span_' . $span . '_duration', $row ) ) {
 				$s = [];
@@ -903,16 +916,12 @@ class Analytics {
 		if ( array_key_exists( 'avg_span_download_start', $row ) && array_key_exists( 'avg_span_download_duration', $row ) ) {
 			$duration = $row['avg_span_download_start'] + $row['avg_span_download_duration'] + 1;
 		}
-		if ( 0 < $duration % $this->traces_tick ) {
-			$duration = $this->traces_tick * ( 1 + (int) ( $duration / $this->traces_tick ) );
-		} else {
-			$duration += $this->traces_tick;
-		}
+		$duration += (int) ( $this->traces_tick / 10 );
 		if ( 3 * $this->traces_tick > $duration ) {
 			$duration = 3 * $this->traces_tick;
 		}
 		foreach ( $spans as $span ) {
-			$result .= $this->get_span( $span, 0, 0, $duration * 1.02 );
+			$result .= $this->get_span( $span, 0, 0, $duration );
 		}
 		$result .= '</div>';
 		return $result;
