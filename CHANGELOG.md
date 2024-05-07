@@ -3,6 +3,11 @@ All notable changes to **Vibes** are documented in this *changelog*.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and **Vibes** adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2024-05-07
+
+### Changed
+- The plugin now adapts its requirements to the PSR-3 loaded version.
+
 ## [1.8.2] - 2024-05-04
 
 ### Fixed
