@@ -16,8 +16,6 @@ Truthful user experience and browsing performances monitoring.
 
 **Vibes** is a robust user experience and browsing performances monitoring solution that analyzes perceived performances from users' viewpoint.
 
-> 🎁 Give this plugin a drive test on a free dummy site: [One-Click Test!](https://tastewp.com/new/?pre-installed-plugin-slug=vibes)
-
 It is fully autonomous - does not rely on external services and does not require any API keys, works on any type of hosting and in any type of environment - including staging, intranets or password protected sites.
 
 By continuously monitoring user experience, **Vibes** can report:
