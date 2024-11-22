@@ -13,6 +13,7 @@ use Vibes\Plugin\Feature\Schema;
 use Vibes\System\Nag;
 use Vibes\System\Option;
 use Vibes\System\Cache;
+use Vibes\System\Http;
 use Vibes\System\Environment;
 
 use Vibes\System\Role;
@@ -122,7 +123,8 @@ class Updater {
 				[
 					'timeout' => 10,
 					'headers' => [
-						'Accept' => 'application/vnd.github+json'
+						'Accept'     => 'application/vnd.github+json',
+						'user-agent' => Http::user_agent(),
 					]
 				]
 			);
@@ -141,8 +143,8 @@ class Updater {
 				[
 					'timeout' => 10,
 					'headers' => [
-						'Accept' => 'application/vnd.github+json'
-					]
+						'user-agent' => Http::user_agent(),
+					],
 				]
 			);
 			if ( is_wp_error( $remote ) || 200 !== wp_remote_retrieve_response_code( $remote ) || empty( wp_remote_retrieve_body( $remote ) ) ) {
