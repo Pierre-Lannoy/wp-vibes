@@ -205,7 +205,7 @@ class Http {
 	 * @since  1.0.0
 	 */
 	public static function user_agent() {
-		return VIBES_PRODUCT_NAME . ' (' . Environment::wordpress_version_id() . '; ' . Environment::plugin_version_id() . '; +' . VIBES_PRODUCT_URL . ')';
+		return 'PerfOps One - ' . VIBES_PRODUCT_NAME . ' / ' . VIBES_VERSION . ' (https://perfops.one/' . VIBES_SLUG . ')';
 	}
 
 	/**
