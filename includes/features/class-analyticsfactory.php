@@ -82,11 +82,11 @@ class AnalyticsFactory {
 		if ( ! ( $type = filter_input( INPUT_GET, 'type' ) ) ) {
 			$type = filter_input( INPUT_POST, 'type' );
 		}
-		if ( false !== strpos( $type, '.' ) ) {
+		if ( false !== strpos( $type ?? '', '.' ) ) {
 			$source = substr( $type, 0, strpos( $type, '.' ) );
 			$type   = str_replace( $source . '.', '', $type );
 		}
-		if ( 0 < strpos( $type, '_' ) ) {
+		if ( 0 < strpos( $type ?? '', '_' ) ) {
 			$type = substr( $type, strpos( $type, '_' ) + 1 );
 		}
 		if ( ! isset( $type ) || ! in_array( (string) $type, self::$allowed_types, true ) ) {

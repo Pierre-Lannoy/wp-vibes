@@ -336,7 +336,7 @@ class Analytics {
 			}
 			$this->authent             = $authent;
 			$this->available_countries = Schema::get_distinct_countries( $this->source, $this->filter, ! $this->is_today );
-			if ( 'all' !== strtolower( $country ) && ! in_array( strtoupper( $country ), $this->available_countries, true ) ) {
+			if ( 'all' !== strtolower( $country ?? '' ) && ! in_array( strtoupper( $country ?? '' ), $this->available_countries, true ) ) {
 				$country = 'all';
 			}
 			if ( 'all' !== strtolower( $country ) ) {

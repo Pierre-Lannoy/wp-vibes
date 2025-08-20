@@ -3,6 +3,13 @@ All notable changes to **Vibes** are documented in this *changelog*.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and **Vibes** adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2025-08-20
+
+### Fixed
+- [SEC005] SQL Injection vulnerability / [CVE-2025-9172](https://www.cve.org/CVERecord?id=CVE-2025-9172) (thanks to [Jonas Benjamin Friedli](https://www.wordfence.com/threat-intel/vulnerabilities/researchers/jonas-benjamin-friedli) from [Wordfence](https://www.wordfence.com)).
+- An error may be triggered while viewing plugin detail (in plugins page).
+- A PHP notice may be triggered when browsing analytics.
+
 ## [2.2.0] - 2025-04-14
 
 ### Added

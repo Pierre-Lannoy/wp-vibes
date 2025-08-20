@@ -229,8 +229,11 @@ class Capture {
 	 * @since    1.0.0
 	 */
 	public static function preprocess( $content ) {
-		if ( ( array_key_exists( 'type', $content ) && in_array( $content['type'], self::$types, true ) && array_key_exists( 'resource', $content ) && array_key_exists( 'authenticated', $content ) && array_key_exists( 'metrics', $content ) && is_array( $content['metrics'] ) ) ) {
-			self::single_preprocess( $content );
+		if ( array_key_exists( 'type', $content ) && in_array( $content['type'], self::$types, true ) && array_key_exists( 'resource', $content ) && array_key_exists( 'authenticated', $content ) && array_key_exists( 'metrics', $content ) && is_array( $content['metrics'] ) ) {
+			$process = self::single_preprocess( $content );
+			if ( true !== $process ) {
+				return $process;
+			}
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( 'Signal received and correctly pre-processed.', [ 'code' => 202 ] );
 			return new \WP_REST_Response( null, 202 );
 		}
@@ -256,6 +259,10 @@ class Capture {
 	 * @since    1.0.0
 	 */
 	private static function single_preprocess( $content ) {
+		if ( ! filter_var(  str_starts_with( 'http', $content['resource'] ) ? $content['resource'] : 'https://example.com' . $content['resource'], FILTER_VALIDATE_URL ) ) {
+			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->error( 'Unprocessable resource in POST request.', [ 'code' => 422 ] );
+			return new \WP_REST_Response( null, 422 );
+		}
 		$record = self::init_record( $content['resource'], $content['authenticated'], $content['type'], $content['initiator'] ?? '' );
 		foreach ( $content['metrics'] as $metric ) {
 			if ( ! ( is_array( $metric ) && array_key_exists( 'name', $metric ) ) ) {
