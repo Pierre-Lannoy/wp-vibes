@@ -10,7 +10,7 @@
  * Plugin Name:       Vibes
  * Plugin URI:        https://perfops.one/vibes
  * Description:       Truthful user experience and browsing performances monitoring.
- * Version:           2.4.0
+ * Version:           2.5.0
  * Requires at least: 6.4
  * Requires PHP:      8.2
  * Author:            Pierre Lannoy / PerfOps One
