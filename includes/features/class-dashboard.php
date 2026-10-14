@@ -49,6 +49,7 @@ class Dashboard {
 	 */
 	public static function add_webvitals() {
 		if ( Option::network_get( 'capture' ) ) {
+			/* translators: %d: Number of minutes. */
 			wp_add_dashboard_widget( 'vibes_webvitals', __( 'Web Vitals', 'vibes' ) . ' (' . sprintf( __( '%d minutes', 'vibes' ), Option::network_get( 'twindow' ) / 60 ) . ')', [
 				self::class,
 				'widget_webvitals'

@@ -186,6 +186,7 @@ class Sitehealth {
 					'label' => esc_html__( 'Performance', 'vibes' ),
 					'color' => 'blue',
 				],
+				/* translators: %s: Name of the recommended plugin, as a link. */
 				'description' => sprintf( '<p>%s %s</p>', esc_html__( 'APCu is available on your site, but only PerfOps One suite and some few other plugins know how to take advantage of it.', 'vibes' ), sprintf( esc_html__( 'You should consider using %s to improve your site\'s speed.', 'vibes' ), '<a href="https://perfops.one/apcu-manager/">APCu Manager</a>' ) ),
 				'actions'     => '',
 				'test'        => $key,

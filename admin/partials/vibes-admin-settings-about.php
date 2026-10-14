@@ -17,12 +17,15 @@ wp_enqueue_script( VIBES_ASSETS_ID );
 $warning = '';
 if ( Environment::is_plugin_in_dev_mode() ) {
 	$icon     = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'alert-triangle', 'none', '#FF8C00' ) . '" />&nbsp;';
+	/* translators: %s: Product name. */
 	$warning .= '<p>' . $icon . sprintf( esc_html__( 'This version of %s is not production-ready. It is a development preview. Use it at your own risk!', 'vibes' ), VIBES_PRODUCT_NAME ) . '</p>';
 }
 if ( Environment::is_plugin_in_rc_mode() ) {
 	$icon     = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'alert-triangle', 'none', '#FF8C00' ) . '" />&nbsp;';
+	/* translators: %s: Product name. */
 	$warning .= '<p>' . $icon . sprintf( esc_html__( 'This version of %s is a release candidate. Although ready for production, this version is not officially supported in production environments.', 'vibes' ), VIBES_PRODUCT_NAME ) . '</p>';
 }
+/* translators: %1$s: Product name. %2$s: List of integrated third-party works. */
 $intro      = sprintf( esc_html__( '%1$s is a free and open source plugin for WordPress. It integrates other free and open source works (as-is or modified) like: %2$s.', 'vibes' ), '<em>' . VIBES_PRODUCT_NAME . '</em>', do_shortcode( '[vibes-libraries]' ) );
 $trademarks = esc_html__( 'All brands, icons and graphic illustrations are registered trademarks of their respective owners.', 'vibes' );
 $icon       = '<img class="vibes-about-logo" style="opacity:0;" src="' . Vibes\Plugin\Core::get_base64_logo() . '" />';

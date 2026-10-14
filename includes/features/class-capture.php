@@ -244,6 +244,7 @@ class Capture {
 					return $result;
 				}
 			}
+			/* translators: %d: Number of signals received. */
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( _n( '%d signal received and correctly pre-processed.', '%d signals received and correctly pre-processed.', count( $content['metrics'] ), 'vibes' ), count( $content['metrics'] ) ), [ 'code' => 202 ] );
 			return new \WP_REST_Response( null, 202 );
 		}

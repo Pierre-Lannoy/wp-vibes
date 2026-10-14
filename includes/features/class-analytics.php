@@ -1040,12 +1040,15 @@ class Analytics {
 					$name = '<details class="vibes-span-details vibes-span-' . $type . '"><summary class="vibes-span-summary"><img style="width:14px;vertical-align:text-bottom;" src="' . Mime::get_category_icon( $row['category'] ) . '" />&nbsp;&nbsp;<span class="vibes-table-text">' . Mime::get_category_name( $row['category'] ) . '</span></summary><div class="vibes-span-container">' . $this->get_spans( $row ) . '</div></details>';
 					break;
 				case 'domains':
+					/* translators: %d: Number of subdomains. */
 					$authorities = sprintf( esc_html( _n( '%d subdomain', '%d subdomains', $row['cnt_authority'], 'vibes' ) ), $row['cnt_authority'] );
+					/* translators: %d: Number of endpoints. */
 					$endpoints   = sprintf( esc_html( _n( '%d endpoint', '%d endpoints', $row['cnt_endpoint'], 'vibes' ) ), $row['cnt_endpoint'] );
 					$detail      = $authorities . ' - ' . $endpoints;
 					$name        = '<img style="width:16px;vertical-align:bottom;" src="' . Favicon::get_base64( $row['id'] ) . '" />&nbsp;&nbsp;<span class="vibes-table-text"><a href="' . esc_url( $url ) . '">' . $row[ $group ] . '</a></span>';
 					break;
 				case 'authorities':
+					/* translators: %d: Number of endpoints. */
 					$detail = sprintf( esc_html( _n( '%d endpoint', '%d endpoints', $row['cnt_endpoint'], 'vibes' ) ), $row['cnt_endpoint'] );
 					$name   = '<img style="width:16px;vertical-align:bottom;" src="' . Favicon::get_base64( $row['id'] ) . '" />&nbsp;&nbsp;<span class="vibes-table-text"><a href="' . esc_url( $url ) . '">' . $row[ $group ] . '</a></span>';
 					break;
@@ -1054,6 +1057,7 @@ class Analytics {
 						$detail = $row['mime'];
 						$name   = '<img style="width:16px;vertical-align:bottom;" src="' . Mime::get_category_icon( $row['category'] ) . '" />&nbsp;&nbsp;<span class="vibes-table-text"><a href="' . esc_url( $url ) . '">' . $row[ $group ] . '</a></span>';
 					} else {
+						/* translators: %d: Number of different mime types. */
 						$detail = sprintf( esc_html( _n( '%d mime type', '%d different mime types', $row['cnt_mime'], 'vibes' ) ), $row['cnt_mime'] );
 						$name   = '<img style="width:16px;vertical-align:bottom;" src="' . Favicon::get_base64( $row['id'] ) . '" />&nbsp;&nbsp;<span class="vibes-table-text"><a href="' . esc_url( $url ) . '">' . $row[ $group ] . '</a></span>';
 					}
@@ -1702,6 +1706,7 @@ class Analytics {
 				$title         = esc_html__( 'Domain Details', 'vibes' );
 				$breadcrumbs[] = [
 					'title'    => esc_html__( 'Domain Summary', 'vibes' ),
+					/* translators: %s: Name of the site, subdomain or page to return to. */
 					'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->domain ),
 					'url'      => $this->get_url(
 						[ 'extra' ],
@@ -1717,6 +1722,7 @@ class Analytics {
 				$title         = esc_html__( 'Subdomain Summary', 'vibes' );
 				$breadcrumbs[] = [
 					'title'    => esc_html__( 'Domain Summary', 'vibes' ),
+					/* translators: %s: Name of the site, subdomain or page to return to. */
 					'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->domain ),
 					'url'      => $this->get_url(
 						[ 'extra' ],
@@ -1732,6 +1738,7 @@ class Analytics {
 				$title         = esc_html__( 'Subdomain Details', 'vibes' );
 				$breadcrumbs[] = [
 					'title'    => esc_html__( 'Subdomain Summary', 'vibes' ),
+					/* translators: %s: Name of the site, subdomain or page to return to. */
 					'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->subdomain ),
 					'url'      => $this->get_url(
 						[ 'extra' ],
@@ -1744,6 +1751,7 @@ class Analytics {
 				];
 				$breadcrumbs[] = [
 					'title'    => esc_html__( 'Domain Summary', 'vibes' ),
+					/* translators: %s: Name of the site, subdomain or page to return to. */
 					'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->domain ),
 					'url'      => $this->get_url(
 						[ 'extra' ],
@@ -1761,6 +1769,7 @@ class Analytics {
 						$title         = esc_html__( 'Mobiles Breakdown', 'vibes' );
 						$breadcrumbs[] = [
 							'title'    => esc_html__( 'Endpoint Summary', 'vibes' ),
+							/* translators: %s: Name of the site, subdomain or page to return to. */
 							'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->id ),
 							'url'      => $this->get_url(
 								[ 'extra' ],
@@ -1777,6 +1786,7 @@ class Analytics {
 				if ( 'resource' === $this->source ) {
 					$breadcrumbs[] = [
 						'title'    => esc_html__( 'Subdomain Summary', 'vibes' ),
+						/* translators: %s: Name of the site, subdomain or page to return to. */
 						'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->subdomain ),
 						'url'      => $this->get_url(
 							[ 'extra' ],
@@ -1789,6 +1799,7 @@ class Analytics {
 					];
 					$breadcrumbs[] = [
 						'title'    => esc_html__( 'Domain Summary', 'vibes' ),
+						/* translators: %s: Name of the site, subdomain or page to return to. */
 						'subtitle' => sprintf( esc_html__( 'Return to %s', 'vibes' ), $this->domain ),
 						'url'      => $this->get_url(
 							[ 'extra' ],
@@ -1829,6 +1840,7 @@ class Analytics {
 		}
 		$breadcrumbs[] = [
 			'title'    => esc_html__( 'Main Summary', 'vibes' ),
+			/* translators: %s: Name of the site to return to. */
 			'subtitle' => sprintf( esc_html__( 'Return to %s main page.', 'vibes' ), $name ),
 			'url'      => $this->get_url( [ 'domain', 'id', 'extra', 'type' ] ),
 		];
@@ -1857,8 +1869,10 @@ class Analytics {
 		} else {
 			if ( Role::SUPER_ADMIN === Role::admin_type() ) {
 				$quit   = '<a href="' . esc_url( $this->get_url( [ 'site' ] ) ) . '"><img style="width:12px;vertical-align:text-top;" src="' . Feather\Icons::get_base64( 'x-circle', 'none', '#FFFFFF' ) . '" /></a>';
+				/* translators: %s: Site ID. */
 				$result = '<span class="vibes-site-button">' . sprintf( esc_html__( 'Site ID %s', 'vibes' ), $this->site ) . $quit . '</span>';
 			} else {
+				/* translators: %s: Site ID. */
 				$result = '<span class="vibes-site-text">' . sprintf( esc_html__( 'Site ID %s', 'vibes' ), $this->site ) . '</span>';
 			}
 		}
