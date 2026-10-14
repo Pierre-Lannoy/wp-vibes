@@ -91,6 +91,7 @@ class Role {
 	public static function get_all() {
 		global $wp_roles;
 		if ( ! isset( $wp_roles ) ) {
+			// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- lazy-initializes $wp_roles, mirroring WP core's own wp_roles().
 			$wp_roles = new \WP_Roles();
 		}
 		$result = [];

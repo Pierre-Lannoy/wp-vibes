@@ -74,13 +74,11 @@ class Favicon {
 			return self::$icons[ $name ];
 		}
 		if ( ! file_exists( $dir ) ) {
-			try {
-				mkdir( $dir, 0755, true );
-				\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( 'Created: "' . $dir . '" favicons cache directory.' );
-			} catch ( \Exception $ex ) {
+			if ( ! wp_mkdir_p( $dir ) ) {
 				\DecaLog\Engine::eventsLogger( VIBES_SLUG )->error( 'Unable to create "' . $dir . '" favicons cache directory.' );
 				return self::get_default();
 			}
+			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( 'Created: "' . $dir . '" favicons cache directory.' );
 		}
 		if ( ! file_exists( $filename ) ) {
 			if ( ! $force_download ) {
