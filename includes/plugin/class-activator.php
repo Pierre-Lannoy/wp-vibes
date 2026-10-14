@@ -31,5 +31,4 @@ class Activator {
 		$schema = new Schema();
 		$schema->initialize();
 	}
-
 }

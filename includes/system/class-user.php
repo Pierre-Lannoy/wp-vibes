@@ -51,8 +51,8 @@ class User {
 	/**
 	 * Get the current user id.
 	 *
-	 * @param   mixed   $default    Optional. Default value to return if user is not detected.
-	 * @param   bool    $force      Optional. Try to force authent if user is not detected at first try.
+	 * @param   mixed $default    Optional. Default value to return if user is not detected.
+	 * @param   bool  $force      Optional. Try to force authent if user is not detected at first try.
 	 * @return  mixed|integer The user id if detected, null otherwise.
 	 * @since   1.0.0
 	 */
@@ -121,5 +121,4 @@ class User {
 		// phpcs:ignore
 		return $wpdb->query( $sql );
 	}
-
 }

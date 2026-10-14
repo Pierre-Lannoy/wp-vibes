@@ -27,9 +27,9 @@ class Markdown {
 	/**
 	 * Get the changelog.
 	 *
-	 * @param   string  $file        The filename.
-	 * @param   array   $attributes  'style' => 'markdown', 'html'.
-	 *                               'mode'  => 'raw', 'clean'.
+	 * @param   string $file        The filename.
+	 * @param   array  $attributes  'style' => 'markdown', 'html'.
+	 *                              'mode'  => 'raw', 'clean'.
 	 * @return  string  The output of the shortcode, ready to print.
 	 * @since 2.0.0
 	 */
@@ -69,9 +69,9 @@ class Markdown {
 	/**
 	 * Get the changelog.
 	 *
-	 * @param   string  $content     The filename.
-	 * @param   array   $attributes  'style' => 'markdown', 'html'.
-	 *                               'mode'  => 'raw', 'clean'.
+	 * @param   string $content     The filename.
+	 * @param   array  $attributes  'style' => 'markdown', 'html'.
+	 *                              'mode'  => 'raw', 'clean'.
 	 * @return  string  The output of the inline, ready to print.
 	 */
 	public function get_inline( $content, $attributes ) {
@@ -116,7 +116,7 @@ class Markdown {
 			}
 			$result = preg_replace_callback(
 				'/<h([0-9])>(.*)<\/h([0-9])>/iU',
-				function( $matches ) {
+				function ( $matches ) {
 					return '<h' . $matches[1] . ' id="' . sanitize_title_with_dashes( $matches[2] ) . '">' . $matches[2] . '</h' . $matches[3] . '>';
 				},
 				$result
@@ -141,10 +141,9 @@ class Markdown {
 				'ol'         => [],
 				'li'         => [],
 				'h3'         => [ 'id' => [] ],
-				'h4'         => [ ],
-				'h5'         => [ ],
+				'h4'         => [],
+				'h5'         => [],
 			]
 		);
 	}
-
 }

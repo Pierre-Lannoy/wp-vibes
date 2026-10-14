@@ -81,7 +81,7 @@ class IP {
 	 * @since 1.0.0
 	 */
 	public static function get_current() {
-		for ( $i = 0 ; $i < 2 ; $i++ ) {
+		for ( $i = 0; $i < 2; $i++ ) {
 			foreach (
 				[
 					'HTTP_FORWARDED',
@@ -113,7 +113,6 @@ class IP {
 					}
 				}
 			}
-
 		}
 		return '127.0.0.1';
 	}
@@ -121,7 +120,7 @@ class IP {
 	/**
 	 * Expands an IPv4 or IPv6 address.
 	 *
-	 * @param string    $ip     The IP to expand.
+	 * @param string $ip     The IP to expand.
 	 * @return  string  The expanded IP.
 	 * @since   1.0.0
 	 */
@@ -138,7 +137,7 @@ class IP {
 	/**
 	 * Expands an IPv4 address.
 	 *
-	 * @param string    $ip     The IP to expand.
+	 * @param string $ip     The IP to expand.
 	 * @return  string  The expanded IP.
 	 * @since   1.0.0
 	 */
@@ -149,7 +148,7 @@ class IP {
 	/**
 	 * Normalizes an IPv4 address.
 	 *
-	 * @param string    $ip     The IP to normalize.
+	 * @param string $ip     The IP to normalize.
 	 * @return  string  The normalized IP.
 	 * @since   1.0.0
 	 */
@@ -160,7 +159,7 @@ class IP {
 	/**
 	 * Expands an IPv6 address.
 	 *
-	 * @param string    $ip     The IP to expand.
+	 * @param string $ip     The IP to expand.
 	 * @return  string  The expanded IP.
 	 * @since   1.0.0
 	 */
@@ -171,12 +170,11 @@ class IP {
 	/**
 	 * Normalizes an IPv6 address.
 	 *
-	 * @param string    $ip     The IP to normalize.
+	 * @param string $ip     The IP to normalize.
 	 * @return  string  The normalized IP.
 	 * @since   1.0.0
 	 */
 	public static function normalize_v6( $ip ) {
 		return inet_ntop( inet_pton( str_replace( self::$clean, '', $ip ) ) );
 	}
-
 }

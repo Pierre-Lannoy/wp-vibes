@@ -90,7 +90,7 @@ class Mime {
 	/**
 	 * Get a mime type.
 	 *
-	 * @param   string  $resource   The resource to guess mime type.
+	 * @param   string $resource   The resource to guess mime type.
 	 * @return  string  The mime type.
 	 * @since   1.0.0
 	 */
@@ -116,7 +116,7 @@ class Mime {
 	/**
 	 * Get a mime category.
 	 *
-	 * @param   string  $mime   The mime type to get mime category.
+	 * @param   string $mime   The mime type to get mime category.
 	 * @return  string  The mime category.
 	 * @since   1.0.0
 	 */
@@ -150,7 +150,7 @@ class Mime {
 	/**
 	 * Get a mime category name.
 	 *
-	 * @param   string  $category   The mime category to get mime category name.
+	 * @param   string $category   The mime category to get mime category name.
 	 * @return  string  The mime category name.
 	 * @since   1.0.0
 	 */
@@ -228,7 +228,7 @@ class Mime {
 	/**
 	 * Get a mime category icon.
 	 *
-	 * @param   string  $category   The mime category to get mime category name.
+	 * @param   string $category   The mime category to get mime category name.
 	 * @return  string  The mime category name.
 	 * @since   1.0.0
 	 */

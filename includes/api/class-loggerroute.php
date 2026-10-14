@@ -11,7 +11,6 @@
 
 namespace Vibes\API;
 
-
 use Vibes\System\Role;
 use Vibes\Plugin\Feature\Wpcli;
 use Vibes\Plugin\Feature\Memory;
@@ -108,9 +107,9 @@ class LoggerRoute extends \WP_REST_Controller {
 	/**
 	 * Sanitization callback for level.
 	 *
-	 * @param   mixed             $value      Value of the arg.
-	 * @param   \WP_REST_Request  $request    Current request object.
-	 * @param   string            $param      Name of the arg.
+	 * @param   mixed            $value      Value of the arg.
+	 * @param   \WP_REST_Request $request    Current request object.
+	 * @param   string           $param      Name of the arg.
 	 * @return  string  The level sanitized.
 	 * @since  2.0.0
 	 */
@@ -148,5 +147,4 @@ class LoggerRoute extends \WP_REST_Controller {
 		$result['items'] = $records;
 		return new \WP_REST_Response( $result, 200 );
 	}
-
 }

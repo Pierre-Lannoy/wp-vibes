@@ -89,8 +89,8 @@ class Wpcli {
 	/**
 	 * Write ids as clean stdout.
 	 *
-	 * @param   array   $ids   The ids.
-	 * @param   string  $field  Optional. The field to output.
+	 * @param   array  $ids   The ids.
+	 * @param   string $field  Optional. The field to output.
 	 * @since   1.0.0
 	 */
 	private function write_ids( $ids, $field = '' ) {
@@ -113,8 +113,8 @@ class Wpcli {
 	/**
 	 * Write an error.
 	 *
-	 * @param   integer  $code      Optional. The error code.
-	 * @param   boolean  $stdout    Optional. Clean stdout output.
+	 * @param   integer $code      Optional. The error code.
+	 * @param   boolean $stdout    Optional. Clean stdout output.
 	 * @since   1.0.0
 	 */
 	private function error( $code = 255, $stdout = false ) {
@@ -137,9 +137,9 @@ class Wpcli {
 	/**
 	 * Write a warning.
 	 *
-	 * @param   string   $msg       The message.
-	 * @param   string   $result    Optional. The result.
-	 * @param   boolean  $stdout    Optional. Clean stdout output.
+	 * @param   string  $msg       The message.
+	 * @param   string  $result    Optional. The result.
+	 * @param   boolean $stdout    Optional. Clean stdout output.
 	 * @since   1.0.0
 	 */
 	private function warning( $msg, $result = '', $stdout = false ) {
@@ -155,9 +155,9 @@ class Wpcli {
 	/**
 	 * Write a success.
 	 *
-	 * @param   string   $msg       The message.
-	 * @param   string   $result    Optional. The result.
-	 * @param   boolean  $stdout    Optional. Clean stdout output.
+	 * @param   string  $msg       The message.
+	 * @param   string  $result    Optional. The result.
+	 * @param   boolean $stdout    Optional. Clean stdout output.
 	 * @since   1.0.0
 	 */
 	private function success( $msg, $result = '', $stdout = false ) {
@@ -173,9 +173,9 @@ class Wpcli {
 	/**
 	 * Write a wimple line.
 	 *
-	 * @param   string   $msg       The message.
-	 * @param   string   $result    Optional. The result.
-	 * @param   boolean  $stdout    Optional. Clean stdout output.
+	 * @param   string  $msg       The message.
+	 * @param   string  $result    Optional. The result.
+	 * @param   boolean $stdout    Optional. Clean stdout output.
 	 * @since   1.0.0
 	 */
 	private function line( $msg, $result = '', $stdout = false ) {
@@ -190,8 +190,8 @@ class Wpcli {
 	/**
 	 * Write a wimple log line.
 	 *
-	 * @param   string   $msg       The message.
-	 * @param   boolean  $stdout    Optional. Clean stdout output.
+	 * @param   string  $msg       The message.
+	 * @param   boolean $stdout    Optional. Clean stdout output.
 	 * @since   1.0.0
 	 */
 	private function log( $msg, $stdout = false ) {
@@ -203,7 +203,7 @@ class Wpcli {
 	/**
 	 * Get params from command line.
 	 *
-	 * @param   array   $args   The command line parameters.
+	 * @param   array $args   The command line parameters.
 	 * @return  array The true parameters.
 	 * @since   1.0.0
 	 */
@@ -221,8 +221,8 @@ class Wpcli {
 	/**
 	 * Filters records.
 	 *
-	 * @param array $records The records to filter.
-	 * @param array $filters Optional. The filter to apply.
+	 * @param array  $records The records to filter.
+	 * @param array  $filters Optional. The filter to apply.
 	 * @param string $index Optional. The starting index.
 	 *
 	 * @return  array   The filtered records.
@@ -317,7 +317,6 @@ class Wpcli {
 	 *
 	 *
 	 *   === For other examples and recipes, visit https://github.com/Pierre-Lannoy/wp-vibes/blob/master/WP-CLI.md ===
-	 *
 	 */
 	public function status( $args, $assoc_args ) {
 		\WP_CLI::line( sprintf( '%s is running.', Environment::plugin_version_text() ) );
@@ -353,7 +352,7 @@ class Wpcli {
 			\WP_CLI::line( 'IP information support: no.' );
 		}
 		if ( defined( 'PODD_VERSION' ) ) {
-			\WP_CLI::line( 'Device detection support: yes (Device Detector v' . PODD_VERSION . ').');
+			\WP_CLI::line( 'Device detection support: yes (Device Detector v' . PODD_VERSION . ').' );
 		} else {
 			\WP_CLI::line( 'Device detection support: no.' );
 		}
@@ -389,7 +388,6 @@ class Wpcli {
 	 *
 	 *
 	 *   === For other examples and recipes, visit https://github.com/Pierre-Lannoy/wp-vibes/blob/master/WP-CLI.md ===
-	 *
 	 */
 	public function settings( $args, $assoc_args ) {
 		$stdout  = \WP_CLI\Utils\get_flag_value( $assoc_args, 'stdout', false );
@@ -491,7 +489,6 @@ class Wpcli {
 	 *
 	 *
 	 *   === For other examples and recipes, visit https://github.com/Pierre-Lannoy/wp-vibes/blob/master/WP-CLI.md ===
-	 *
 	 */
 	public function exitcode( $args, $assoc_args ) {
 		$stdout = \WP_CLI\Utils\get_flag_value( $assoc_args, 'stdout', false );
@@ -534,7 +531,7 @@ class Wpcli {
 	 *  - resource
 	 * ---
 	 *
-	 *[--filter=<filter>]
+	 * [--filter=<filter>]
 	 * : The misc. filters to apply. Show only signals matching the specified pattern.
 	 * MUST be a json string containing pairs "field":"regexp".
 	 * ---
@@ -574,7 +571,6 @@ class Wpcli {
 	 *
 	 *
 	 *   === For other examples and recipes, visit https://github.com/Pierre-Lannoy/wp-vibes/blob/master/WP-CLI.md ===
-	 *
 	 */
 	public function tail( $args, $assoc_args ) {
 		if ( ! function_exists( 'shmop_open' ) || ! function_exists( 'shmop_read' ) || ! function_exists( 'shmop_write' ) || ! function_exists( 'shmop_delete' ) ) {
@@ -645,7 +641,6 @@ class Wpcli {
 		$md = new Markdown();
 		return $md->get_shortcode( 'WP-CLI.md', $attributes );
 	}
-
 }
 
 add_shortcode( 'vibes-wpcli', [ 'Vibes\Plugin\Feature\Wpcli', 'sc_get_helpfile' ] );

@@ -55,7 +55,7 @@ wp_enqueue_style( 'vibes-chartist-tooltip' );
 			</div>
 		<?php } ?>
 		<?php if ( 'summary' === $analytics->type || 'domain' === $analytics->type || 'authority' === $analytics->type || 'endpoint' === $analytics->type ) { ?>
-		    <?php $network = ( Role::SUPER_ADMIN === Role::admin_type() && 'all' === $analytics->site ); ?>
+			<?php $network = ( Role::SUPER_ADMIN === Role::admin_type() && 'all' === $analytics->site ); ?>
 			<div class="vibes-row">
 				<div class="vibes-box vibes-box-33-33-33-line">
 					<?php echo wp_kses( $analytics->get_initiator_box(), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
@@ -66,7 +66,12 @@ wp_enqueue_style( 'vibes-chartist-tooltip' );
 			<div class="vibes-row first-full-row">
 				<?php echo wp_kses( $analytics->get_categories_list(), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
 			</div>
-			<div class="vibes-row <?php if ( ! $network ) { echo ' last-full-row'; } ?>">
+			<div class="vibes-row 
+			<?php
+			if ( ! $network ) {
+				echo ' last-full-row'; }
+			?>
+			">
 				<?php echo wp_kses( $analytics->get_mimes_list(), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
 			</div>
 			<?php if ( $network ) { ?>

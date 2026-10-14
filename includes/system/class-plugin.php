@@ -32,15 +32,15 @@ class Plugin {
 	/**
 	 * Initializes the class and set its properties.
 	 *
-	 * @param string    $slug           The slug of the plugin.
-	 * @param boolean   $skip_detection Optional. Skip header parsing.
+	 * @param string  $slug           The slug of the plugin.
+	 * @param boolean $skip_detection Optional. Skip header parsing.
 	 * @since 1.0.0
 	 */
 	public function __construct( $slug, $skip_detection = true ) {
 		$this->slug = $slug . '/' . $slug . '.php';
 		$plugin     = WP_PLUGIN_DIR . '/' . $this->slug;
 		if ( $skip_detection ) {
-			$this->details = [ 'detection' => 'skipped'];
+			$this->details = [ 'detection' => 'skipped' ];
 		} else {
 			if ( ! function_exists( 'get_plugin_data' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -54,7 +54,7 @@ class Plugin {
 	/**
 	 * Get a value.
 	 *
-	 * @param string    $key   The value to retrieve.
+	 * @param string $key   The value to retrieve.
 	 * @return string   The value.
 	 * @since 1.0.0
 	 */

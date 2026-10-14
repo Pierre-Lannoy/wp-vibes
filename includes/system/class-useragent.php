@@ -428,5 +428,4 @@ class UserAgent {
 	 * @since   1.0.0
 	 */
 	public $bot_producer_url = '';
-
 }

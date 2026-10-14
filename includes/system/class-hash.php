@@ -86,7 +86,6 @@ class Hash {
 		}
 		return $result;
 	}
-
 }
 
 Hash::init();

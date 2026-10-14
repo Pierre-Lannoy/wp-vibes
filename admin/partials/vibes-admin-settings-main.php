@@ -55,8 +55,8 @@ $url        = esc_url(
 		?>
 		" class="nav-tab <?php echo 'about' === $active_tab ? 'nav-tab-active' : ''; ?>" style="float:right;"><?php esc_html_e( 'About', 'vibes' ); ?></a>
 		<?php if ( class_exists( 'Vibes\Plugin\Feature\Wpcli' ) ) { ?>
-            <a href="
-            <?php
+			<a href="
+			<?php
 			echo esc_url(
 				add_query_arg(
 					array(
@@ -67,10 +67,10 @@ $url        = esc_url(
 				)
 			);
 			?>
-            " class="nav-tab <?php echo 'wpcli' === $active_tab ? 'nav-tab-active' : ''; ?>" style="float:right;">WP-CLI</a>
+			" class="nav-tab <?php echo 'wpcli' === $active_tab ? 'nav-tab-active' : ''; ?>" style="float:right;">WP-CLI</a>
 		<?php } ?>
 	</h2>
-    
+	
 	<?php if ( 'misc' === $active_tab ) { ?>
 		<?php include __DIR__ . '/vibes-admin-settings-options.php'; ?>
 	<?php } ?>
@@ -81,9 +81,9 @@ $url        = esc_url(
 		<?php wp_enqueue_style( VIBES_ASSETS_ID ); ?>
 		<?php echo do_shortcode( '[vibes-wpcli]' ); ?>
 	<?php } ?>
-    <div style="min-height: 100px; position: fixed; bottom: 4vh; right: 4vw; z-index: 10000">
-        <div style="background-color: #FFF; padding: 20px; border-radius: 4px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2)">
-            <img style="width:60px; margin-right: 20px;" src="<?php echo \PerfOpsOne\Resources::get_sponsor_base64_logo(); ?>"/><div style="float: right; text-align: center;padding-top:10px">The PerfOps One plugins suite is sponsored by <br/><a href="https://hosterra.eu">Hosterra - Ethical & Sustainable Internet Hosting</a></div>
-        </div>
-    </div>
+	<div style="min-height: 100px; position: fixed; bottom: 4vh; right: 4vw; z-index: 10000">
+		<div style="background-color: #FFF; padding: 20px; border-radius: 4px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2)">
+			<img style="width:60px; margin-right: 20px;" src="<?php echo \PerfOpsOne\Resources::get_sponsor_base64_logo(); ?>"/><div style="float: right; text-align: center;padding-top:10px">The PerfOps One plugins suite is sponsored by <br/><a href="https://hosterra.eu">Hosterra - Ethical & Sustainable Internet Hosting</a></div>
+		</div>
+	</div>
 </div>

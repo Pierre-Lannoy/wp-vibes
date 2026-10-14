@@ -170,13 +170,13 @@ class GeoIP {
 	/**
 	 * Get the image flag.
 	 *
-	 * @param   string    $ip         Optional. The ip to detect from.
-	 *                                If not specified, get the ip of the current request.
-	 * @param   string    $class      Optional. The class(es) name(s).
-	 * @param   string    $style      Optional. The style.
-	 * @param   string    $id         Optional. The ID.
-	 * @param   string    $alt        Optional. The alt text.
-	 * @param   boolean   $squared    Optional. The flag must be squared.
+	 * @param   string  $ip         Optional. The ip to detect from.
+	 *                              If not specified, get the ip of the current request.
+	 * @param   string  $class      Optional. The class(es) name(s).
+	 * @param   string  $style      Optional. The style.
+	 * @param   string  $id         Optional. The ID.
+	 * @param   string  $alt        Optional. The alt text.
+	 * @param   boolean $squared    Optional. The flag must be squared.
 	 * @return  string                The svg flag base 64 encoded.
 	 * @since 1.0.0
 	 */
@@ -195,12 +195,12 @@ class GeoIP {
 	/**
 	 * Get the image flag.
 	 *
-	 * @param   string    $cc         The country code.
-	 * @param   string    $class      Optional. The class(es) name(s).
-	 * @param   string    $style      Optional. The style.
-	 * @param   string    $id         Optional. The ID.
-	 * @param   string    $alt        Optional. The alt text.
-	 * @param   boolean   $squared    Optional. The flag must be squared.
+	 * @param   string  $cc         The country code.
+	 * @param   string  $class      Optional. The class(es) name(s).
+	 * @param   string  $style      Optional. The style.
+	 * @param   string  $id         Optional. The ID.
+	 * @param   string  $alt        Optional. The alt text.
+	 * @param   boolean $squared    Optional. The flag must be squared.
 	 * @return  string                The svg flag base 64 encoded.
 	 * @since 1.0.0
 	 */
@@ -220,5 +220,4 @@ class GeoIP {
 		}
 		return '';
 	}
-
 }

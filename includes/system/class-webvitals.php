@@ -168,8 +168,8 @@ class WebVitals {
 	/**
 	 * Get the rate field.
 	 *
-	 * @param   string      $metric The metric name.
-	 * @param   integer     $value  The current storable value of the metric.
+	 * @param   string  $metric The metric name.
+	 * @param   integer $value  The current storable value of the metric.
 	 * @return  string  The field name.
 	 * @since 1.0.0
 	 */
@@ -184,10 +184,8 @@ class WebVitals {
 			$result = 'poor';
 			if ( $value <= self::$metrics_rates[ $metric ][0] ) {
 				$result = 'good';
-			} else {
-				if ( $value <= self::$metrics_rates[ $metric ][1] ) {
+			} elseif ( $value <= self::$metrics_rates[ $metric ][1] ) {
 					$result = 'impr';
-				}
 			}
 			return $result;
 		}
@@ -197,8 +195,8 @@ class WebVitals {
 	/**
 	 * Get the storable value.
 	 *
-	 * @param   string      $metric The metric name.
-	 * @param   integer     $value  The current raw value of the metric.
+	 * @param   string  $metric The metric name.
+	 * @param   integer $value  The current raw value of the metric.
 	 * @return  integer  The storable value.
 	 * @since 1.0.0
 	 */
@@ -212,8 +210,8 @@ class WebVitals {
 	/**
 	 * Get the displayable value.
 	 *
-	 * @param   string      $metric The metric name.
-	 * @param   integer     $value  The current storable value of the metric.
+	 * @param   string  $metric The metric name.
+	 * @param   integer $value  The current storable value of the metric.
 	 * @return  float  The displayable value.
 	 * @since 1.0.0
 	 */
@@ -234,8 +232,8 @@ class WebVitals {
 	/**
 	 * Get the graphable value.
 	 *
-	 * @param   string      $metric The metric name.
-	 * @param   integer     $value  The current storable value of the metric.
+	 * @param   string  $metric The metric name.
+	 * @param   integer $value  The current storable value of the metric.
 	 * @return  null|float  The graphable value.
 	 * @since 1.0.0
 	 */
@@ -249,8 +247,8 @@ class WebVitals {
 	/**
 	 * Get the displayable value.
 	 *
-	 * @param   string      $metric The metric name.
-	 * @param   integer     $value  The current storable value of the metric.
+	 * @param   string  $metric The metric name.
+	 * @param   integer $value  The current storable value of the metric.
 	 * @return  float  The displayable value.
 	 * @since 1.0.0
 	 */
@@ -283,7 +281,7 @@ class WebVitals {
 	/**
 	 * Get the information line about metric and value.
 	 *
-	 * @param   array      $metric The metric array.
+	 * @param   array $metric The metric array.
 	 * @return  string  The storable value.
 	 * @since 1.0.0
 	 */
@@ -310,5 +308,4 @@ class WebVitals {
 		}
 		return strtoupper( str_pad( $idx, 5 ) ) . strtoupper( str_pad( $qdx, 7 ) ) . $val;
 	}
-
 }

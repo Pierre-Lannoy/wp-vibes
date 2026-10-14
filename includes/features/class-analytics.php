@@ -470,7 +470,7 @@ class Analytics {
 	 * Query statistics table.
 	 *
 	 * @param   array  $row        The type of widget.
-	 * @param   string  $field     The class or device id.
+	 * @param   string $field     The class or device id.
 	 * @return string  The result of the query, ready to encode.
 	 * @since    1.0.0
 	 */
@@ -537,8 +537,8 @@ class Analytics {
 	/**
 	 * Query statistics table.
 	 *
-	 * @param   string  $type   The type of widget.
-	 * @param   string  $id     The class or device id.
+	 * @param   string $type   The type of widget.
+	 * @param   string $id     The class or device id.
 	 * @return array  The result of the query, ready to encode.
 	 * @since    1.0.0
 	 */
@@ -674,7 +674,7 @@ class Analytics {
 					'meta'  => $meta,
 					'value' => (float) $percent,
 				];
-				++ $cpt;
+				++$cpt;
 			}
 			if ( 0 < $other ) {
 				if ( 0 < $total ) {
@@ -780,7 +780,7 @@ class Analytics {
 			if ( 0.5 > $percent ) {
 				$percent = 0.5;
 			}
-			$text    = $data[ $cpt ][ $group ];
+			$text = $data[ $cpt ][ $group ];
 			if ( 60 < strlen( $text ) ) {
 				$text = substr( $text, 0, 60 ) . '…';
 			}
@@ -858,8 +858,8 @@ class Analytics {
 			$lblank = 0.1;
 		}
 		$eblank = 100.0 - $bblank - $lblank;
-		$tick    = round( 200 * $this->traces_tick / $duration, 3 );
-		$color   = $this->span_colors[ $span['name'] ];
+		$tick   = round( 200 * $this->traces_tick / $duration, 3 );
+		$color  = $this->span_colors[ $span['name'] ];
 		if ( 0 > $eblank ) {
 			$eblank = 0.0;
 			$bblank = 100.0 - $lblank;
@@ -891,7 +891,7 @@ class Analytics {
 	/**
 	 * Get a trace visualization.
 	 *
-	 * @param   array   $row    The type of list.
+	 * @param   array $row    The type of list.
 	 * @return  string  The span, ready to print.
 	 * @since    1.0.0
 	 */
@@ -930,8 +930,8 @@ class Analytics {
 	/**
 	 * Query statistics table.
 	 *
-	 * @param   string  $type   The type of widget.
-	 * @param   string  $id     The class or device id.
+	 * @param   string $type   The type of widget.
+	 * @param   string $id     The class or device id.
 	 * @return array  The result of the query, ready to encode.
 	 * @since    1.0.0
 	 */
@@ -1316,13 +1316,13 @@ class Analytics {
 				if ( ( array_key_exists( strtolower( $metric ), $max ) && $max[ strtolower( $metric ) ] < $val ) || ! array_key_exists( strtolower( $metric ), $max ) ) {
 					$max[ strtolower( $metric ) ] = $val;
 				}
-				$series[ strtolower( $metric ) ]['avg'][$idx] = [
+				$series[ strtolower( $metric ) ]['avg'][ $idx ] = [
 					'x' => $ts,
 					'y' => $val,
 				];
 				foreach ( [ 'good', 'impr', 'poor' ] as $field ) {
 					if ( array_key_exists( 'pct_' . $metric . '_' . $field, $row ) ) {
-						$series[ strtolower( $metric ) ][ $field ][$idx] = [
+						$series[ strtolower( $metric ) ][ $field ][ $idx ] = [
 							'x' => $ts,
 							'y' => round( 100 * $row[ 'pct_' . $metric . '_' . $field ], 1 ),
 						];
@@ -1330,10 +1330,10 @@ class Analytics {
 				}
 			}
 		}
-		$scale  = [];
+		$scale = [];
 		foreach ( $metrics as $metric ) {
-			$metric = strtolower( $metric );
-			$series[ $metric ]['avg']   = wp_json_encode(
+			$metric                   = strtolower( $metric );
+			$series[ $metric ]['avg'] = wp_json_encode(
 				[
 					'series' => [
 						[
@@ -1343,9 +1343,9 @@ class Analytics {
 					],
 				],
 			);
-			$series[ $metric ]['avg']   = str_replace( '"x":"new', '"x":new', $series[ $metric ]['avg'] );
-			$series[ $metric ]['avg']   = str_replace( ')","y"', '),"y"', $series[ $metric ]['avg'] );
-			$series[ $metric ]['avg']   = str_replace( '"null"', 'null', $series[ $metric ]['avg'] );
+			$series[ $metric ]['avg'] = str_replace( '"x":"new', '"x":new', $series[ $metric ]['avg'] );
+			$series[ $metric ]['avg'] = str_replace( ')","y"', '),"y"', $series[ $metric ]['avg'] );
+			$series[ $metric ]['avg'] = str_replace( '"null"', 'null', $series[ $metric ]['avg'] );
 			if ( 'ttfb' !== $metric ) {
 				$series[ $metric ]['pct'] = wp_json_encode(
 					[
@@ -1454,7 +1454,7 @@ class Analytics {
 		$max       = [];
 		$max[0]    = [];
 		$max[1]    = [];
-		$init    = strtotime( $this->start ) - 86400;
+		$init      = strtotime( $this->start ) - 86400;
 		for ( $i = 0; $i < $this->duration + 2; $i++ ) {
 			$ts = 'new Date(' . (string) ( ( $i * 86400 ) + $init ) . '000)';
 			foreach ( $metrics as $stack ) {
@@ -1478,7 +1478,7 @@ class Analytics {
 					if ( ( array_key_exists( $metric, $max[ $key ] ) && $max[ $key ][ $metric ] < $val ) || ! array_key_exists( $metric, $max[ $key ] ) ) {
 						$max[ $key ][ $metric ] = $val;
 					}
-					$series[ $metric ]['avg'][$idx] = [
+					$series[ $metric ]['avg'][ $idx ] = [
 						'x' => $ts,
 						'y' => $val,
 					];
@@ -1543,7 +1543,7 @@ class Analytics {
 		$result .= '  showLine: true,';
 		$result .= '  showPoint: false,';
 		$result .= '  plugins: [time_tooltip' . $uuid . '],';
-		//$result .= '  axisX: {scaleMinSpace: 100, type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
+		// $result .= '  axisX: {scaleMinSpace: 100, type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
 		$result .= '  axisX: {scaleMinSpace: 10, type: Chartist.FixedScaleAxis, divisor:' . ( $this->duration + 1 ) . ', labelInterpolationFnc: function skipLabels(value, index, labels) {return 0 === index % ' . $ticks . ' ? moment(value).format("DD") : null;}},';
 		$result .= '  axisY: {type: Chartist.FixedScaleAxis, ticks: [1000, 2000, 3000],low: 0, labelInterpolationFnc: function (value) {return value.toString() + " ms";}},';
 		$result .= ' };';
@@ -1563,7 +1563,7 @@ class Analytics {
 		$result .= '  showLine: true,';
 		$result .= '  showPoint: false,';
 		$result .= '  plugins: [net_tooltip' . $uuid . '],';
-		//$result .= '  axisX: {type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
+		// $result .= '  axisX: {type: Chartist.FixedScaleAxis, divisor:' . $divisor . ', labelInterpolationFnc: function (value) {return moment(value).format("YYYY-MM-DD");}},';
 		$result .= '  axisX: {scaleMinSpace: 10, type: Chartist.FixedScaleAxis, divisor:' . ( $this->duration + 1 ) . ', labelInterpolationFnc: function skipLabels(value, index, labels) {return 0 === index % ' . $ticks . ' ? moment(value).format("DD") : null;}},';
 		$result .= '  axisY: {type: Chartist.AutoScaleAxis, labelInterpolationFnc: function (value) {return value.toString() + " ms";}},';
 		$result .= ' };';
@@ -1854,13 +1854,11 @@ class Analytics {
 		}
 		if ( 'all' === $this->site ) {
 			$result = '<span class="vibes-site-text">' . esc_html__( 'All Sites', 'vibes' ) . '</span>';
-		} else {
-			if ( Role::SUPER_ADMIN === Role::admin_type() ) {
+		} elseif ( Role::SUPER_ADMIN === Role::admin_type() ) {
 				$quit   = '<a href="' . esc_url( $this->get_url( [ 'site' ] ) ) . '"><img style="width:12px;vertical-align:text-top;" src="' . Feather\Icons::get_base64( 'x-circle', 'none', '#FFFFFF' ) . '" /></a>';
 				$result = '<span class="vibes-site-button">' . sprintf( esc_html__( 'Site ID %s', 'vibes' ), $this->site ) . $quit . '</span>';
-			} else {
-				$result = '<span class="vibes-site-text">' . sprintf( esc_html__( 'Site ID %s', 'vibes' ), $this->site ) . '</span>';
-			}
+		} else {
+			$result = '<span class="vibes-site-text">' . sprintf( esc_html__( 'Site ID %s', 'vibes' ), $this->site ) . '</span>';
 		}
 		return '<span class="vibes-site">' . $result . '</span>';
 	}
@@ -2135,7 +2133,7 @@ class Analytics {
 			[
 				'query'   => 'resource.mimes' . ( 'none' !== $this->mode ? '~' . $this->mode : '' ),
 				'queried' => 0,
-				'domain' => $this->domain,
+				'domain'  => $this->domain,
 			]
 		);
 		return $result;
@@ -2156,7 +2154,7 @@ class Analytics {
 			[
 				'query'   => 'resource.categories' . ( 'none' !== $this->mode ? '~' . $this->mode : '' ),
 				'queried' => 0,
-				'domain' => $this->domain,
+				'domain'  => $this->domain,
 			]
 		);
 		return $result;
@@ -2379,7 +2377,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.top-domains',
 				'queried' => 5,
-				'domain' => $this->domain,
+				'domain'  => $this->domain,
 			]
 		);
 		return $result;
@@ -2409,7 +2407,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.top-authorities',
 				'queried' => 5,
-				'domain' => $this->domain,
+				'domain'  => $this->domain,
 			]
 		);
 		return $result;
@@ -2439,7 +2437,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.top-endpoints',
 				'queried' => 5,
-				'domain' => $this->domain,
+				'domain'  => $this->domain,
 			]
 		);
 		return $result;
@@ -2460,7 +2458,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.category' . ( 'none' !== $this->mode ? '~' . $this->mode : '' ),
 				'queried' => 7,
-				'domain' => $this->domain,
+				'domain'  => $this->domain,
 			]
 		);
 		return $result;
@@ -2481,7 +2479,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.initiator' . ( 'none' !== $this->mode ? '~' . $this->mode : '' ),
 				'queried' => 4,
-				'domain' => $this->domain,
+				'domain'  => $this->domain,
 			]
 		);
 		return $result;
@@ -2502,7 +2500,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.security' . ( 'none' !== $this->mode ? '~' . $this->mode : '' ),
 				'queried' => 4,
-				'domain' => $this->domain,
+				'domain'  => $this->domain,
 			]
 		);
 		return $result;
@@ -2523,7 +2521,7 @@ class Analytics {
 			[
 				'query'   => $this->source . '.cache' . ( 'none' !== $this->mode ? '~' . $this->mode : '' ),
 				'queried' => 4,
-				'domain' => $this->domain,
+				'domain'  => $this->domain,
 			]
 		);
 		return $result;
@@ -2675,5 +2673,4 @@ class Analytics {
 		$result .= '</script>';
 		return $result;
 	}
-
 }

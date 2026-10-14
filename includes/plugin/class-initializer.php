@@ -26,7 +26,6 @@ class Initializer {
 	 * @since   1.0.0
 	 */
 	public function __construct() {
-
 	}
 
 	/**
@@ -48,5 +47,4 @@ class Initializer {
 	public function late_initialize() {
 		require_once VIBES_PLUGIN_DIR . 'perfopsone/init.php';
 	}
-
 }

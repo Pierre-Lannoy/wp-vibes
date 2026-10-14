@@ -65,10 +65,12 @@ if ( ! defined( 'PERFOO_ALLOWED_HTML_FOR_DASHBOARD' ) ) {
 
 		],
 	];
-	add_filter( 'safe_style_css',
-		function( $allowed ) {
+	add_filter(
+		'safe_style_css',
+		function ( $allowed ) {
 			return array_merge( $allowed, [ 'opacity' ] );
-		});
+		}
+	);
 	define( 'PERFOO_ALLOWED_HTML_FOR_DASHBOARD', array_merge( $allowed, $extra ) );
 }
 

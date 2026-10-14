@@ -211,7 +211,7 @@ class Capture {
 	/**
 	 * Records an entry.
 	 *
-	 * @param array          $record     A record of metrics.
+	 * @param array $record     A record of metrics.
 	 * @since    1.0.0
 	 */
 	public static function record( $record ) {
@@ -224,7 +224,7 @@ class Capture {
 	/**
 	 * Pre-process an entry.
 	 *
-	 * @param array          $content     The body content of the request.
+	 * @param array $content     The body content of the request.
 	 * @return \WP_REST_Response
 	 * @since    1.0.0
 	 */
@@ -254,12 +254,12 @@ class Capture {
 	/**
 	 * Pre-process a single entry.
 	 *
-	 * @param array          $content     A record of metrics.
+	 * @param array $content     A record of metrics.
 	 * @return true|\WP_REST_Response   True if all goes OK, a rest response otherwise.
 	 * @since    1.0.0
 	 */
 	private static function single_preprocess( $content ) {
-		if ( ! filter_var(  str_starts_with( 'http', $content['resource'] ) ? $content['resource'] : 'https://example.com' . $content['resource'], FILTER_VALIDATE_URL ) ) {
+		if ( ! filter_var( str_starts_with( 'http', $content['resource'] ) ? $content['resource'] : 'https://example.com' . $content['resource'], FILTER_VALIDATE_URL ) ) {
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->error( 'Unprocessable resource in POST request.', [ 'code' => 422 ] );
 			return new \WP_REST_Response( null, 422 );
 		}
@@ -309,5 +309,4 @@ class Capture {
 		self::record( $record );
 		return true;
 	}
-
 }

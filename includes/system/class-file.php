@@ -87,5 +87,4 @@ class File {
 		@closedir( $dir );
 		return $files;
 	}
-
 }

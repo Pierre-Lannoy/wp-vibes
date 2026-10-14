@@ -144,5 +144,4 @@ class Blog {
 	public static function get_current_blog_name( $default = 'unknown' ) {
 		return self::get_blog_name( self::get_current_blog_id(), $default );
 	}
-
 }

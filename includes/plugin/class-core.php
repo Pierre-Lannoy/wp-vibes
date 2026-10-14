@@ -217,5 +217,4 @@ class Core {
 		// phpcs:ignore
 		return 'data:image/svg+xml;base64,' . base64_encode( $source );
 	}
-
 }

@@ -65,7 +65,6 @@ class EmojiFlag {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-
 	}
 
 	/**
@@ -97,5 +96,4 @@ class EmojiFlag {
 		}
 		return $result;
 	}
-
 }

@@ -44,8 +44,8 @@ class BrowserPerformance {
 	/**
 	 * Get the storable value.
 	 *
-	 * @param   string      $metric The metric name.
-	 * @param   integer     $value  The current raw value of the metric.
+	 * @param   string  $metric The metric name.
+	 * @param   integer $value  The current raw value of the metric.
 	 * @return  integer  The storable value.
 	 * @since 1.0.0
 	 */
@@ -56,8 +56,8 @@ class BrowserPerformance {
 	/**
 	 * Get the displayable value.
 	 *
-	 * @param   string      $metric The metric name.
-	 * @param   integer     $value  The current storable value of the metric.
+	 * @param   string  $metric The metric name.
+	 * @param   integer $value  The current storable value of the metric.
 	 * @return  float  The displayable value.
 	 * @since 1.0.0
 	 */
@@ -68,7 +68,7 @@ class BrowserPerformance {
 	/**
 	 * Get the information line about metric and value.
 	 *
-	 * @param   array      $metric The metric array.
+	 * @param   array $metric The metric array.
 	 * @return  string  The storable value.
 	 * @since 1.0.0
 	 */
@@ -106,5 +106,4 @@ class BrowserPerformance {
 		}
 		return 'SPAN ' . strtoupper( str_pad( $initiator, 7 ) ) . $span . $host;
 	}
-
 }

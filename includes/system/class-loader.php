@@ -117,5 +117,4 @@ class Loader {
 			add_action( $hook['hook'], [ $hook['component'], $hook['callback'] ], $hook['priority'], $hook['accepted_args'] );
 		}
 	}
-
 }

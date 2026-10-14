@@ -124,5 +124,4 @@ class Date {
 		}
 		return array_reverse( $value );
 	}
-
 }

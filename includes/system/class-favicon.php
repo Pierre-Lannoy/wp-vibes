@@ -11,8 +11,6 @@
 
 namespace Vibes\System;
 
-
-
 /**
  * Define the favicons functionality.
  *
@@ -43,7 +41,7 @@ class Favicon {
 	/**
 	 * Get a raw favicon.
 	 *
-	 * @param   string $name    Optional. The top domain of the site.
+	 * @param   string  $name    Optional. The top domain of the site.
 	 * @param   boolean $force_download Optional. Forces download instead of default icon if not present.
 	 * @return  string  The raw value of the favicon.
 	 * @since   1.0.0
@@ -68,7 +66,7 @@ class Favicon {
 				}
 			}
 		}
-		$name = str_replace( [ 'https://', 'http://' ], '', $name );
+		$name     = str_replace( [ 'https://', 'http://' ], '', $name );
 		$filename = $dir . sanitize_file_name( $name ) . '.png';
 		if ( array_key_exists( $name, self::$icons ) ) {
 			return self::$icons[ $name ];
@@ -160,5 +158,4 @@ class Favicon {
 			return 'data:image/png;base64,' . base64_encode( $source );
 		}
 	}
-
 }

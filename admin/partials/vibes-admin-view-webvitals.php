@@ -31,7 +31,7 @@ wp_enqueue_style( 'vibes-chartist-tooltip' );
 		<div class="vibes-row">
 			<?php echo wp_kses( $analytics->get_title_bar(), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
 		</div>
-		<?php if ( ( 'summary' === $analytics->type || 'endpoint' === $analytics->type )  && '' === $analytics->extra ) { ?>
+		<?php if ( ( 'summary' === $analytics->type || 'endpoint' === $analytics->type ) && '' === $analytics->extra ) { ?>
 			<div class="vibes-row">
 				<div class="vibes-box vibes-box-50-50-line">
 					<?php echo wp_kses( $analytics->get_webvital_class( 'mobile', 'left' ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
@@ -42,7 +42,7 @@ wp_enqueue_style( 'vibes-chartist-tooltip' );
 				<?php echo wp_kses( $analytics->get_webvital_chart(), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
 			</div>
 		<?php } ?>
-		<?php if ( 'summary' === $analytics->type  && '' === $analytics->extra ) { ?>
+		<?php if ( 'summary' === $analytics->type && '' === $analytics->extra ) { ?>
 			<?php $network = ( Role::SUPER_ADMIN === Role::admin_type() && 'all' === $analytics->site ); ?>
 			<?php if ( $network ) { ?>
 				<div class="vibes-row last-full-row">
@@ -57,13 +57,13 @@ wp_enqueue_style( 'vibes-chartist-tooltip' );
 		<?php if ( 'devices' === $analytics->extra ) { ?>
 			<?php foreach ( Device::$types as $key => $device ) { ?>
 				<?php if ( ! ( $key & 1 ) ) { ?>
-                    <div class="vibes-row">
-                        <div class="vibes-box vibes-box-50-50-line">
-                        <?php echo wp_kses( $analytics->get_webvital_device( $device, 'left' ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
+					<div class="vibes-row">
+						<div class="vibes-box vibes-box-50-50-line">
+						<?php echo wp_kses( $analytics->get_webvital_device( $device, 'left' ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
 				<?php } else { ?>
-                        <?php echo wp_kses( $analytics->get_webvital_device( $device, 'right' ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
-                        </div>
-                    </div>
+						<?php echo wp_kses( $analytics->get_webvital_device( $device, 'right' ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD ); ?>
+						</div>
+					</div>
 				<?php } ?>
 			<?php } ?>
 		<?php } ?>

@@ -315,5 +315,4 @@ class Form {
 	public function echo_field_simple_text( $args ) {
 		echo wp_kses( $this->field_simple_text( $args['text'] ), PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD );
 	}
-
 }

@@ -363,7 +363,7 @@ class Schema {
 	/**
 	 * Create the table.
 	 *
-	 * @param   string  $text   The text to log.
+	 * @param   string $text   The text to log.
 	 * @since    1.0.0
 	 */
 	private function create_tables( $text ) {
@@ -426,7 +426,7 @@ class Schema {
 	/**
 	 * Get an empty record.
 	 *
-	 * @param   string  $type       The metrics type.
+	 * @param   string $type       The metrics type.
 	 * @return  array   An empty, ready to use, record.
 	 * @since    1.0.0
 	 */
@@ -482,7 +482,7 @@ class Schema {
 	/**
 	 * Get the oldest date.
 	 *
-	 * @param   string  $source   The source of data.
+	 * @param   string $source   The source of data.
 	 * @return  string   The oldest timestamp in the statistics table.
 	 * @since    1.0.0
 	 */
@@ -505,8 +505,8 @@ class Schema {
 	/**
 	 * Get the authority.
 	 *
-	 * @param   string  $source   The source of data.
-	 * @param   array   $filter   The filter of the query.
+	 * @param   string $source   The source of data.
+	 * @param   array  $filter   The filter of the query.
 	 * @return  string   The authority.
 	 * @since    1.0.0
 	 */

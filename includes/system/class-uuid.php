@@ -93,5 +93,4 @@ class UUID {
 		} while ( $l < $length );
 		return substr( str_shuffle( $result ), 0, $length );
 	}
-
 }

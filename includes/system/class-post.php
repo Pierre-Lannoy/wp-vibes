@@ -11,7 +11,6 @@
 
 namespace Vibes\System;
 
-
 /**
  * Define the post functionality.
  *
@@ -62,5 +61,4 @@ class Post {
 		$title = self::get_post_title( $id );
 		return sprintf( '"%s" (post ID %s)', $title, $id );
 	}
-
 }
