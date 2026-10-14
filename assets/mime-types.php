@@ -2,6 +2,7 @@
 /**
  * Mime types extensions.
  *
+ * @package Bootstrap
  * @generated   2021-11-18
  * @author      Pierre Lannoy <https://pierre.lannoy.fr/>.
  * @since       1.0.0

@@ -123,6 +123,9 @@ class Cache {
 	/**
 	 * Get an ID for caching.
 	 *
+	 * @param mixed  $args The arguments to build the ID from.
+	 * @param string $path Optional. The path prefix to use.
+	 * @return string The ID ready to use for caching.
 	 * @since 1.0.0
 	 */
 	public static function id( $args, $path = 'data/' ) {

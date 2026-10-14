@@ -39,9 +39,9 @@ class Form {
 	 * @param   integer $max    Maximal number for input.
 	 * @param   integer $step   Step value for the control.
 	 * @param   string  $description    Optional. A description to display.
+	 * @param   boolean $full_width     Optional. Whether the control is full width.
+	 * @param   boolean $enabled     Optional. Whether the control is enabled.
 	 * @param   string  $unit   Optional. A unit to display just after the control.
-	 * @param   boolean $full_width     Optional. Is the control full width?
-	 * @param   boolean $enabled     Optional. Is the control enabled?
 	 * @return  string  The HTML string ready to print.
 	 * @since   1.0.0
 	 */
@@ -77,8 +77,8 @@ class Form {
 	 * @param   string  $id The id (and the name) of the control.
 	 * @param   string  $value  The string to put in the text field.
 	 * @param   string  $description    Optional. A description to display.
-	 * @param   boolean $full_width     Optional. Is the control full width?
-	 * @param   boolean $enabled     Optional. Is the control enabled?
+	 * @param   boolean $full_width     Optional. Whether the control is full width.
+	 * @param   boolean $enabled     Optional. Whether the control is enabled.
 	 * @param   string  $placeholder Optional. Placeholder of the input.
 	 * @return  string The HTML string ready to print.
 	 * @since   1.0.0
@@ -114,7 +114,7 @@ class Form {
 	 * @param   string  $description    Optional. A description to display.
 	 * @param   integer $columns     Optional. Number of columns.
 	 * @param   integer $lines     Optional. Number of lines.
-	 * @param   boolean $enabled     Optional. Is the control enabled?
+	 * @param   boolean $enabled     Optional. Whether the control is enabled.
 	 * @return  string The HTML string ready to print.
 	 * @since   1.0.0
 	 */
@@ -142,8 +142,8 @@ class Form {
 	 * @param   string  $id The id (and the name) of the control.
 	 * @param   string  $value  The string to put in the text field.
 	 * @param   string  $description    Optional. A description to display.
-	 * @param   boolean $full_width     Optional. Is the control full width?
-	 * @param   boolean $enabled     Optional. Is the control enabled?
+	 * @param   boolean $full_width     Optional. Whether the control is full width.
+	 * @param   boolean $enabled     Optional. Whether the control is enabled.
 	 * @return  string The HTML string ready to print.
 	 * @since   1.0.0
 	 */
@@ -177,8 +177,8 @@ class Form {
 	 * @param   string     $id The id (and the name) of the control.
 	 * @param   int|string $value  The string to put in the text field.
 	 * @param   string     $description    Optional. A description to display.
-	 * @param   boolean    $full_width Optional. Is the control full width?
-	 * @param   boolean    $enabled     Optional. Is the control enabled?
+	 * @param   boolean    $full_width Optional. Whether the control is full width.
+	 * @param   boolean    $enabled     Optional. Whether the control is enabled.
 	 * @return  string  The HTML string ready to print.
 	 * @since  1.0.0
 	 */
@@ -216,8 +216,8 @@ class Form {
 	 * @param   string     $id The id (and the name) of the control.
 	 * @param   int|string $value  The string to put in the text field.
 	 * @param   string     $description    Optional. A description to display.
-	 * @param   boolean    $full_width Optional. Is the control full width?
-	 * @param   boolean    $enabled     Optional. Is the control enabled?
+	 * @param   boolean    $full_width Optional. Whether the control is full width.
+	 * @param   boolean    $enabled     Optional. Whether the control is enabled.
 	 * @return  string  The HTML string ready to print.
 	 * @since  1.0.0
 	 */
@@ -256,11 +256,11 @@ class Form {
 	 *
 	 * @param   string  $text        The text of the checkbox.
 	 * @param   string  $id          The id (and the name) of the control.
-	 * @param   boolean $checked     Optional. Is the checkbox on?
+	 * @param   boolean $checked     Optional. Whether the checkbox is checked.
 	 * @param   string  $description Optional. A description to display.
 	 * @param   string  $more        Optional. The content of a "more" box.
-	 * @param   boolean $full_width  Optional. Is the control full width?
-	 * @param   boolean $enabled     Optional. Is the control enabled?
+	 * @param   boolean $full_width  Optional. Whether the control is full width.
+	 * @param   boolean $enabled     Optional. Whether the control is enabled.
 	 * @return  string  The HTML string ready to print.
 	 * @since   1.0.0
 	 */

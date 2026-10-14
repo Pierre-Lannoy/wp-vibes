@@ -97,7 +97,7 @@ class Capture {
 	 * Get a pre-filled record.
 	 *
 	 * @param   string  $url        The location url.
-	 * @param   integer $authent    Is te call authenticated?
+	 * @param   integer $authent    Whether the call is authenticated.
 	 * @param   string  $type       The metrics type.
 	 * @param   string  $initiator  Optional. The metrics type.
 	 * @return  array   A pre-filled, ready to use, record.
