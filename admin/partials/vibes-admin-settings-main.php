@@ -24,7 +24,12 @@ $url        = esc_url(
 
 <div class="wrap">
 
-	<h2><?php echo esc_html( sprintf( esc_html__( '%s Settings', 'vibes' ), VIBES_PRODUCT_NAME ) ); ?></h2>
+	<h2>
+	<?php
+	/* translators: %s: Product name. */
+	echo esc_html( sprintf( esc_html__( '%s Settings', 'vibes' ), VIBES_PRODUCT_NAME ) );
+	?>
+	</h2>
 	<?php settings_errors(); ?>
 
 	<h2 class="nav-tab-wrapper">

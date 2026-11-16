@@ -53,6 +53,7 @@ class Date {
 	 */
 	public static function get_positive_time_diff_from_mysql_utc( $from ) {
 		if ( strtotime( $from ) < time() ) {
+			/* translators: %s: Human-readable time difference, as in "8 minutes". */
 			return sprintf( esc_html__( '%s ago', 'vibes' ), human_time_diff( strtotime( $from ) ) );
 		} else {
 			return esc_html__( 'currently', 'vibes' );
@@ -68,8 +69,10 @@ class Date {
 	 */
 	public static function get_time_diff_from_mysql_utc( $from ) {
 		if ( strtotime( $from ) < time() ) {
+			/* translators: %s: Human-readable time difference, as in "8 minutes". */
 			return sprintf( esc_html__( '%s ago', 'vibes' ), human_time_diff( strtotime( $from ) ) );
 		} else {
+			/* translators: %s: Human-readable time difference, as in "8 minutes". */
 			return sprintf( esc_html__( 'in %s', 'vibes' ), human_time_diff( strtotime( $from ) ) );
 		}
 	}

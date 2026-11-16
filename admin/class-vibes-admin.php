@@ -341,6 +341,7 @@ class Vibes_Admin {
 								if ( '' === $result ) {
 									add_settings_error( 'vibes_no_error', '', esc_html__( 'Plugin successfully installed and activated with default settings.', 'vibes' ), 'info' );
 								} else {
+									/* translators: as in the sentence "Unable to install or activate the plugin. Error message: Something went wrong." */
 									add_settings_error( 'vibes_install_error', '', sprintf( esc_html__( 'Unable to install or activate the plugin. Error message: %s.', 'vibes' ), $result ), 'error' );
 								}
 							}
@@ -351,6 +352,7 @@ class Vibes_Admin {
 								if ( '' === $result ) {
 									add_settings_error( 'vibes_no_error', '', esc_html__( 'Plugin successfully installed and activated with default settings.', 'vibes' ), 'info' );
 								} else {
+									/* translators: as in the sentence "Unable to install or activate the plugin. Error message: Something went wrong." */
 									add_settings_error( 'vibes_install_error', '', sprintf( esc_html__( 'Unable to install or activate the plugin. Error message: %s.', 'vibes' ), $result ), 'error' );
 								}
 							}
@@ -361,6 +363,7 @@ class Vibes_Admin {
 								if ( '' === $result ) {
 									add_settings_error( 'vibes_no_error', '', esc_html__( 'Plugin successfully installed and activated with default settings.', 'vibes' ), 'info' );
 								} else {
+									/* translators: as in the sentence "Unable to install or activate the plugin. Error message: Something went wrong." */
 									add_settings_error( 'vibes_install_error', '', sprintf( esc_html__( 'Unable to install or activate the plugin. Error message: %s.', 'vibes' ), $result ), 'error' );
 								}
 							}
@@ -457,9 +460,11 @@ class Vibes_Admin {
 		register_setting( 'vibes_plugin_options_section', 'vibes_plugin_options_favicons' );
 		if ( \DecaLog\Engine::isDecalogActivated() ) {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'thumbs-up', 'none', '#00C800' ) . '" />&nbsp;';
+			/* translators: %s: Name and version of the plugin currently in use. */
 			$help .= sprintf( esc_html__( 'Your site is currently using %s.', 'vibes' ), '<em>' . \DecaLog\Engine::getVersionString() . '</em>' );
 		} else {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'alert-triangle', 'none', '#FF8C00' ) . '" />&nbsp;';
+			/* translators: %s: Name of the recommended plugin, as a link. */
 			$help .= sprintf( esc_html__( 'Your site does not use any logging plugin. To log all events triggered in Vibes, I recommend you to install the excellent (and free) %s. But it is not mandatory.', 'vibes' ), '<a href="https://wordpress.org/plugins/decalog/">DecaLog</a>' );
 			if ( class_exists( 'PerfOpsOne\Installer' ) && ! Environment::is_wordpress_multisite() ) {
 				$help .= '<br/><a href="' . wp_nonce_url( admin_url( 'admin.php?page=vibes-settings&tab=misc&action=install-decalog' ), 'install-decalog', 'nonce' ) . '" class="poo-button-install"><img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'download-cloud', 'none', '#FFFFFF', 3 ) . '" />&nbsp;&nbsp;' . esc_html__('Install It Now', 'vibes' ) . '</a>';
@@ -478,9 +483,11 @@ class Vibes_Admin {
 		register_setting( 'vibes_plugin_options_section', 'vibes_plugin_options_logger' );
 		if ( class_exists( 'PODeviceDetector\API\Device' ) ) {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'thumbs-up', 'none', '#00C800' ) . '" />&nbsp;';
+			/* translators: %s: Name and version of the plugin currently in use. */
 			$help .= sprintf( esc_html__( 'Your site is currently using %s.', 'vibes' ), '<em>Device Detector v' . PODD_VERSION . '</em>' );
 		} else {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'alert-triangle', 'none', '#FF8C00' ) . '" />&nbsp;';
+			/* translators: %s: Name of the recommended plugin, as a link. */
 			$help .= sprintf( esc_html__( 'Your site does not use any device detection mechanism. To allow device differentiation in Vibes, I recommend you to install the excellent (and free) %s. But it is not mandatory.', 'vibes' ), '<a href="https://wordpress.org/plugins/device-detector/">Device Detector</a>' );
 			if ( class_exists( 'PerfOpsOne\Installer' ) && ! Environment::is_wordpress_multisite() ) {
 				$help .= '<br/><a href="' . wp_nonce_url( admin_url( 'admin.php?page=vibes-settings&tab=misc&action=install-podd' ), 'install-podd', 'nonce' ) . '" class="poo-button-install"><img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'download-cloud', 'none', '#FFFFFF', 3 ) . '" />&nbsp;&nbsp;' . esc_html__('Install It Now', 'vibes' ) . '</a>';
@@ -500,9 +507,11 @@ class Vibes_Admin {
 		$geo_ip = new GeoIP();
 		if ( $geo_ip->is_installed() ) {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'thumbs-up', 'none', '#00C800' ) . '" />&nbsp;';
+			/* translators: %s: Name and version of the plugin currently in use. */
 			$help .= sprintf( esc_html__( 'Your site is currently using %s.', 'vibes' ), '<em>' . $geo_ip->get_full_name() . '</em>' );
 		} else {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'alert-triangle', 'none', '#FF8C00' ) . '" />&nbsp;';
+			/* translators: %s: Name of the recommended plugin, as a link. */
 			$help .= sprintf( esc_html__( 'Your site does not use any IP geographic information plugin. To take advantage of the geographical distribution of calls in Vibes, I recommend you to install the excellent (and free) %s. But it is not mandatory.', 'vibes' ), '<a href="https://wordpress.org/plugins/ip-locator/">IP Locator</a>' );
 			if ( class_exists( 'PerfOpsOne\Installer' ) && ! Environment::is_wordpress_multisite() ) {
 				$help .= '<br/><a href="' . wp_nonce_url( admin_url( 'admin.php?page=vibes-settings&tab=misc&action=install-iplocator' ), 'install-iplocator', 'nonce' ) . '" class="poo-button-install"><img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'download-cloud', 'none', '#FFFFFF', 3 ) . '" />&nbsp;&nbsp;' . esc_html__('Install It Now', 'vibes' ) . '</a>';
@@ -524,6 +533,7 @@ class Vibes_Admin {
 			$help .= esc_html__( 'Shared memory is available on your server: you can use live console.', 'vibes' );
 		} else {
 			$help  = '<img style="width:16px;vertical-align:text-bottom;" src="' . \Feather\Icons::get_base64( 'alert-triangle', 'none', '#FF8C00' ) . '" />&nbsp;';
+			/* translators: %s: Name of the PHP module to activate. */
 			$help .= sprintf( esc_html__( 'Shared memory is not available on your server. To use live console you must activate %s PHP module.', 'vibes' ), '<code>shmop</code>' );
 		}
 		add_settings_field(
