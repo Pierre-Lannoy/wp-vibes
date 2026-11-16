@@ -318,6 +318,8 @@ class Wpcli {
 	 *
 	 *   === For other examples and recipes, visit https://github.com/Pierre-Lannoy/wp-vibes/blob/master/WP-CLI.md ===
 	 *
+	 * @param array $args The positional command arguments.
+	 * @param array $assoc_args The associative command arguments (flags/options).
 	 */
 	public function status( $args, $assoc_args ) {
 		\WP_CLI::line( sprintf( '%s is running.', Environment::plugin_version_text() ) );
@@ -390,6 +392,8 @@ class Wpcli {
 	 *
 	 *   === For other examples and recipes, visit https://github.com/Pierre-Lannoy/wp-vibes/blob/master/WP-CLI.md ===
 	 *
+	 * @param array $args The positional command arguments.
+	 * @param array $assoc_args The associative command arguments (flags/options).
 	 */
 	public function settings( $args, $assoc_args ) {
 		$stdout  = \WP_CLI\Utils\get_flag_value( $assoc_args, 'stdout', false );
@@ -492,6 +496,8 @@ class Wpcli {
 	 *
 	 *   === For other examples and recipes, visit https://github.com/Pierre-Lannoy/wp-vibes/blob/master/WP-CLI.md ===
 	 *
+	 * @param array $args The positional command arguments.
+	 * @param array $assoc_args The associative command arguments (flags/options).
 	 */
 	public function exitcode( $args, $assoc_args ) {
 		$stdout = \WP_CLI\Utils\get_flag_value( $assoc_args, 'stdout', false );
@@ -575,6 +581,8 @@ class Wpcli {
 	 *
 	 *   === For other examples and recipes, visit https://github.com/Pierre-Lannoy/wp-vibes/blob/master/WP-CLI.md ===
 	 *
+	 * @param array $args The positional command arguments.
+	 * @param array $assoc_args The associative command arguments (flags/options).
 	 */
 	public function tail( $args, $assoc_args ) {
 		if ( ! function_exists( 'shmop_open' ) || ! function_exists( 'shmop_read' ) || ! function_exists( 'shmop_write' ) || ! function_exists( 'shmop_delete' ) ) {

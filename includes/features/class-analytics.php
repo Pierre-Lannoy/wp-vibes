@@ -815,6 +815,8 @@ class Analytics {
 	/**
 	 * Print the single span name.
 	 *
+	 * @param string $name The span name.
+	 * @return string The translated span name.
 	 * @since 1.0.0
 	 */
 	private function get_span_name( $name ) {
@@ -837,6 +839,10 @@ class Analytics {
 	/**
 	 * Print the single span visualization.
 	 *
+	 * @param array   $span     The span to print.
+	 * @param integer $level    Optional. The nesting level of the span.
+	 * @param integer $start    Optional. The start offset of the trace.
+	 * @param integer $duration Optional. The total duration of the trace.
 	 * @since 1.0.0
 	 */
 	private function get_span( $span, $level = 0, $start = 0, $duration = 0 ) {
@@ -1981,6 +1987,8 @@ class Analytics {
 	/**
 	 * Get the web vital widget.
 	 *
+	 * @param string $class    The CSS class to use.
+	 * @param string $position The position of the widget.
 	 * @return string  The widget ready to print.
 	 * @since    1.0.0
 	 */
@@ -2029,6 +2037,8 @@ class Analytics {
 	/**
 	 * Get the navigation widget.
 	 *
+	 * @param string $class    The CSS class to use.
+	 * @param string $position The position of the widget.
 	 * @return string  The widget ready to print.
 	 * @since    1.0.0
 	 */
@@ -2077,6 +2087,8 @@ class Analytics {
 	/**
 	 * Get the web vital widget.
 	 *
+	 * @param string $device   The device type to use.
+	 * @param string $position The position of the widget.
 	 * @return string  The widget ready to print.
 	 * @since    1.0.0
 	 */
@@ -2100,6 +2112,8 @@ class Analytics {
 	/**
 	 * Get the navigation widget.
 	 *
+	 * @param string $device   The device type to use.
+	 * @param string $position The position of the widget.
 	 * @return string  The widget ready to print.
 	 * @since    1.0.0
 	 */

@@ -11,6 +11,13 @@
 
 namespace Vibes\System;
 
+/**
+ * The class responsible to handle plugin statistics and detection.
+ *
+ * @package System
+ * @author  Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @since   1.0.0
+ */
 class Plugin {
 
 	/**

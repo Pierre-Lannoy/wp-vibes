@@ -31,12 +31,36 @@ use Vibes\System\Markdown;
  */
 class Updater {
 
+	/**
+	 * The product name.
+	 *
+	 * @var string
+	 * @since 1.0.0
+	 */
 	private $name = VIBES_PRODUCT_NAME;
 
+	/**
+	 * The product slug.
+	 *
+	 * @var string
+	 * @since 1.0.0
+	 */
 	private $slug = VIBES_SLUG;
 
+	/**
+	 * The current product version.
+	 *
+	 * @var string
+	 * @since 1.0.0
+	 */
 	private $version = VIBES_VERSION;
 
+	/**
+	 * The product URL.
+	 *
+	 * @var string
+	 * @since 1.0.0
+	 */
 	private $product = VIBES_PRODUCT_URL;
 
 	/**
@@ -192,10 +216,10 @@ class Updater {
 	/**
 	 * Filters the response for the current WordPress.org Plugin Installation API request.
 	 *
-	 * @param false|object|array $result The result object or array.
+	 * @param false|object|array $res The result object or array.
 	 * @param string $action The type of information being requested from the Plugin Installation API.
 	 * @param object $args Plugin API arguments.
-	 * @@return false|object|array  The result object or array.
+	 * @return false|object|array  The result object or array.
 	 */
 	function plugin_info( $res, $action, $args ) {
 		if ( 'plugin_information' !== $action ) {

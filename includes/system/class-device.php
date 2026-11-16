@@ -81,6 +81,7 @@ class Device {
 	/**
 	 * Get class name.
 	 *
+	 * @param string $class Optional. The class to get the name of. If not provided, it is auto-detected.
 	 * @since 1.0.0
 	 */
 	public static function get_class_name( $class = '' ) {
@@ -167,6 +168,7 @@ class Device {
 	/**
 	 * Get device name.
 	 *
+	 * @param string $device Optional. The device to get the name of. If not provided, it is auto-detected.
 	 * @since 1.0.0
 	 */
 	public static function get_device_name( $device = '' ) {

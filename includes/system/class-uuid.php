@@ -55,7 +55,7 @@ class UUID {
 	/**
 	 * Check if a string is a valid v4 UUID
 	 *
-	 * @param mixed $uuid The string to check
+	 * @param mixed $uuid The string to check.
 	 * @return  boolean True if the string is a valid v4 UUID, false otherwise.
 	 * @since  2.0.0
 	 */
@@ -66,7 +66,7 @@ class UUID {
 	/**
 	 * Sanitize a v4 UUID
 	 *
-	 * @param mixed $uuid The string to sanitize
+	 * @param mixed $uuid The string to sanitize.
 	 * @return  string The sanitized v4 UUID.
 	 * @since  2.0.0
 	 */

@@ -2,6 +2,7 @@
 /**
  * Mime types extensions.
  *
+ * @package Bootstrap
  * @generated   $DATE$
  * @author      Pierre Lannoy <https://pierre.lannoy.fr/>.
  * @since       1.0.0
