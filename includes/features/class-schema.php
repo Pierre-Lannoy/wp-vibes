@@ -139,12 +139,12 @@ class Schema {
 		foreach ( self::$standard_fields as $field ) {
 			if ( array_key_exists( $field, $record ) ) {
 				$field_insert[] = '`' . $field . '`';
-				$value_insert[] = "'" . $record[ $field ] . "'";
+				$value_insert[] = "'" . esc_sql( $record[ $field ] ) . "'";
 			}
 		}
 		if ( array_key_exists( 'initiator', $record ) ) {
 			$field_insert[] = '`initiator`';
-			$value_insert[] = "'" . $record['initiator'] . "'";
+			$value_insert[] = "'" . esc_sql( $record['initiator'] ) . "'";
 		}
 		foreach ( array_merge( WebVitals::$rated_metrics, WebVitals::$unrated_metrics, BrowserPerformance::$unrated_metrics ) as $metric ) {
 			foreach ( [ 'sum', 'good', 'impr', 'poor', 'hit' ] as $cmp ) {
