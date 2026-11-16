@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<ruleset name="Vibes">
+	<description>Coding standard for the Vibes plugin.</description>
+
+	<file>.</file>
+
+	<!-- Vendored third-party libraries and the shared PerfOps One framework are synced from
+	     upstream sources and kept as-is; don't reformat them to this plugin's conventions. -->
+	<exclude-pattern>*/includes/libraries/*</exclude-pattern>
+	<exclude-pattern>*/perfopsone/*</exclude-pattern>
+	<!-- Build-time templates containing $PLACEHOLDER$ tokens substituted by .bin/mime-generate.php;
+	     not valid, lintable PHP on their own. -->
+	<exclude-pattern>*/.bin/*</exclude-pattern>
+
+	<arg value="sp"/>
+	<arg name="basepath" value="."/>
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+
+	<rule ref="WordPress-Extra">
+		<!-- Plugin requires PHP 8.2+ (see Requires PHP in the plugin header), so short array
+		     syntax is supported and already used consistently throughout the codebase. -->
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+	</rule>
+	<rule ref="WordPress-Docs"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="vibes"/>
+			</property>
+		</properties>
+	</rule>
+
+	<config name="minimum_supported_wp_version" value="6.4"/>
+</ruleset>

@@ -76,5 +76,4 @@ class Timezone extends \DateTimeZone {
 		}
 		return self::site_get();
 	}
-
 }

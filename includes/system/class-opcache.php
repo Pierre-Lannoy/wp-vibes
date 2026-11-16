@@ -11,7 +11,6 @@
 
 namespace Vibes\System;
 
-
 use Vibes\System\Option;
 use Vibes\System\File;
 
@@ -164,7 +163,7 @@ class OPcache {
 	/**
 	 * Invalidate files.
 	 *
-	 * @param   array $files List of files to invalidate.
+	 * @param   array   $files List of files to invalidate.
 	 * @param   boolean $force Optional. Has the invalidation to be forced.
 	 * @return integer The number of invalidated files.
 	 * @since   1.0.0
@@ -177,7 +176,7 @@ class OPcache {
 					$file = str_replace( '..', '', $file );
 					$file = str_replace( './', ABSPATH, $file );
 					if ( opcache_invalidate( $file, $force ) ) {
-						$cpt++;
+						++$cpt;
 					}
 				}
 			}
@@ -194,7 +193,7 @@ class OPcache {
 	/**
 	 * Recompile files.
 	 *
-	 * @param   array $files List of files to recompile.
+	 * @param   array   $files List of files to recompile.
 	 * @param   boolean $force Optional. Has the invalidation to be forced.
 	 * @return integer The number of recompiled files.
 	 * @since   1.0.0
@@ -219,7 +218,7 @@ class OPcache {
 						try {
 							// phpcs:ignore
 							if ( @opcache_compile_file( $file ) ) {
-								$cpt++;
+								++$cpt;
 							} else {
 								\DecaLog\Engine::eventsLogger( VIBES_SLUG )->debug( sprintf( 'Unable to compile file "%s".', $file ) );
 							}
@@ -297,5 +296,4 @@ class OPcache {
 		}
 		return $result;
 	}
-
 }

@@ -130,7 +130,7 @@ class Memory {
 				}
 				$data = array_slice( $data, -self::$buffer );
 				if ( false === $sm->write( $data ) ) {
-					//error_log( 'ERROR' );
+					// error_log( 'ERROR' );
 				}
 			}
 		);

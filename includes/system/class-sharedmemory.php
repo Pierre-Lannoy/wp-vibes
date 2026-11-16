@@ -69,7 +69,7 @@ class SharedMemory {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @param   string  $id     The system V id.
+	 * @param   string $id     The system V id.
 	 * @since    2.0.0
 	 */
 	public function __construct( $id ) {
@@ -115,7 +115,7 @@ class SharedMemory {
 	/**
 	 * Writes an array.
 	 *
-	 * @param   array   $data   The data to write.
+	 * @param   array $data   The data to write.
 	 * @return  false|int       TThe number of written bytes, false if something went wrong.
 	 * @since    2.0.0
 	 */
@@ -132,7 +132,7 @@ class SharedMemory {
 				if ( vibes_is_shmop_resource( $this->shmid ) ) {
 					break;
 				} else {
-					$cpt++;
+					++$cpt;
 					usleep( 100 );
 				}
 			}
@@ -170,7 +170,7 @@ class SharedMemory {
 				if ( vibes_is_shmop_resource( $this->shmid ) ) {
 					break;
 				} else {
-					$cpt++;
+					++$cpt;
 					usleep( 100 );
 				}
 			}
@@ -191,7 +191,6 @@ class SharedMemory {
 		}
 		return $data;
 	}
-
 }
 
 SharedMemory::init();

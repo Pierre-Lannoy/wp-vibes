@@ -208,7 +208,7 @@ class Device {
 	/**
 	 * Get icon.
 	 *
-	 * @param   string  $type   The device type.
+	 * @param   string $type   The device type.
 	 * @return  string  The icon.
 	 * @since 1.0.0
 	 */
@@ -261,7 +261,7 @@ class Device {
 	/**
 	 * Get id name.
 	 *
-	 * @param   string  $type   The device type.
+	 * @param   string $type   The device type.
 	 * @return  string  The id name.
 	 * @since 1.0.0
 	 */
@@ -272,14 +272,13 @@ class Device {
 	/**
 	 * Get icon and id name.
 	 *
-	 * @param   string  $type   The device type or class.
+	 * @param   string $type   The device type or class.
 	 * @return  string  The icon and id name.
 	 * @since 1.0.0
 	 */
 	public static function get_icon_id_name( $type ) {
 		return self::get_icon( $type ) . ' ' . self::get_id_name( $type );
 	}
-
 }
 
 Device::init();

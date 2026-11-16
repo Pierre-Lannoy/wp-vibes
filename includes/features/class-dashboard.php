@@ -49,10 +49,14 @@ class Dashboard {
 	 */
 	public static function add_webvitals() {
 		if ( Option::network_get( 'capture' ) ) {
-			wp_add_dashboard_widget( 'vibes_webvitals', __( 'Web Vitals', 'vibes' ) . ' (' . sprintf( __( '%d minutes', 'vibes' ), Option::network_get( 'twindow' ) / 60 ) . ')', [
-				self::class,
-				'widget_webvitals'
-			] );
+			wp_add_dashboard_widget(
+				'vibes_webvitals',
+				__( 'Web Vitals', 'vibes' ) . ' (' . sprintf( __( '%d minutes', 'vibes' ), Option::network_get( 'twindow' ) / 60 ) . ')',
+				[
+					self::class,
+					'widget_webvitals',
+				]
+			);
 		}
 	}
 
@@ -97,6 +101,4 @@ class Dashboard {
 		$result .= '</div>';
 		echo wp_kses( $result, PERFOO_ALLOWED_HTML_FOR_DASHBOARD, PERFOO_ALLOWED_PROTOCOLS_FOR_DASHBOARD );
 	}
-
-
 }

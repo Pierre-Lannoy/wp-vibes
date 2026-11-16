@@ -54,5 +54,4 @@ class I18n {
 			VIBES_LANGUAGES_DIR
 		);
 	}
-
 }

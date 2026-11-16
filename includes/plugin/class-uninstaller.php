@@ -35,5 +35,4 @@ class Uninstaller {
 		$schema = new Schema();
 		$schema->finalize();
 	}
-
 }

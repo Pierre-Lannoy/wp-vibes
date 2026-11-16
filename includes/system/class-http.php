@@ -243,7 +243,7 @@ class Http {
 	/**
 	 * Format a captured record.
 	 *
-	 * @param   array   $record     The record to fromat.
+	 * @param   array $record     The record to fromat.
 	 * @return  array   The record formatted.
 	 * @since  1.0.0
 	 */

@@ -363,17 +363,17 @@ class L10n {
 			$subtags = \ResourceBundle::create( 'likelySubtags', 'ICUDATA', false );
 			if ( $subtags instanceof \ResourceBundle ) {
 				// First try
-				$locale  = $subtags->get( \Locale::canonicalize( 'und_' . $country ) );
+				$locale = $subtags->get( \Locale::canonicalize( 'und_' . $country ) );
 				if ( $locale ) {
 					return \Locale::getPrimaryLanguage( $locale );
 				}
 				// Second try
-				$locale  = $subtags->get( 'und_' . $country );
+				$locale = $subtags->get( 'und_' . $country );
 				if ( $locale ) {
 					return \Locale::getPrimaryLanguage( $locale );
 				}
 				// Third try
-				$locale  = $subtags->get( $country );
+				$locale = $subtags->get( $country );
 				if ( $locale ) {
 					return \Locale::getPrimaryLanguage( $locale );
 				}
@@ -389,9 +389,9 @@ class L10n {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string    $country    The ISO-2 country code.
-	 * @param string    $lang       The locale.
-	 * @param string    $locale     Optional. The locale string.
+	 * @param string $country    The ISO-2 country code.
+	 * @param string $lang       The locale.
+	 * @param string $locale     Optional. The locale string.
 	 * @return string Display name of the region for the current locale.
 	 */
 	public static function get_main_lang_name( $country, $lang, $locale = null ) {
@@ -459,8 +459,8 @@ class L10n {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string    $country The ISO-2 country code.
-	 * @param string    $locale     Optional. The locale string.
+	 * @param string $country The ISO-2 country code.
+	 * @param string $locale     Optional. The locale string.
 	 * @return string Display name of the region for the current locale.
 	 */
 	public static function get_country_name( $country, $locale = null ) {
@@ -483,5 +483,4 @@ class L10n {
 		}
 		return $result;
 	}
-
 }

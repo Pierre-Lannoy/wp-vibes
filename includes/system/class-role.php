@@ -74,10 +74,8 @@ class Role {
 			} elseif ( in_array( 'administrator', $user->roles ) ) {
 				return self::LOCAL_ADMIN;
 			}
-		} else {
-			if ( in_array( 'administrator', $user->roles ) ) {
+		} elseif ( in_array( 'administrator', $user->roles ) ) {
 				return self::SINGLE_ADMIN;
-			}
 		}
 		return 0;
 	}
@@ -139,5 +137,4 @@ class Role {
 		}
 		return $role;
 	}
-
 }

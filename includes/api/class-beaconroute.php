@@ -91,5 +91,4 @@ class BeaconRoute extends \WP_REST_Controller {
 	public function post_beacon( $request ) {
 		return Capture::preprocess( \json_decode( $request->get_body(), true ) );
 	}
-
 }

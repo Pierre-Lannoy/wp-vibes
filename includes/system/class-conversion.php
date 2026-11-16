@@ -103,5 +103,4 @@ class Conversion {
 			return 0 + number_format( $number / $divisor, $precision, '.', '' ) . $separator . $shorthand;
 		}
 	}
-
 }

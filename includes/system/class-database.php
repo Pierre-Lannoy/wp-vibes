@@ -238,17 +238,15 @@ class Database {
 	public function safe_add_column( $table, $column, $alter ) {
 		global $wpdb;
 		$result = false;
-		if ( ! $wpdb->get_var( "SHOW COLUMNS FROM `" . $table . "` LIKE '" . $column . "'" ) ) {
+		if ( ! $wpdb->get_var( 'SHOW COLUMNS FROM `' . $table . "` LIKE '" . $column . "'" ) ) {
 			try {
 				// phpcs:ignore
 				$wpdb->query( $alter );
 				$result = true;
-			}
-			catch ( \Exception $ex ) {
+			} catch ( \Exception $ex ) {
 				$result = false;
 			}
 		}
 		return $result;
 	}
-
 }

@@ -97,7 +97,6 @@ class Sitehealth {
 	 * @since 1.0.0
 	 */
 	private static function plugin_test_init() {
-
 	}
 
 	/**
@@ -378,5 +377,4 @@ class Sitehealth {
 		}
 		return $result;
 	}
-
 }

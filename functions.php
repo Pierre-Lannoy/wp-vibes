@@ -7,7 +7,7 @@
  * @since   2.0.0
  */
 
-if ( ! function_exists('decalog_get_psr_log_version') ) {
+if ( ! function_exists( 'decalog_get_psr_log_version' ) ) {
 	/**
 	 * Get the needed version of PSR-3.
 	 *
@@ -16,7 +16,7 @@ if ( ! function_exists('decalog_get_psr_log_version') ) {
 	 */
 	function decalog_get_psr_log_version() {
 		$required = 1;
-		if ( ! defined( 'DECALOG_PSR_LOG_VERSION') ) {
+		if ( ! defined( 'DECALOG_PSR_LOG_VERSION' ) ) {
 			define( 'DECALOG_PSR_LOG_VERSION', 'V1' );
 		}
 		switch ( strtolower( DECALOG_PSR_LOG_VERSION ) ) {
@@ -24,11 +24,11 @@ if ( ! function_exists('decalog_get_psr_log_version') ) {
 				$required = 3;
 				break;
 			case 'auto':
-				if ( class_exists( '\Psr\Log\NullLogger') ) {
-					$reflection = new \ReflectionMethod(\Psr\Log\NullLogger::class, 'log');
+				if ( class_exists( '\Psr\Log\NullLogger' ) ) {
+					$reflection = new \ReflectionMethod( \Psr\Log\NullLogger::class, 'log' );
 					foreach ( $reflection->getParameters() as $param ) {
 						if ( 'message' === $param->getName() ) {
-							if ( str_contains($param->getType() ?? '', '|') ) {
+							if ( str_contains( $param->getType() ?? '', '|' ) ) {
 								$required = 3;
 							}
 						}
@@ -45,9 +45,9 @@ if ( ! function_exists('decalog_get_psr_log_version') ) {
  * Functionally, the equivalent of the standard str_pad function, but is capable of successfully padding multibyte strings.
  *
  * @param string $input The string to be padded.
- * @param int $length The length of the resultant padded string.
+ * @param int    $length The length of the resultant padded string.
  * @param string $padding The string to use as padding. Defaults to space.
- * @param int $padType The type of padding. Defaults to STR_PAD_RIGHT.
+ * @param int    $padType The type of padding. Defaults to STR_PAD_RIGHT.
  * @param string $encoding The encoding to use, defaults to UTF-8.
  *
  * @return string A padded multibyte string.
@@ -87,7 +87,7 @@ function vibes_mb_str_pad( $input, $length, $padding = ' ', $padType = STR_PAD_R
  *
  * @param mixed $shmop  The shmop resource to close.
  */
-function vibes_shmop_close( $shmop ){
+function vibes_shmop_close( $shmop ) {
 	if ( defined( 'PHP_VERSION' ) && version_compare( PHP_VERSION, '8.0.0', '<' ) ) {
 		shmop_close( $shmop );
 	}
@@ -98,7 +98,7 @@ function vibes_shmop_close( $shmop ){
  *
  * @since 1.4.0
  *
- * @param mixed     $value  URL to retrieve.
+ * @param mixed $value  URL to retrieve.
  * @return bool     True if it's a shmop resource, false otherwise.
  */
 function vibes_is_shmop_resource( $value ) {

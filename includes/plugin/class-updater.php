@@ -77,7 +77,6 @@ class Updater {
 	 * @since 1.0.0
 	 */
 	private function install() {
-
 	}
 
 	/**
@@ -125,7 +124,7 @@ class Updater {
 					'headers' => [
 						'Accept'     => 'application/vnd.github+json',
 						'user-agent' => Http::user_agent(),
-					]
+					],
 				]
 			);
 			if ( is_wp_error( $remote ) || 200 !== wp_remote_retrieve_response_code( $remote ) || empty( wp_remote_retrieve_body( $remote ) ) ) {
@@ -193,8 +192,8 @@ class Updater {
 	 * Filters the response for the current WordPress.org Plugin Installation API request.
 	 *
 	 * @param false|object|array $result The result object or array.
-	 * @param string $action The type of information being requested from the Plugin Installation API.
-	 * @param object $args Plugin API arguments.
+	 * @param string             $action The type of information being requested from the Plugin Installation API.
+	 * @param object             $args Plugin API arguments.
 	 * @@return false|object|array  The result object or array.
 	 */
 	function plugin_info( $res, $action, $args ) {
@@ -208,7 +207,7 @@ class Updater {
 		if ( ! $infos ) {
 			return $res;
 		}
-		$md                           = new Markdown();
+		$md = new Markdown();
 		if ( ! is_object( $res ) ) {
 			$res = new \stdClass();
 		}
@@ -233,13 +232,13 @@ class Updater {
 				'changelog' => $md->get_inline( $infos->changelog, [] ) . '<br/><br/><p><a target="_blank" href="' . $res->homepage . '-changelog">CHANGELOG »</a></p>',
 			];
 		}
-		if ( isset( $res->banners['low'] ) && isset( $res->banners['high'] )) {
-			$res->banners['low'] = str_replace( 'github.com', 'raw.githubusercontent.com', $this->product ) . '/refs/heads/master/.wordpress-org/banner-772x250.jpg';
+		if ( isset( $res->banners['low'] ) && isset( $res->banners['high'] ) ) {
+			$res->banners['low']  = str_replace( 'github.com', 'raw.githubusercontent.com', $this->product ) . '/refs/heads/master/.wordpress-org/banner-772x250.jpg';
 			$res->banners['high'] = str_replace( 'github.com', 'raw.githubusercontent.com', $this->product ) . '/refs/heads/master/.wordpress-org/banner-1544x500.jpg';
 		} else {
-			$res->banners                 = [
+			$res->banners = [
 				'low'  => str_replace( 'github.com', 'raw.githubusercontent.com', $this->product ) . '/refs/heads/master/.wordpress-org/banner-772x250.jpg',
-				'high' => str_replace( 'github.com', 'raw.githubusercontent.com', $this->product ) . '/refs/heads/master/.wordpress-org/banner-1544x500.jpg'
+				'high' => str_replace( 'github.com', 'raw.githubusercontent.com', $this->product ) . '/refs/heads/master/.wordpress-org/banner-1544x500.jpg',
 			];
 		}
 		return $res;
@@ -265,7 +264,7 @@ class Updater {
 			$res->tested                         = $remote->tested;
 			$res->package                        = $remote->download_url;
 			$res->icons                          = [
-				'svg' => 'https://data.' . $this->slug
+				'svg' => 'https://data.' . $this->slug,
 			];
 			$transient->response[ $res->plugin ] = $res;
 		}
@@ -277,7 +276,7 @@ class Updater {
 	 * Reset update infos
 	 *
 	 * @param Plugin_Upgrader $upgrader Upgrader instance.
-	 * @param array $options Array of bulk item update data.
+	 * @param array           $options Array of bulk item update data.
 	 */
 	public function info_reset( $upgrader, $options ) {
 		if ( 'update' === $options['action'] && 'plugin' === $options['type'] ) {

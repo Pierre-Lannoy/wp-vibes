@@ -87,7 +87,7 @@ class Cache {
 	 * @since  1.0.0
 	 */
 	public static function get_analytics() {
-		$result    = [];
+		$result = [];
 		if ( wp_using_ext_object_cache() ) {
 			$result['type'] = 'object_cache';
 		} elseif ( self::$apcu_available ) {
@@ -117,7 +117,7 @@ class Cache {
 			define( 'APCU_CACHE_PREFIX', '_' . md5( ABSPATH ) . '_' );
 		}
 		self::$apcu_pool_prefix = APCU_CACHE_PREFIX;
-		self::$apcu_available = function_exists( 'apcu_delete' ) && function_exists( 'apcu_fetch' ) && function_exists( 'apcu_store' );
+		self::$apcu_available   = function_exists( 'apcu_delete' ) && function_exists( 'apcu_fetch' ) && function_exists( 'apcu_store' );
 	}
 
 	/**
@@ -192,7 +192,7 @@ class Cache {
 		$item_name = self::normalized_item_name( $item_name );
 		$found     = false;
 		if ( self::$apcu_available && Option::network_get( 'use_apcu', true ) ) {
-			$result = apcu_fetch(  self::$pool_name . self::$apcu_pool_prefix . $item_name, $found );
+			$result = apcu_fetch( self::$pool_name . self::$apcu_pool_prefix . $item_name, $found );
 		} elseif ( wp_using_ext_object_cache() ) {
 			$result = wp_cache_get( $item_name, self::$pool_name, false, $found );
 		} else {
@@ -243,9 +243,9 @@ class Cache {
 	 * You do not need to serialize values. If the value needs to be serialized, then
 	 * it will be serialized before it is set.
 	 *
-	 * @param  string $item_name Item name. Expected to not be SQL-escaped.
-	 * @param  mixed  $value     Item value. Must be serializable if non-scalar.
-	 *                           Expected to not be SQL-escaped.
+	 * @param  string     $item_name Item name. Expected to not be SQL-escaped.
+	 * @param  mixed      $value     Item value. Must be serializable if non-scalar.
+	 *                               Expected to not be SQL-escaped.
 	 * @param  int|string $ttl   Optional. The previously defined ttl @see self::init() if it's a string.
 	 *                           The ttl value in seconds if it's and integer.
 	 * @return bool False if value was not set and true if value was set.
@@ -263,7 +263,7 @@ class Cache {
 		if ( $expiration > 0 ) {
 			if ( self::$apcu_available && Option::network_get( 'use_apcu', true ) ) {
 				$result = apcu_store( self::$pool_name . self::$apcu_pool_prefix . $item_name, $value, $expiration );
-			}  elseif ( wp_using_ext_object_cache() ) {
+			} elseif ( wp_using_ext_object_cache() ) {
 				$result = wp_cache_set( $item_name, $value, self::$pool_name, $expiration );
 			} else {
 				$result = set_transient( self::$pool_name . '_' . $item_name, $value, $expiration );
@@ -280,9 +280,9 @@ class Cache {
 	 * You do not need to serialize values. If the value needs to be serialized, then
 	 * it will be serialized before it is set.
 	 *
-	 * @param  string $item_name Item name. Expected to not be SQL-escaped.
-	 * @param  mixed  $value     Item value. Must be serializable if non-scalar.
-	 *                           Expected to not be SQL-escaped.
+	 * @param  string     $item_name Item name. Expected to not be SQL-escaped.
+	 * @param  mixed      $value     Item value. Must be serializable if non-scalar.
+	 *                               Expected to not be SQL-escaped.
 	 * @param  int|string $ttl   Optional. The previously defined ttl @see self::init() if it's a string.
 	 *                           The ttl value in seconds if it's and integer.
 	 * @return bool False if value was not set and true if value was set.
@@ -298,14 +298,14 @@ class Cache {
 	 * You do not need to serialize values. If the value needs to be serialized, then
 	 * it will be serialized before it is set.
 	 *
-	 * @param  string  $item_name    Item name. Expected to not be SQL-escaped.
-	 * @param  mixed   $value        Item value. Must be serializable if non-scalar.
-	 *                               Expected to not be SQL-escaped.
+	 * @param  string     $item_name    Item name. Expected to not be SQL-escaped.
+	 * @param  mixed      $value        Item value. Must be serializable if non-scalar.
+	 *                                  Expected to not be SQL-escaped.
 	 * @param  int|string $ttl       Optional. The previously defined ttl @see self::init() if it's a string.
 	 *                               The ttl value in seconds if it's and integer.
-	 * @param  boolean $blog_aware   Optional. Has the name must take care of blog.
-	 * @param  boolean $locale_aware Optional. Has the name must take care of locale.
-	 * @param  boolean $user_aware   Optional. Has the name must take care of user.
+	 * @param  boolean    $blog_aware   Optional. Has the name must take care of blog.
+	 * @param  boolean    $locale_aware Optional. Has the name must take care of locale.
+	 * @param  boolean    $user_aware   Optional. Has the name must take care of user.
 	 * @return bool False if value was not set and true if value was set.
 	 * @since  1.0.0
 	 */
@@ -373,7 +373,7 @@ class Cache {
 						foreach ( $infos['cache_list'] as $script ) {
 							if ( 0 === strpos( $script['info'], self::$pool_name . self::$apcu_pool_prefix ) ) {
 								apcu_delete( $script['info'] );
-								$result++;
+								++$result;
 							}
 						}
 					}
@@ -422,12 +422,12 @@ class Cache {
 	/**
 	 * Get the minimum value of a ttl time range.
 	 *
-	 * @param  string  $ttl_range   The time range in seconds. May be something like '0', '200' or '15-600:15'.
+	 * @param  string $ttl_range   The time range in seconds. May be something like '0', '200' or '15-600:15'.
 	 * @return integer The ttl in seconds.
 	 * @since  1.0.0
 	 */
 	public static function get_min( $ttl_range ) {
-		if ( ! is_string( $ttl_range) ) {
+		if ( ! is_string( $ttl_range ) ) {
 			return 0;
 		}
 		$ttls = explode( '-', $ttl_range );
@@ -444,12 +444,12 @@ class Cache {
 	/**
 	 * Get the maximum value of a ttl time range.
 	 *
-	 * @param  string  $ttl_range   The time range in seconds. May be something like '0', '200' or '15-600:15'.
+	 * @param  string $ttl_range   The time range in seconds. May be something like '0', '200' or '15-600:15'.
 	 * @return integer The ttl in seconds.
 	 * @since  1.0.0
 	 */
 	public static function get_max( $ttl_range ) {
-		if ( ! is_string( $ttl_range) ) {
+		if ( ! is_string( $ttl_range ) ) {
 			return 0;
 		}
 		$ttls = explode( '-', $ttl_range );
@@ -466,12 +466,12 @@ class Cache {
 	/**
 	 * Get the step of a ttl time range.
 	 *
-	 * @param  string  $ttl_range   The time range in seconds. May be something like '0', '200' or '15-600:15'.
+	 * @param  string $ttl_range   The time range in seconds. May be something like '0', '200' or '15-600:15'.
 	 * @return integer The ttl in seconds.
 	 * @since  1.0.0
 	 */
 	public static function get_step( $ttl_range ) {
-		if ( ! is_string( $ttl_range) ) {
+		if ( ! is_string( $ttl_range ) ) {
 			return 0;
 		}
 		$ttls = explode( '-', $ttl_range );
@@ -492,7 +492,7 @@ class Cache {
 	 *
 	 * This function accepts generic car "*" for transients.
 	 *
-	 * @param  string  $ttl_range   The time range in seconds. May be something like '5-600' or '200'.
+	 * @param  string $ttl_range   The time range in seconds. May be something like '5-600' or '200'.
 	 * @return integer The ttl in seconds.
 	 * @since  1.0.0
 	 */
@@ -549,5 +549,4 @@ class Cache {
 		}
 		return $result;
 	}
-
 }

@@ -143,5 +143,4 @@ class AnalyticsFactory {
 		}
 		return new Analytics( $source, $domain, $type, $site, $start, $end, $id, $reload, $extra, $authent, $country, $channel );
 	}
-
 }

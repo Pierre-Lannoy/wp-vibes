@@ -11,7 +11,6 @@
 
 namespace Vibes\System;
 
-
 use Vibes\System\Option;
 use Vibes\System\File;
 
@@ -97,7 +96,7 @@ class APCu {
 			$prefix = md5( ABSPATH ) . '_';
 			foreach ( $objects as $object ) {
 				if ( false !== apcu_delete( $prefix . $object ) ) {
-					$cpt++;
+					++$cpt;
 				}
 			}
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->info( sprintf( '%d object(s) deleted.', $cpt ) );
@@ -113,17 +112,16 @@ class APCu {
 	public static function reset() {
 		if ( function_exists( 'apcu_cache_info' ) && function_exists( 'apcu_delete' ) ) {
 			$prefix = md5( ABSPATH ) . '_';
-			$infos = apcu_cache_info( false );
+			$infos  = apcu_cache_info( false );
 			if ( array_key_exists( 'cache_list', $infos ) && is_array( $infos['cache_list'] ) ) {
 				foreach ( $infos['cache_list'] as $script ) {
 					if ( 0 === strpos( $script['info'], $prefix ) ) {
 						apcu_delete( $script['info'] );
-						$result++;
+						++$result;
 					}
 				}
 			}
 			\DecaLog\Engine::eventsLogger( VIBES_SLUG )->notice( 'Cache cleared.' );
 		}
 	}
-
 }

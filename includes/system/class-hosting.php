@@ -66,5 +66,4 @@ class Hosting {
 	public static function is_apache_geoip_enabled() {
 		return array_key_exists( 'GEOIP_COUNTRY_CODE', $_SERVER );
 	}
-
 }

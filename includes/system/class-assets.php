@@ -114,5 +114,4 @@ class Assets {
 			return wp_register_script( $handle, $src . $file, $deps, $version, VIBES_ANALYTICS_ID === $handle ? true : Option::network_get( 'script_in_footer' ) );
 		}
 	}
-
 }
