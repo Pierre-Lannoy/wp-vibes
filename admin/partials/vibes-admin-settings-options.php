@@ -31,5 +31,15 @@
 	<?php do_settings_sections( 'vibes_plugin_options_section' ); ?>
 	<?php do_settings_sections( 'vibes_plugin_advanced_section' ); ?>
 	<?php wp_nonce_field( 'vibes-plugin-options' ); ?>
-	<p><?php echo get_submit_button( esc_html__( 'Reset to Defaults', 'vibes' ), 'secondary', 'reset-to-defaults', false ); ?>&nbsp;&nbsp;&nbsp;<?php echo get_submit_button( null, 'primary', 'submit', false ); ?></p>
+	<p>
+	<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_submit_button() escapes its own output.
+	echo get_submit_button( esc_html__( 'Reset to Defaults', 'vibes' ), 'secondary', 'reset-to-defaults', false );
+	?>
+	&nbsp;&nbsp;&nbsp;
+	<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_submit_button() escapes its own output.
+	echo get_submit_button( null, 'primary', 'submit', false );
+	?>
+	</p>
 </form>

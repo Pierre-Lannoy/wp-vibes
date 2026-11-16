@@ -238,6 +238,7 @@ class Database {
 	public function safe_add_column( $table, $column, $alter ) {
 		global $wpdb;
 		$result = false;
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- schema introspection, not reachable with user input.
 		if ( ! $wpdb->get_var( "SHOW COLUMNS FROM `" . $table . "` LIKE '" . $column . "'" ) ) {
 			try {
 				// phpcs:ignore
